@@ -43,15 +43,16 @@ const page = await browser.newPage({ viewport: { width: 1920, height: 1920 } });
 page.on('console', (m) => { if (m.text().startsWith('sculpt')) console.log(m.text()); if (m.type() === 'error') { console.error('[page]', m.text()); if (/module|SyntaxError|not provide/.test(m.text())) process.exit(1); } });
 page.on('pageerror', (e) => { console.error('[page]', e.message); process.exit(1); });
 await page.goto(`http://localhost:${srv.address().port}/?ep=${ep}${args.q ? '&' + args.q : ''}`);
-await page.waitForFunction(() => window.READY === true, null, { timeout: 120000 });
-const { duration, fps } = await page.evaluate(() => window.EPISODE);
+await page.waitForFunction(() => window.READY === true, null, { timeout: 0 });
+const { duration, fps, width, height } = await page.evaluate(() => window.EPISODE);
+const shot = (o) => page.screenshot({ ...o, clip: { x: 0, y: 0, width, height }, timeout: 0, animations: 'allow', caret: 'initial' });
 const stage = await page.$('#stage');
 
 if (args.stills) {
   for (const t of String(args.stills).split(',').map(Number)) {
     await page.evaluate((t) => window.renderFrame(t), t);
     const f = path.join(outDir, 'stills', `${ep}_${t.toFixed(2)}.jpg`);
-    await stage.screenshot({ path: f, type: 'jpeg', quality: 90 });
+    await shot({ path: f, type: 'jpeg', quality: 90 });
     console.log(f);
   }
 } else {
@@ -64,7 +65,7 @@ if (args.stills) {
   const t0 = Date.now();
   for (let i = 0; i < n; i++) {
     await page.evaluate((t) => window.renderFrame(t), from + i / fps);
-    const buf = await stage.screenshot({ type: 'jpeg', quality: 92 });
+    const buf = await shot({ type: 'jpeg', quality: 92 });
     if (!ff.stdin.write(buf)) await new Promise((r) => ff.stdin.once('drain', r));
     if (i % 30 === 0) process.stdout.write(`\rimage ${i}/${n}  (${((Date.now() - t0) / (i + 1)).toFixed(0)} ms/image)`);
   }

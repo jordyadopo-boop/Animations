@@ -36,8 +36,10 @@ Une forêt d'arbres immenses dont les cimes dépassent une **mer de nuages**. Ri
 - nuit bleue avec lune et lucioles (c'est le territoire du hibou) ;
 - orage, vent, neige.
 
-**Direction artistique :**
-- 3D cartoon douce, **sans contours noirs**, couleurs franches et lumineuses (dans l'esprit d'Oscar & Co).
+**Direction artistique (validée) :**
+- Personnages **sculptés** : chaque personnage est une seule forme organique continue (comme de la pâte à modeler), avec arcades sourcilières en bourrelets, yeux enfoncés dans leurs orbites, bouches sculptées. Pas de peluche.
+- Couleurs naturelles de forêt (bruns, gris chauds, crème, roux) pour les personnages ; décor lumineux.
+- 3D cartoon douce, **sans contours noirs** (dans l'esprit d'Oscar & Co).
 - Écorces rouge-orangé, feuillage en boules vert vif, nuages blancs moelleux, ciel bleu profond.
 - **Caméra souvent au niveau de la branche**, avec de grandes plongées vertigineuses vers les nuages.
 
@@ -61,13 +63,14 @@ Une forêt d'arbres immenses dont les cimes dépassent une **mer de nuages**. Ri
   - sa **membrane étalée devant le soleil** fait des ombres chinoises qui font peur.
 
 ### Le trio de voleurs (les rivaux du quotidien)
+Trois silhouettes reconnaissables à leur ombre : **un gros et lent, une rapide, un bête**.
 Ils habitent le Nid-Bazar et veulent tout ce que Pépin trouve. Ils se disputent et se trahissent entre eux.
 
 | Personnage | Look | Rôle |
 |---|---|---|
-| **MARGOT**, la pie | Noire et blanche aux reflets bleus, toujours un objet brillant au bec | **La cheffe.** Vaniteuse, collectionneuse, attirée par **tout ce qui brille** (son point faible). |
-| **BOUBOULE**, le raton laveur | Gros, masque noir, queue rayée | **Le costaud glouton.** Lent, idiot, mange tout, y compris le butin du trio. |
-| **TAC-TAC**, le pic-vert | Vert et rouge, très nerveux | **Le bricoleur.** Perce les troncs à la vitesse d'une perceuse, construit les pièges du trio. Ses plans marchent… contre eux. |
+| **MARGOT**, la pie | Fine et pointue (silhouette en flèche), noire et blanche aux reflets bleus | **La cheffe, la rapide.** Vaniteuse, collectionneuse, attirée par **tout ce qui brille** (son point faible). |
+| **BOUBOULE**, le raton laveur | Gros, debout, ventre énorme, masque de bandit, queue annelée | **Le gros lent.** Glouton et bourrin, mange tout, y compris le butin du trio. |
+| **TAC-TAC**, le pic-vert | Maigre et dégingandé, long cou, tête trop grosse, calotte rouge, yeux qui louchent | **Le bête.** Nerveux, comprend tout de travers ; perce les troncs comme une perceuse, ses plans se retournent contre le trio. |
 
 ### Les prédateurs (les grandes menaces)
 Ils débarquent au pire moment et changent tout. Comme les crocodiles d'Oscar, mais ce sont de vrais chasseurs.
@@ -152,3 +155,18 @@ Ces épisodes sont faits pour être **publiés en bloc** au lancement, puis en a
 - **Effets slapstick :** écrasement/étirement, traînées de vitesse, images-flash à l'impact, lignes de vitesse, tremblement et zooms de caméra, onomatopées animées, fermeture en rond (iris) en fin d'épisode.
 - **Son :** musique et bruitages générés en code et calés image par image sur l'action (pizzicato, xylophone, sifflet à coulisse, « boïng », vent…).
 - **Déclinaison verticale (option) :** le 16:9 est le format maître. Pour TikTok/Reels, on peut sortir une version 9:16 avec la vidéo au centre et des bandeaux titre/logo, comme la vidéo de référence.
+
+---
+
+## 8. Visages des méchants (règle)
+Méchants mais pas effrayants : **sourcils en V**, **paupières en biais**, **pupilles en tête d'épingle** avec iris jaune, regard par en dessous, rictus en coin. On doit comprendre au premier regard qui sont les « pécheurs ».
+
+## 9. Musique
+- Ritournelle de Pépin (xylophone / clarinette), qui change d'humeur selon la scène.
+- **Un thème par méchant** : cuivres graves pour Bec-de-Fer, clarinette chromatique sournoise pour Margot (à venir : Bouboule au tuba, Tac-Tac au woodblock).
+- Bruitages cartoon calés à l'image ; onomatopées écrites à l'écran.
+
+## 10. Générique de fin (chaque épisode)
+- Série créée par **Jordy Adopo**
+- Contact : **jordy.adopo@outlook.fr** — **+225 07 09 95 10 92**
+- © Jordy Adopo — tous droits réservés
