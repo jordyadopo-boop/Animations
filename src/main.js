@@ -9,6 +9,7 @@ const W = ep.width || 1920, H = ep.height || 1080;
 Object.assign($('stage').style, { width: `${W}px`, height: `${H}px` });
 Object.assign($('c').style, { width: `${W}px`, height: `${H}px` });
 const { createWorld } = await import(`./engine/${ep.world || 'canopy'}.js`);
+if (ep.world === 'ink') document.body.classList.add('ink');
 const world = createWorld($('c'), W, H);
 const fxLayer = $('fx'), iris = $('iris');
 

@@ -37,6 +37,8 @@ function bandpass(sig, fc, q = 4) { // biquad
   const w = 2 * Math.PI * fc / SR, al = Math.sin(w) / (2 * q), b0 = al, b2 = -al, a0 = 1 + al, a1 = -2 * Math.cos(w), a2 = 1 - al;
   let x1 = 0, x2 = 0, y1 = 0, y2 = 0; return sig.map((x) => { const y = (b0 * x + b2 * x2 - a1 * y1 - a2 * y2) / a0; x2 = x1; x1 = x; y2 = y1; y1 = y; return y; });
 }
+// copie un signal dans un tampon en coupant ce qui déborde
+const put = (out, sig, off) => { const n = Math.max(0, Math.min(sig.length, out.length - off)); if (n > 0) out.set(n < sig.length ? sig.subarray(0, n) : sig, off); };
 const add = (...sigs) => { const n = Math.max(...sigs.map((s) => s.length)), o = new Float32Array(n); sigs.forEach((s) => s.forEach((v, i) => (o[i] += v))); return o; };
 const gainS = (s, g) => s.map((v) => v * g);
 const ad = (a, d) => (t) => Math.min(1, t / a) * Math.exp(-t / d);
@@ -51,7 +53,7 @@ function pluck(freq, dur, bright = 0.5) {
 function voice(dur, f0, vowels = [[700, 1200]], vib = 6) {
   const src = tone(dur, (t) => f0(t) * (1 + 0.02 * Math.sin(2 * Math.PI * vib * t)), 'saw', hold(0.01, 0.04));
   const per = dur / vowels.length; const out = new Float32Array(src.length);
-  vowels.forEach(([f1, f2], i) => { const a = Math.floor(i * per * SR), b = Math.floor((i + 1) * per * SR); const seg = src.slice(a, b); const v = add(bandpass(seg, f1, 5), gainS(bandpass(seg, f2, 6), 0.6)); out.set(v.map((x, k) => x * Math.min(1, k / 400, (v.length - k) / 400)), a); });
+  vowels.forEach(([f1, f2], i) => { const a = Math.floor(i * per * SR), b = Math.floor((i + 1) * per * SR); const seg = src.slice(a, b); const v = add(bandpass(seg, f1, 5), gainS(bandpass(seg, f2, 6), 0.6)); put(out, v.map((x, k) => x * Math.min(1, k / 400, (v.length - k) / 400)), a); });
   return gainS(out, 3);
 }
 
@@ -68,18 +70,18 @@ const FX = {
   slideUp: (o) => tone(o?.dur || 0.6, (t) => 300 + 800 * t, 'tri', hold(0.02, 0.05)),
   splat: () => add(gainS(lowpass(tone(0.35, 0, 'noise', ad(0.002, 0.09)), 1400), 2), tone(0.25, (t) => 90 * Math.exp(-t * 6), 'sine', ad(0.002, 0.1))),
   squeak: (o) => { const d = o?.dur || 1.2; return gainS(tone(d, (t) => 1500 + 400 * Math.sin(t * 18), 'tri', (t) => 0.4 * Math.sin(Math.PI * t / d) * (0.6 + 0.4 * Math.sin(t * 40))), 0.6); },
-  scramble: (o) => { const d = o?.dur || 0.4, out = new Float32Array(Math.floor(d * SR)); for (let k = 0; k < d * 20; k++) out.set(gainS(highpass(tone(0.02, 0, 'noise', ad(0.001, 0.008)), 2000), 0.7), Math.floor(k * SR / 20)); return out; },
-  tiptoe: (o) => { const d = o?.dur || 2, out = new Float32Array(Math.floor(d * SR)); for (let k = 0; k < d * 4; k++) out.set(pluck(mtof(76 + (k % 2) * 3), 0.15, 0.3).map((v) => v * 0.5), Math.floor(k * SR / 4)); return out; },
+  scramble: (o) => { const d = o?.dur || 0.4, out = new Float32Array(Math.floor(d * SR)); for (let k = 0; k < d * 20; k++) put(out, gainS(highpass(tone(0.02, 0, 'noise', ad(0.001, 0.008)), 2000), 0.7), Math.floor(k * SR / 20)); return out; },
+  tiptoe: (o) => { const d = o?.dur || 2, out = new Float32Array(Math.floor(d * SR)); for (let k = 0; k < d * 4; k++) put(out, pluck(mtof(76 + (k % 2) * 3), 0.15, 0.3).map((v) => v * 0.5), Math.floor(k * SR / 4)); return out; },
   gulp: () => tone(0.3, (t) => 300 - 600 * t + 80 * Math.sin(t * 50), 'sine', ad(0.01, 0.12)),
   screech: () => gainS(add(bandpass(tone(0.9, (t) => 1600 + 300 * Math.sin(t * 30), 'saw', hold(0.02, 0.2)), 2400, 3), bandpass(tone(0.9, 0, 'noise', hold(0.02, 0.2)), 3200, 4)), 0.9),
-  screechMagpie: () => { const out = new Float32Array(Math.floor(0.9 * SR)); for (let k = 0; k < 4; k++) out.set(gainS(bandpass(tone(0.16, (t) => 1300 - 300 * t, 'saw', ad(0.005, 0.08)), 1800, 3), 1.6), Math.floor(k * 0.2 * SR)); return out; },
-  tweet: (o) => { const d = o?.dur || 1.5, out = new Float32Array(Math.floor(d * SR)); for (let k = 0; k < d * 5; k++) out.set(tone(0.12, (t) => 2800 + 900 * Math.sin(t * 80) - k * 20, 'sine', ad(0.005, 0.05)).map((v) => v * 0.35), Math.floor(k * SR / 5)); return out; },
-  flap: (o) => { const d = o?.dur || 1.5, out = new Float32Array(Math.floor(d * SR)); for (let k = 0; k < d * 7; k++) out.set(gainS(lowpass(tone(0.09, 0, 'noise', ad(0.004, 0.03)), 900), 1.2), Math.floor(k * SR / 7)); return out; },
+  screechMagpie: () => { const out = new Float32Array(Math.floor(0.9 * SR)); for (let k = 0; k < 4; k++) put(out, gainS(bandpass(tone(0.16, (t) => 1300 - 300 * t, 'saw', ad(0.005, 0.08)), 1800, 3), 1.6), Math.floor(k * 0.2 * SR)); return out; },
+  tweet: (o) => { const d = o?.dur || 1.5, out = new Float32Array(Math.floor(d * SR)); for (let k = 0; k < d * 5; k++) put(out, tone(0.12, (t) => 2800 + 900 * Math.sin(t * 80) - k * 20, 'sine', ad(0.005, 0.05)).map((v) => v * 0.35), Math.floor(k * SR / 5)); return out; },
+  flap: (o) => { const d = o?.dur || 1.5, out = new Float32Array(Math.floor(d * SR)); for (let k = 0; k < d * 7; k++) put(out, gainS(lowpass(tone(0.09, 0, 'noise', ad(0.004, 0.03)), 900), 1.2), Math.floor(k * SR / 7)); return out; },
   creak: (o) => { const d = o?.dur || 1.5; return gainS(bandpass(tone(d, (t) => 90 + 30 * Math.sin(t * 3), 'saw', (t) => Math.sin(Math.PI * t / d) * (0.5 + 0.5 * (Math.sin(t * 35) > 0.6 ? 1 : 0))), 700, 3), 1.2); },
   strain: (o) => voice(o?.dur || 0.8, (t) => 260 + 120 * t, [[400, 900]], 14),
   ploc: () => tone(0.15, (t) => 900 * Math.exp(-t * 20) + 300, 'sine', ad(0.001, 0.05)),
   ding: () => add(tone(1.2, 1568, 'sine', ad(0.002, 0.5)), gainS(tone(1.2, 3136, 'sine', ad(0.002, 0.25)), 0.4)),
-  twinkle: () => { const out = new Float32Array(Math.floor(0.7 * SR)); [88, 91, 95, 100].forEach((m, k) => out.set(tone(0.3, mtof(m), 'sine', ad(0.002, 0.12)).map((v) => v * 0.4), Math.floor(k * 0.08 * SR))); return out; },
+  twinkle: () => { const out = new Float32Array(Math.floor(0.7 * SR)); [88, 91, 95, 100].forEach((m, k) => put(out, tone(0.3, mtof(m), 'sine', ad(0.002, 0.12)).map((v) => v * 0.4), Math.floor(k * 0.08 * SR))); return out; },
   zoom: () => gainS(bandpass(tone(0.35, 0, 'noise', (t) => t / 0.35), 1500, 1), 1.5),
   zoomAway: (o) => { const d = o?.dur || 1; return add(tone(d, (t) => 900 - 600 * t / d, 'tri', (t) => 0.4 * (1 - t / d)), gainS(bandpass(tone(d, 0, 'noise', (t) => 1 - t / d), 1200, 1), 1.2)); },
   catch: () => add(tone(0.1, 220, 'sine', ad(0.002, 0.04)), gainS(lowpass(tone(0.08, 0, 'noise', ad(0.001, 0.02)), 2500), 0.8)),
@@ -93,15 +95,15 @@ const FX = {
   growl: () => gainS(lowpass(tone(0.7, (t) => 60 + 20 * Math.sin(t * 20), 'saw', (t) => Math.sin(Math.PI * t / 0.7)), 300), 1.2),
   stretch: (o) => voice(o?.dur || 0.8, (t) => 300 - 80 * t, [[500, 1000], [650, 1100]], 8),
   yawn: () => voice(0.7, (t) => 330 - 150 * t, [[750, 1150], [700, 1100], [500, 900]], 5),
-  hehe: () => { const out = new Float32Array(Math.floor(0.9 * SR)); for (let k = 0; k < 3; k++) out.set(voice(0.16, () => 720 + k * 30, [[450, 2000]], 0), Math.floor(k * 0.24 * SR)); return out; },
-  coucou: () => { const out = new Float32Array(Math.floor(0.8 * SR)); out.set(voice(0.25, () => 880, [[350, 900], [300, 800]], 0)); out.set(voice(0.3, () => 740, [[350, 900], [300, 800]], 0), Math.floor(0.32 * SR)); return out; },
-  sad: () => { const out = new Float32Array(Math.floor(2.6 * SR)); [58, 57, 56].forEach((m, k) => out.set(bandpass(tone(0.45, mtof(m), 'saw', hold(0.02, 0.1)), 700, 1.2).map((v) => v * 1.4), Math.floor(k * 0.5 * SR)));
-    out.set(bandpass(tone(1.0, (t) => mtof(55) * (1 + 0.02 * Math.sin(t * 30)), 'saw', hold(0.02, 0.3)), 650, 1.2).map((v) => v * 1.4), Math.floor(1.5 * SR)); return out; },
-  title: () => { const out = new Float32Array(Math.floor(1.6 * SR)); [72, 76, 79, 84].forEach((m, k) => out.set(add(tone(0.6, mtof(m), 'sine', ad(0.002, 0.3)), tone(0.6, mtof(m) * 4, 'sine', ad(0.002, 0.08)).map((v) => v * 0.3)), Math.floor(k * 0.11 * SR))); return out; },
-  outro: () => { const out = new Float32Array(Math.floor(2.5 * SR)); [[60, 0], [64, 0.15], [67, 0.3], [72, 0.5]].forEach(([m, t0]) => out.set(add(pluck(mtof(m), 2, 0.4), tone(1.5, mtof(m) / 2, 'tri', ad(0.01, 0.6)).map((v) => v * 0.4)), Math.floor(t0 * SR))); return out; },
+  hehe: () => { const out = new Float32Array(Math.floor(0.9 * SR)); for (let k = 0; k < 3; k++) put(out, voice(0.16, () => 720 + k * 30, [[450, 2000]], 0), Math.floor(k * 0.24 * SR)); return out; },
+  coucou: () => { const out = new Float32Array(Math.floor(0.8 * SR)); put(out, voice(0.25, () => 880, [[350, 900], [300, 800]], 0), 0); put(out, voice(0.3, () => 740, [[350, 900], [300, 800]], 0), Math.floor(0.32 * SR)); return out; },
+  sad: () => { const out = new Float32Array(Math.floor(2.6 * SR)); [58, 57, 56].forEach((m, k) => put(out, bandpass(tone(0.45, mtof(m), 'saw', hold(0.02, 0.1)), 700, 1.2).map((v) => v * 1.4), Math.floor(k * 0.5 * SR)));
+    put(out, bandpass(tone(1.0, (t) => mtof(55) * (1 + 0.02 * Math.sin(t * 30)), 'saw', hold(0.02, 0.3)), 650, 1.2).map((v) => v * 1.4), Math.floor(1.5 * SR)); return out; },
+  title: () => { const out = new Float32Array(Math.floor(1.6 * SR)); [72, 76, 79, 84].forEach((m, k) => put(out, add(tone(0.6, mtof(m), 'sine', ad(0.002, 0.3)), tone(0.6, mtof(m) * 4, 'sine', ad(0.002, 0.08)).map((v) => v * 0.3)), Math.floor(k * 0.11 * SR))); return out; },
+  outro: () => { const out = new Float32Array(Math.floor(2.5 * SR)); [[60, 0], [64, 0.15], [67, 0.3], [72, 0.5]].forEach(([m, t0]) => put(out, add(pluck(mtof(m), 2, 0.4), tone(1.5, mtof(m) / 2, 'tri', ad(0.01, 0.6)).map((v) => v * 0.4)), Math.floor(t0 * SR))); return out; },
   beat: () => new Float32Array(1),
-  eagleTheme: () => { const out = new Float32Array(Math.floor(1.6 * SR)); [[36, 0, 0.25], [36, 0.3, 0.25], [42, 0.6, 0.9]].forEach(([m, t0, d]) => out.set(add(lowpass(tone(d, mtof(m), 'saw', hold(0.02, 0.15)), 900), lowpass(tone(d, mtof(m + 12), 'saw', hold(0.02, 0.15)), 1200).map((v) => v * 0.5), tone(d, mtof(m - 12), 'sine', hold(0.02, 0.15))).map((v) => v * 0.7), Math.floor(t0 * SR))); return out; },
-  margotTheme: () => { const out = new Float32Array(Math.floor(1.6 * SR)); [79, 78, 77, 76, 75, 74].forEach((m, k) => out.set(bandpass(tone(0.16, mtof(m), 'square', ad(0.005, 0.1)), mtof(m) * 1.5, 1).map((v) => v * 0.9), Math.floor(k * 0.18 * SR))); return out; },
+  eagleTheme: () => { const out = new Float32Array(Math.floor(1.6 * SR)); [[36, 0, 0.25], [36, 0.3, 0.25], [42, 0.6, 0.9]].forEach(([m, t0, d]) => put(out, add(lowpass(tone(d, mtof(m), 'saw', hold(0.02, 0.15)), 900), lowpass(tone(d, mtof(m + 12), 'saw', hold(0.02, 0.15)), 1200).map((v) => v * 0.5), tone(d, mtof(m - 12), 'sine', hold(0.02, 0.15))).map((v) => v * 0.7), Math.floor(t0 * SR))); return out; },
+  margotTheme: () => { const out = new Float32Array(Math.floor(1.6 * SR)); [79, 78, 77, 76, 75, 74].forEach((m, k) => put(out, bandpass(tone(0.16, mtof(m), 'square', ad(0.005, 0.1)), mtof(m) * 1.5, 1).map((v) => v * 0.9), Math.floor(k * 0.18 * SR))); return out; },
 };
 
 // ---------- musique : petit séquenceur par sections ----------
@@ -143,8 +145,9 @@ function section(t0, t1, style, bpm, tr = 0, gain = 1) {
   }
 }
 
-// plan musical de l'épisode (calé sur les plans)
-if (epName === 'ep01') {
+// plan musical : fourni par l'épisode (MUSIC) ou plan du pilote
+if (ep.MUSIC) ep.MUSIC.forEach((m) => section(...m));
+else if (epName === 'ep01') {
   section(0, 5, 'calm', 100, 0, 0.9);
   section(5, 11.5, 'play', 120, 0, 0.8);
   section(11.5, 20, 'play', 140, 2, 0.9);
