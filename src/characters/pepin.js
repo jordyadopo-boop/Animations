@@ -12,7 +12,7 @@ export const P0 = {
   // membres : [swing (avant +), spread (écarté +), bend (coude/genou)]
   armL: [0.2, 0.15, 0.4], armR: [0.2, 0.15, 0.4], legL: [-0.2, 0.15, -0.6], legR: [-0.2, 0.15, -0.6],
   tailCurl: 0.6, tailWave: 0, tailPhase: 0, tailSide: 0, tailFluff: 1,
-  eyeScale: 1, lookX: 0, lookY: 0, lid: 0.48, lidLow: 0.12, wink: 0, cross: 0, brow: 0, browAng: 0,
+  eyeScale: 1, lookX: 0, lookY: 0, lid: 0.48, lidLow: 0.12, tilt: 0, pupil: 1, wink: 0, cross: 0, brow: 0, browAng: 0,
   mouth: 0, smile: 0.3, smirk: 0, teeth: 1, cheeks: 0, nose: 0, earBack: 0, tuft: 0, billow: 0.3,
   // élasticité cartoon : cou extensible, yeux qui jaillissent (chacun le sien), doigts écartés, langue
   neck: 1, eyePop: 0, eyeL: 1, eyeR: 1, splitEyes: 0, fingers: 0.3, tongue: 0, stretchX: 1,
@@ -145,7 +145,7 @@ export function createPepin({ fur: withFur = true } = {}) {
     eyes.forEach((e, i) => {
       const side = i ? 1 : -1, pop = p.eyePop;
       e.position.copy(e.userData.base).add(V3.set(side * 0.02 * pop, 0.035 * pop, 0.03 * pop));
-      poseEye(e, { lookX: p.lookX + (i ? -1 : 1) * p.cross + side * p.splitEyes, lookY: p.lookY + (i ? 0.4 : -0.4) * p.splitEyes, lid: i ? Math.max(p.lid, p.wink) : p.lid, lidLow: p.lidLow, browY: p.brow, browAng: p.browAng + (i ? -1 : 1) * p.smirk * 0.4,
+      poseEye(e, { lookX: p.lookX + (i ? -1 : 1) * p.cross + side * p.splitEyes, lookY: p.lookY + (i ? 0.4 : -0.4) * p.splitEyes, lid: i ? Math.max(p.lid, p.wink) : p.lid, lidLow: p.lidLow, tilt: p.tilt, pupil: p.pupil, browY: p.brow, browAng: p.browAng + (i ? -1 : 1) * p.smirk * 0.4,
         scale: p.eyeScale * (1 + pop * 0.55) * (i ? p.eyeR : p.eyeL) });
     });
     // mâchoire : s'ouvre puis s'allonge jusqu'à la poitrine

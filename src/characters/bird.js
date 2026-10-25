@@ -22,7 +22,7 @@ function colorFeather(geo, root, tip, len) {
 
 export const B0 = {
   squash: 1, pitch: 0, roll: 0, bodyY: 0, neck: 1, headTurn: 0, headTilt: 0, headNod: 0,
-  beak: 0, eyeScale: 1, eyePop: 0, lookX: 0, lookY: 0, lid: 0.35, lidLow: 0.1, cross: 0, brow: 0, browAng: -0.5, smirk: 0,
+  beak: 0, eyeScale: 1, eyePop: 0, lookX: 0, lookY: 0, lid: 0.35, lidLow: 0.1, tilt: 0, pupil: 1, cross: 0, brow: 0, browAng: -0.5, smirk: 0,
   // ailes : open 0 = repliée le long du corps, 1 = grande ouverte ; flap = angle de battement (+ haut) ; sweep = vers l'avant/arrière
   wingL: [0, 0, 0], wingR: [0, 0, 0], tailSpread: 0.2, tailLift: 0, tailWag: 0,
   legL: [0, 0], legR: [0, 0], grip: 0, crest: 0,
@@ -50,8 +50,8 @@ export function createBird(cfg) {
   upper.rotation.x = Math.PI / 2; upper.scale.set(1, 1, 0.7); upper.position.set(0, -0.005 * S, 0.1 * S + cfg.beakLen * S / 2); upper.castShadow = true; head.add(upper);
   if (cfg.hook) {
     upper.scale.set(1, 1, 1.0);
-    const tip = new THREE.Mesh(new THREE.ConeGeometry(cfg.beakW * 0.55 * S, cfg.beakLen * 0.45 * S, 12), beakMat);
-    tip.position.set(0, -0.035 * S, 0.1 * S + cfg.beakLen * S * 0.95); tip.rotation.x = Math.PI * 0.85; tip.castShadow = true; head.add(tip);
+    const tip = new THREE.Mesh(new THREE.ConeGeometry(cfg.beakW * 0.42 * S, cfg.beakLen * 0.35 * S, 12), beakMat);
+    tip.position.set(0, -0.03 * S, 0.1 * S + cfg.beakLen * S * 0.92); tip.rotation.x = Math.PI * 0.8; tip.castShadow = true; head.add(tip);
     head.add(sph(0.055 * S, beakMat, [1.05, 0.75, 0.8], [0, 0.0, 0.11 * S])); // cire jaune à la base du bec
   }
   const jaw = group([0, -0.035 * S, 0.1 * S]); head.add(jaw);
@@ -65,7 +65,7 @@ export function createBird(cfg) {
   });
   // huppe / plumes de tête
   const crest = group([0, 0.09 * S, -0.02 * S]); head.add(crest);
-  for (let i = 0; i < (cfg.crest ?? 0); i++) { const g = colorFeather(featherGeo(0.09 * S, 0.035 * S), cfg.head ?? cfg.body, cfg.crestTip ?? cfg.body, 0.09 * S); const f = new THREE.Mesh(g, featherMat); f.rotation.set(-0.9 - i * 0.12, 0, (i - (cfg.crest - 1) / 2) * 0.3); f.castShadow = true; crest.add(f); }
+  for (let i = 0; i < (cfg.crest ?? 0); i++) { const g = colorFeather(featherGeo(0.09 * S, 0.035 * S), cfg.crestTip && cfg.crestTip === 0xe0262a ? 0xc81e22 : (cfg.head ?? cfg.body), cfg.crestTip ?? cfg.body, 0.09 * S); const f = new THREE.Mesh(g, featherMat); f.rotation.set(-0.9 - i * 0.12, 0, (i - (cfg.crest - 1) / 2) * 0.3); f.castShadow = true; crest.add(f); }
 
   // ailes : 3 segments (bras, avant-bras, main) portant secondaires et primaires
   const wings = [-1, 1].map((s) => {
@@ -99,7 +99,7 @@ export function createBird(cfg) {
     for (let i = 0; i < 4; i++) {
       const [cr, ct] = cfg.featherColors('p', i / 3); const L = cfg.span * 0.38 * (1 - i * 0.08);
       const f = new THREE.Mesh(colorFeather(featherGeo(L * S, 0.1 * S), cr, ct, L * S), featherMat); f.castShadow = true;
-      f.rotation.set(-Math.PI / 2 - 0.12, 0, Math.PI / 2 * s); f.position.set(s * 0.01 * S * i, -0.02 * S - i * 0.012 * S, -0.06 * S); g.add(f);
+      f.rotation.set(-Math.PI / 2 - 0.12, s * 0.08 * i, 0); f.position.set(s * 0.01 * S * i - 0.02 * S, -0.02 * S - i * 0.012 * S, -0.06 * S); g.add(f);
     }
     g.rotation.y = s * 0.12; return g;
   });
@@ -142,7 +142,7 @@ export function createBird(cfg) {
     eyes.forEach((e, i) => {
       const side = i ? 1 : -1;
       e.position.copy(e.userData.base).add(new THREE.Vector3(side * 0.015 * S * p.eyePop, 0.03 * S * p.eyePop, 0.02 * S * p.eyePop));
-      poseEye(e, { lookX: p.lookX + (i ? -1 : 1) * p.cross, lookY: p.lookY, lid: p.lid, lidLow: p.lidLow, browY: p.brow, browAng: p.browAng + (i ? -1 : 1) * p.smirk * 0.4, scale: p.eyeScale * (1 + p.eyePop * 0.5) });
+      poseEye(e, { lookX: p.lookX + (i ? -1 : 1) * p.cross, lookY: p.lookY, lid: p.lid, lidLow: p.lidLow, tilt: p.tilt, pupil: p.pupil, browY: p.brow, browAng: p.browAng + (i ? -1 : 1) * p.smirk * 0.4, scale: p.eyeScale * (1 + p.eyePop * 0.5) });
     });
     crest.rotation.x = -p.crest * 0.6;
     wings.forEach((w, i) => {
@@ -166,12 +166,24 @@ export function createBird(cfg) {
 // Margot la pie : noire à reflets bleu-vert, ventre et épaules blancs, longue queue, regard vaniteux
 export function createMargot() {
   return createBird({
-    scale: 1.15, body: 0x17191f, belly: 0xf2f2ee, head: 0x14161c, gloss: true, neckR: 0.05, neckMat: 'head',
-    bodyShape: [0.95, 0.9, 1.35], bellyShape: [0.95, 0.85, 1.05], headShape: [0.95, 0.92, 1.05],
-    beak: 0x1a1a1e, beakW: 0.03, beakLen: 0.16, hook: false,
-    eyeR: 0.05, eyeX: 0.065, eyeZ: 0.07, eyeYaw: 0.5, iris: 0x2b1810, irisScale: 1.1, brow: 0x0a0a0c, browScale: [1.5, 1, 1],
-    crest: 0, span: 0.75, tailN: 7, tailLen: 0.55, legLen: 0.16, legColor: 0x22232a, trousers: true,
+    scale: 1.1, body: 0x15171d, belly: 0xf2f2ee, head: 0x121419, gloss: true, neckR: 0.042, neckMat: 'head',
+    bodyShape: [0.78, 0.82, 1.45], bellyShape: [0.8, 0.8, 1.1], headShape: [0.88, 0.9, 1.15],
+    beak: 0x16161a, beakW: 0.026, beakLen: 0.2, hook: false,
+    eyeR: 0.046, eyeX: 0.06, eyeZ: 0.075, eyeYaw: 0.45, iris: 0xd6a51e, irisScale: 1.0, brow: 0x050506, browScale: [1.8, 1.2, 1.2],
+    crest: 0, span: 0.78, tailN: 7, tailLen: 0.7, legLen: 0.17, legColor: 0x22232a, trousers: true,
     featherColors: (kind, k) => kind === 'p' ? (k < 0.6 ? [0xf5f5f0, 0x1c2a44] : [0x1c2236, 0x0c1424]) : kind === 't' ? [0x10302e, 0x1a3d5a] : [0x14181f, 0x1d3550],
+  });
+}
+
+// Tac-Tac le pic-vert : maigre et dégingandé, long cou, tête trop grosse, calotte rouge, long bec droit, yeux qui louchent
+export function createTacTac() {
+  return createBird({
+    scale: 1.0, body: 0x5f8a2c, belly: 0xd9d6a0, head: 0x6e9a33, neckR: 0.035, neckMat: 'head',
+    bodyShape: [0.62, 0.95, 1.05], bellyShape: [0.62, 0.9, 0.8], headShape: [1.2, 1.15, 1.2],
+    beak: 0x8a8476, beakW: 0.026, beakLen: 0.26, hook: false,
+    eyeR: 0.06, eyeX: 0.075, eyeZ: 0.08, eyeYaw: 0.4, iris: 0xe8e2c8, irisScale: 0.75, brow: 0x1b1b1b, browScale: [1.3, 1, 1],
+    crest: 7, crestTip: 0xe0262a, span: 0.6, tailN: 5, tailLen: 0.3, legLen: 0.22, legColor: 0x8a8476, trousers: false,
+    featherColors: (kind, k) => kind === 'p' ? [0x4f7424, 0x2d4316] : kind === 't' ? [0x2b2b22, 0x111111] : [0x6a9632, 0x4a6e22],
   });
 }
 
@@ -179,7 +191,7 @@ export function createMargot() {
 export function createBecDeFer() {
   return createBird({
     scale: 2.4, body: 0x3e2a1c, belly: 0x4a3222, head: 0xf3efe4, neckR: 0.045, neckMat: 'head',
-    bodyShape: [1.1, 1.0, 1.25], bellyShape: [1.15, 1.05, 1.0], headShape: [0.95, 0.85, 1.1],
+    bodyShape: [1.25, 1.15, 1.3], bellyShape: [1.3, 1.2, 1.1], headShape: [0.8, 0.75, 1.0],
     beak: 0xf5c21c, beakW: 0.05, beakLen: 0.17, hook: true,
     eyeR: 0.036, eyeX: 0.06, eyeZ: 0.085, eyeYaw: 0.35, iris: 0xe0a414, irisScale: 0.85, brow: 0x2a1a10, browScale: [2.6, 2.0, 2.0],
     crest: 5, crestTip: 0xffffff, span: 1.05, tailN: 9, tailLen: 0.32, legLen: 0.14, legColor: 0xf5c21c, trousers: true,
