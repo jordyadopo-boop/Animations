@@ -1,4 +1,4 @@
-// Rendu headless : Chromium (WebGL logiciel) -> images -> ffmpeg -> MP4 9:16 avec bande-son.
+// Rendu headless : Chromium (WebGL logiciel) -> images -> ffmpeg -> MP4 (16:9 par défaut) avec bande-son.
 // Usage :
 //   node render/render.js --ep ep01                      (épisode complet -> out/ep01.mp4)
 //   node render/render.js --ep ep01 --stills 3.2,7.5     (images fixes -> out/stills/)
@@ -18,7 +18,7 @@ const outDir = path.join(ROOT, 'out'); fs.mkdirSync(path.join(outDir, 'stills'),
 
 const srv = await serve();
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
+const page = await browser.newPage({ viewport: { width: 1920, height: 1920 } });
 page.on('console', (m) => m.type() === 'error' && console.error('[page]', m.text()));
 page.on('pageerror', (e) => console.error('[page]', e.message));
 await page.goto(`http://localhost:${srv.address().port}/?ep=${ep}`);

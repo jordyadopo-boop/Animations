@@ -1,10 +1,15 @@
 // Point d'entrée : charge l'épisode demandé (?ep=ep01) et expose renderFrame(t) au moteur de rendu.
-import { createOcean } from './engine/ocean.js';
 
 const params = new URLSearchParams(location.search);
-const W = 1080, H = 1920;
-const world = createOcean(document.getElementById('c'), W, H);
 const $ = (id) => document.getElementById(id);
+const epName = params.get('ep') || 'ep01';
+const ep = await import(`./episodes/${epName}.js`);
+// format maître 16:9 (l'épisode peut le changer)
+const W = ep.width || 1920, H = ep.height || 1080;
+Object.assign($('stage').style, { width: `${W}px`, height: `${H}px` });
+Object.assign($('c').style, { width: `${W}px`, height: `${H}px` });
+const { createWorld } = await import(`./engine/${ep.world || 'canopy'}.js`);
+const world = createWorld($('c'), W, H);
 const fxLayer = $('fx'), iris = $('iris');
 
 // Onomatopées et rideau d'iris en surimpression HTML
@@ -32,12 +37,10 @@ const fx = {
   },
 };
 
-const epName = params.get('ep') || 'ep01';
-const ep = await import(`./episodes/${epName}.js`);
 const frame = ep.build({ ...world, fx, W, H });
 await document.fonts.load("150px 'Luckiest Guy'");
 
-window.EPISODE = { duration: ep.duration, fps: ep.fps || 30 };
+window.EPISODE = { duration: ep.duration, fps: ep.fps || 30, width: W, height: H };
 window.renderFrame = (t) => { world.update(t); fx.iris(2); fx.set([]); fx.dim(0); fx.flash(0); fx.speed(0); frame(t); world.renderer.render(world.scene, world.camera); };
 window.renderFrame(Number(params.get('t') || 0));
 window.READY = true;

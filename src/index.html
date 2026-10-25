@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><title>ZIP !</title>
+<html lang="fr"><head><meta charset="utf-8"><title>PÉPIN !</title>
 <style>
   @font-face { font-family: 'Luckiest Guy'; src: url('/node_modules/@fontsource/luckiest-guy/files/luckiest-guy-latin-400-normal.woff2') format('woff2'); }
   html,body{margin:0;background:#000;overflow:hidden}
-  #stage{position:relative;width:1080px;height:1920px;overflow:hidden}
-  canvas{display:block;width:1080px;height:1920px}
+  #stage{position:relative;overflow:hidden}
+  canvas{display:block}
   #fx{position:absolute;inset:0;pointer-events:none}
   .ono{position:absolute;font:900 150px/1 'Luckiest Guy','Arial Black',Impact,sans-serif;color:#ffd21f;
        -webkit-text-stroke:10px #2a1405;paint-order:stroke fill;text-shadow:0 12px 0 #2a1405;white-space:nowrap;transform-origin:50% 50%}
@@ -17,6 +17,6 @@
 </style>
 <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
 </head><body>
-<div id="stage"><canvas id="c" width="1080" height="1920"></canvas><div id="dim"></div><div id="speed"></div><div id="fx"></div><div id="flash"></div><div id="iris"></div></div>
+<div id="stage"><canvas id="c"></canvas><div id="dim"></div><div id="speed"></div><div id="fx"></div><div id="flash"></div><div id="iris"></div></div>
 <script type="module" src="/src/main.js"></script>
 </body></html>
