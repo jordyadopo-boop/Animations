@@ -26,6 +26,13 @@ const fx = {
       d.style.opacity = it.opacity ?? 1;
     });
   },
+  // générique de fin : html = contenu, k = progression du défilement (0..1), a = opacité
+  credits(html, k = 0, a = 1) {
+    const c = $('credits'); if (!html) { c.style.display = 'none'; return; }
+    c.style.display = 'block'; c.style.opacity = a;
+    if (c.dataset.html !== html) { c.innerHTML = `<div class="roll">${html}</div>`; c.dataset.html = html; }
+    const roll = c.firstChild, hgt = roll.offsetHeight; roll.style.top = `${H - k * (hgt + H * 0.5)}px`;
+  },
   dim(a) { $('dim').style.opacity = a; },
   flash(a, color = '#fff') { $('flash').style.opacity = a; $('flash').style.background = color; },
   // lignes de vitesse radiales (style manga), rot en degrés pour les faire « vibrer »
@@ -41,6 +48,6 @@ const frame = ep.build({ ...world, fx, W, H });
 await document.fonts.load("150px 'Luckiest Guy'");
 
 window.EPISODE = { duration: ep.duration, fps: ep.fps || 30, width: W, height: H };
-window.renderFrame = (t) => { world.update(t); fx.iris(2); fx.set([]); fx.dim(0); fx.flash(0); fx.speed(0); world.dof?.(1, 0); frame(t); world.render ? world.render() : world.renderer.render(world.scene, world.camera); };
+window.renderFrame = (t) => { world.update(t); fx.iris(2); fx.set([]); fx.credits(null); fx.dim(0); fx.flash(0); fx.speed(0); world.dof?.(1, 0); frame(t); world.render ? world.render() : world.renderer.render(world.scene, world.camera); };
 window.renderFrame(Number(params.get('t') || 0));
 window.READY = true;

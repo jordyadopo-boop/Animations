@@ -16,6 +16,27 @@ const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, arr) => (
 const ep = args.ep || 'ep01';
 const outDir = path.join(ROOT, 'out'); fs.mkdirSync(path.join(outDir, 'stills'), { recursive: true });
 
+// rendu parallèle : découpe en tranches rendues par plusieurs processus, puis assemblage + son
+if (args.workers && !args.part) {
+  const W = Number(args.workers);
+  const probe = await import(path.join(ROOT, 'src/episodes', `${ep}.js`));
+  const fps = probe.fps || 30, total = Math.round(probe.duration * fps), per = Math.ceil(total / W);
+  fs.mkdirSync(path.join(outDir, 'parts'), { recursive: true });
+  const t0 = Date.now();
+  await Promise.all([...Array(W)].map((_, i) => new Promise((res, rej) => {
+    const a = i * per, b = Math.min(total, (i + 1) * per); if (a >= b) return res();
+    const c = spawn(process.execPath, [process.argv[1], '--ep', ep, '--from', String(a / fps), '--to', String(b / fps), '--part', String(i)], { stdio: ['ignore', 'pipe', 'inherit'] });
+    c.stdout.on('data', (d) => { const m = String(d).match(/image (\d+)\/(\d+)/g); if (m) process.stdout.write(`\r[tranche ${i}] ${m.at(-1)}   `); });
+    c.on('close', (code) => (code ? rej(new Error(`tranche ${i} : code ${code}`)) : res()));
+  })));
+  const list = path.join(outDir, 'parts', `${ep}.txt`);
+  fs.writeFileSync(list, [...Array(W)].map((_, i) => `file '${ep}_part${i}.mp4'`).filter((_, i) => i * per < total).join('\n'));
+  const silent = path.join(outDir, `${ep}_video.mp4`), final = path.join(outDir, `${ep}.mp4`), wav = path.join(outDir, `${ep}.wav`);
+  await new Promise((r) => spawn('ffmpeg', ['-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', silent], { stdio: 'inherit' }).on('close', r));
+  if (fs.existsSync(wav)) await new Promise((r) => spawn('ffmpeg', ['-y', '-v', 'error', '-i', silent, '-i', wav, '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', final], { stdio: 'inherit' }).on('close', r));
+  console.log(`\nfini en ${((Date.now() - t0) / 60000).toFixed(1)} min : ${final}`);
+  process.exit(0);
+}
 const srv = await serve();
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage({ viewport: { width: 1920, height: 1920 } });
@@ -37,7 +58,7 @@ if (args.stills) {
   const from = Number(args.from || 0), to = Math.min(Number(args.to || duration), duration);
   const n = Math.round((to - from) * fps);
   const suffix = args.from || args.to ? `_${from}-${to}` : '';
-  const silent = path.join(outDir, `${ep}${suffix}_video.mp4`);
+  const silent = args.part !== undefined ? path.join(outDir, 'parts', `${ep}_part${args.part}.mp4`) : path.join(outDir, `${ep}${suffix}_video.mp4`);
   const ff = spawn('ffmpeg', ['-y', '-v', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'mjpeg', '-i', '-',
     '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', silent], { stdio: ['pipe', 'inherit', 'inherit'] });
   const t0 = Date.now();
@@ -50,7 +71,7 @@ if (args.stills) {
   ff.stdin.end(); await new Promise((r) => ff.on('close', r));
   console.log(`\nvidéo muette : ${silent}`);
   const wav = path.join(outDir, `${ep}.wav`);
-  if (fs.existsSync(wav)) {
+  if (fs.existsSync(wav) && args.part === undefined) {
     const final = path.join(outDir, `${ep}${suffix}.mp4`);
     await new Promise((r) => spawn('ffmpeg', ['-y', '-v', 'error', '-i', silent, '-ss', String(from), '-t', String(to - from), '-i', wav,
       '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', final], { stdio: 'inherit' }).on('close', r));
