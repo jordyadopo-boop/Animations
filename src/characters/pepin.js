@@ -14,6 +14,8 @@ export const P0 = {
   tailCurl: 0.6, tailWave: 0, tailPhase: 0, tailSide: 0, tailFluff: 1,
   eyeScale: 1, lookX: 0, lookY: 0, lid: 0.48, lidLow: 0.12, wink: 0, cross: 0, brow: 0, browAng: 0,
   mouth: 0, smile: 0.3, smirk: 0, teeth: 1, cheeks: 0, nose: 0, earBack: 0, tuft: 0, billow: 0.3,
+  // élasticité cartoon : cou extensible, yeux qui jaillissent (chacun le sien), doigts écartés, langue
+  neck: 1, eyePop: 0, eyeL: 1, eyeR: 1, splitEyes: 0, fingers: 0.3, tongue: 0, stretchX: 1,
 };
 
 const C = { back: 0x7f6350, side: 0xa8744a, belly: 0xeedcc0, dark: 0x3e2c22, rim: 0xf1e6d2, pink: 0xd98a86, nose: 0x8a4a4a };
@@ -31,15 +33,22 @@ export function createPepin({ fur: withFur = true } = {}) {
 
   // tête
   const neck = group([0, 0.04, 0.17]); body.add(neck);
-  F(neck.add(cap(0.03, 0.07, back, [0, 0.04, 0.02], [0.5, 0, 0])) && neck.children.at(-1), { length: 0.01, density: 380 });
+  const neckStem = group([0, 0, 0]); neckStem.rotation.x = 0.45; neck.add(neckStem);
+  neckStem.add(F(cap(0.028, 0.08, back, [0, 0.05, 0]), { length: 0.01, density: 380 }));
   const head = group([0, 0.11, 0.05]); neck.add(head);
   F((head.add(sph(0.155, back, [1.02, 0.9, 1.05])), head.children.at(-1)), { length: 0.018, comb: [0, 0.1, -0.7] });
-  F((head.add(sph(0.1, belly, [0.95, 0.72, 1.45], [0, -0.05, 0.11])), head.children.at(-1)), { length: 0.012, comb: [0, -0.3, 0.2] });
+  F((head.add(sph(0.095, belly, [0.95, 0.5, 1.5], [0, -0.035, 0.11])), head.children.at(-1)), { length: 0.012, comb: [0, -0.3, 0.2] });
+  // intérieur de la gueule (visible quand la mâchoire tombe)
+  head.add(sph(0.07, mat(0x5e1220, 0.85), [0.95, 0.75, 1.3], [0, -0.075, 0.1]));
+  const jaw = group([0, -0.07, 0.04]); head.add(jaw);
+  F((jaw.add(sph(0.08, belly, [0.92, 0.42, 1.45], [0, -0.012, 0.105])), jaw.children.at(-1)), { length: 0.01, comb: [0, -0.4, 0.2] });
+  const tongue = sph(0.05, mat(0xe0566e, 0.45), [0.85, 0.3, 1.2], [0, 0.012, 0.1]); jaw.add(tongue);
+  jaw.add(cap(0.008, 0.012, mat(0xfff6dc, 0.25), [-0.009, 0.02, 0.215], [0, 0, 0]), cap(0.008, 0.012, mat(0xfff6dc, 0.25), [0.009, 0.02, 0.215], [0, 0, 0]));
   const nose = sph(0.022, mat(C.nose, 0.2), [1.4, 1, 1], [0, -0.012, 0.252]); head.add(nose);
   const whisk = mat(0x2a1d16, 0.6);
   [-1, 1].forEach((s) => [0.2, 0.02, -0.14].forEach((a, i) => head.add(cap(0.0025, 0.24, whisk, [s * 0.075, -0.035, 0.215 - i * 0.008], [0, s * 0.35, Math.PI / 2 + s * a]))));
   // bouche + grandes incisives de travers
-  const mouth = group([0, -0.095, 0.2]); head.add(mouth);
+  const mouth = group([0, -0.065, 0.215]); head.add(mouth);
   const mouthIn = sph(0.045, mat(0x4a141c, 0.8), [1.3, 0.35, 0.55]); mouth.add(mouthIn);
   const toothM = mat(0xfff6dc, 0.25);
   const teeth = group([0, 0.006, 0.018], cap(0.011, 0.03, toothM, [-0.012, -0.018, 0], [0, 0, 0.06]), cap(0.011, 0.022, toothM, [0.012, -0.014, 0.002], [0, 0, -0.1])); mouth.add(teeth);
@@ -49,7 +58,7 @@ export function createPepin({ fur: withFur = true } = {}) {
   // yeux exorbités, iris ambre, paupières lourdes
   const eyes = [-1, 1].map((s) => {
     const e = makeEye(0.068, back, 0xc98a1b, dark, s, 1.05);
-    e.position.set(s * 0.068, 0.05, 0.118); e.rotation.y = s * 0.28; head.add(e);
+    e.position.set(s * 0.068, 0.05, 0.118); e.userData.base = e.position.clone(); e.rotation.y = s * 0.28; head.add(e);
     e.userData.brow.scale.set(1.6, 1.1, 1.1); F(e.userData.brow, { length: 0.01, shells: 8, density: 500, comb: [0, 0.3, 0.3] }); // sourcils broussailleux
     return e;
   });
@@ -76,7 +85,16 @@ export function createPepin({ fur: withFur = true } = {}) {
     return { sh, el, tip };
   };
   const claw = mat(0x2a1d16, 0.4);
-  const hand = () => { const g = group([0, 0, 0]); g.add(F(sph(0.032, belly, [1.1, 0.6, 1.2]), { length: 0.008, shells: 8 })); [-1, 0, 1].forEach((k) => { g.add(sph(0.012, belly, [1, 1, 1.6], [k * 0.017, -0.006, 0.03])); const c = new THREE.Mesh(new THREE.ConeGeometry(0.005, 0.02, 5), claw); c.rotation.x = Math.PI / 2 + 0.6; c.position.set(k * 0.017, -0.01, 0.05); g.add(c); }); return g; };
+  const fingerGroups = [];
+  const hand = () => {
+    const g = group([0, 0, 0]); g.add(sph(0.026, belly, [1.15, 0.55, 1.1]));
+    [-1.5, -0.5, 0.5, 1.5].forEach((k) => {
+      const f = group([k * 0.011, 0, 0.012]); f.userData.k = k; g.add(f); fingerGroups.push(f);
+      f.add(cap(0.0065, 0.05, belly, [0, 0, 0.028], [Math.PI / 2, 0, 0]));
+      const c = new THREE.Mesh(new THREE.ConeGeometry(0.004, 0.014, 5), claw); c.rotation.x = Math.PI / 2; c.position.set(0, 0, 0.065); f.add(c);
+    });
+    return g;
+  };
   const foot = () => { const g = group([0, 0, 0]); g.add(F(sph(0.036, belly, [0.95, 0.5, 2.0], [0, 0, 0.035]), { length: 0.008, shells: 8 })); [-1, 0, 1].forEach((k) => g.add(sph(0.013, belly, [1, 0.9, 1.4], [k * 0.02, -0.004, 0.1]))); return g; };
   const arms = [-1, 1].map((s) => { const L = limb([s * 0.065, -0.02, 0.14], 0.11, 0.105, hand(), side); body.add(L.sh); L.s = s; return L; });
   const legs = [-1, 1].map((s) => {
@@ -108,7 +126,7 @@ export function createPepin({ fur: withFur = true } = {}) {
     const m = new THREE.Mesh(g, memMat); m.castShadow = true; m.frustumCulled = false; body.add(m);
     return { g, s };
   });
-  const Q = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+  const Q = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()], V3 = new THREE.Vector3();
 
   function pose(p = {}) {
     p = { ...P0, ...p };
@@ -116,14 +134,27 @@ export function createPepin({ fur: withFur = true } = {}) {
     body.position.y = 0.22 + p.bodyY;
     body.rotation.set(p.pitch, p.yaw, p.roll);
     neck.rotation.set(p.headNod - p.pitch * 0.95, p.headTurn, p.headTilt);
+    neckStem.scale.set(1 / Math.sqrt(p.neck), p.neck, 1 / Math.sqrt(p.neck));
+    head.position.set(0, 0.11 + (p.neck - 1) * 0.105, 0.05 + (p.neck - 1) * 0.045);
+    head.scale.set(p.stretchX, 1, 1);
+    fingerGroups.forEach((f) => (f.rotation.y = f.userData.k * (0.12 + p.fingers * 0.3)));
     const setLimb = (L, [sw, sp, bd], leg) => { L.sh.rotation.set(-sw, 0, L.s * sp); L.el.rotation.set(leg ? bd : -bd, 0, 0); };
     setLimb(arms[0], p.armL); setLimb(arms[1], p.armR); setLimb(legs[0], p.legL, true); setLimb(legs[1], p.legR, true);
     tailSegs.forEach((g, i) => { g.rotation.set(p.tailCurl * 0.22 + Math.sin(p.tailPhase - i * 0.7) * p.tailWave * 0.12, p.tailSide * 0.08 + Math.sin(p.tailPhase * 0.7 - i * 0.5) * p.tailWave * 0.06, 0); g.scale.x = p.tailFluff; });
     tailRoot.rotation.x = -0.2;
-    eyes.forEach((e, i) => poseEye(e, { lookX: p.lookX + (i ? -1 : 1) * p.cross, lookY: p.lookY, lid: i ? Math.max(p.lid, p.wink) : p.lid, lidLow: p.lidLow, browY: p.brow, browAng: p.browAng + (i ? -1 : 1) * p.smirk * 0.4, scale: p.eyeScale }));
-    const mo = p.mouth; mouthIn.scale.set(1.3, 0.2 + mo * 2.2, 0.55); mouthIn.visible = mo > 0.05;
-    teeth.visible = p.teeth > 0.5; teeth.position.y = 0.006 + mo * 0.02;
-    smileM.visible = mo < 0.35; smileM.rotation.z = (p.smile >= 0 ? Math.PI * 1.05 : Math.PI * 0.05) + p.smirk * 0.35;
+    eyes.forEach((e, i) => {
+      const side = i ? 1 : -1, pop = p.eyePop;
+      e.position.copy(e.userData.base).add(V3.set(side * 0.02 * pop, 0.035 * pop, 0.03 * pop));
+      poseEye(e, { lookX: p.lookX + (i ? -1 : 1) * p.cross + side * p.splitEyes, lookY: p.lookY + (i ? 0.4 : -0.4) * p.splitEyes, lid: i ? Math.max(p.lid, p.wink) : p.lid, lidLow: p.lidLow, browY: p.brow, browAng: p.browAng + (i ? -1 : 1) * p.smirk * 0.4,
+        scale: p.eyeScale * (1 + pop * 0.55) * (i ? p.eyeR : p.eyeL) });
+    });
+    // mâchoire : s'ouvre puis s'allonge jusqu'à la poitrine
+    const mo = p.mouth; jaw.rotation.x = Math.min(mo, 0.6) * 1.3; jaw.scale.set(1 + mo * 0.25, 1 + Math.max(0, mo - 0.4) * 1.6, 1 + Math.max(0, mo - 0.4) * 0.5);
+    jaw.position.y = -0.07 - Math.max(0, mo - 0.5) * 0.06;
+    tongue.position.z = 0.1 + p.tongue * 0.07; tongue.scale.set(0.85, 0.3, 1.2 + p.tongue * 0.8);
+    mouthIn.visible = false;
+    teeth.visible = p.teeth > 0.5; teeth.position.y = 0.006;
+    smileM.visible = mo < 0.12; smileM.rotation.z = (p.smile >= 0 ? Math.PI * 1.05 : Math.PI * 0.05) + p.smirk * 0.35;
     smileM.scale.set(1, Math.abs(p.smile) * 1.2 + 0.2, 1); smileM.position.y = p.smile >= 0 ? 0.012 : -0.028;
     cheeks.forEach((c) => c.scale.set(1 + p.cheeks * 1.5, 0.9 + p.cheeks * 1.1, 0.9 + p.cheeks * 1.1));
     nose.scale.setScalar(1 + p.nose * 0.5);
