@@ -22,16 +22,17 @@ export function createPepin({ fur: withFur = true } = {}) {
   const back = mat(C.back, 0.95), side = mat(C.side, 0.95), belly = mat(C.belly, 0.95), dark = mat(C.dark, 0.9), pink = mat(C.pink, 0.7);
   const F = (m, o) => (withFur ? addFur(m, o) : m);
   const root = new THREE.Group(), squash = new THREE.Group(); root.add(squash);
-  const body = group([0, 0.17, 0]); squash.add(body);
+  const body = group([0, 0.22, 0]); squash.add(body);
 
   // tronc nerveux : dos gris-brun, flancs cannelle, ventre crème
-  F((body.add(sph(0.15, back, [1, 0.88, 1.75], [0, 0.01, 0.03])), body.children.at(-1)), { length: 0.024 });
-  F((body.add(sph(0.135, side, [1.08, 0.7, 1.6], [0, -0.025, 0.03])), body.children.at(-1)), { length: 0.02 });
-  F((body.add(sph(0.12, belly, [0.85, 0.62, 1.45], [0, -0.06, 0.05])), body.children.at(-1)), { length: 0.016, comb: [0, -0.2, -0.3] });
+  F((body.add(sph(0.085, back, [1, 0.95, 2.3], [0, 0.01, 0.02])), body.children.at(-1)), { length: 0.012, density: 380 });
+  F((body.add(sph(0.078, side, [1.08, 0.75, 2.1], [0, -0.012, 0.02])), body.children.at(-1)), { length: 0.01, density: 380 });
+  F((body.add(sph(0.068, belly, [0.85, 0.7, 2.0], [0, -0.03, 0.03])), body.children.at(-1)), { length: 0.009, density: 380, comb: [0, -0.2, -0.3] });
 
   // tête
-  const neck = group([0, 0.07, 0.24]); body.add(neck);
-  const head = group([0, 0.08, 0.06]); neck.add(head);
+  const neck = group([0, 0.04, 0.17]); body.add(neck);
+  F(neck.add(cap(0.03, 0.07, back, [0, 0.04, 0.02], [0.5, 0, 0])) && neck.children.at(-1), { length: 0.01, density: 380 });
+  const head = group([0, 0.11, 0.05]); neck.add(head);
   F((head.add(sph(0.155, back, [1.02, 0.9, 1.05])), head.children.at(-1)), { length: 0.018, comb: [0, 0.1, -0.7] });
   F((head.add(sph(0.1, belly, [0.95, 0.72, 1.45], [0, -0.05, 0.11])), head.children.at(-1)), { length: 0.012, comb: [0, -0.3, 0.2] });
   const nose = sph(0.022, mat(C.nose, 0.2), [1.4, 1, 1], [0, -0.012, 0.252]); head.add(nose);
@@ -44,7 +45,7 @@ export function createPepin({ fur: withFur = true } = {}) {
   const teeth = group([0, 0.006, 0.018], cap(0.011, 0.03, toothM, [-0.012, -0.018, 0], [0, 0, 0.06]), cap(0.011, 0.022, toothM, [0.012, -0.014, 0.002], [0, 0, -0.1])); mouth.add(teeth);
   const smileM = new THREE.Mesh(new THREE.TorusGeometry(0.04, 0.005, 6, 20, Math.PI * 0.9), mat(0x2a120c, 0.7)); smileM.position.set(0, 0.012, 0.004); mouth.add(smileM);
   // joues (abajoues extensibles)
-  const cheeks = [-1, 1].map((s) => { const c = sph(0.058, side, [1, 0.9, 0.9], [s * 0.085, -0.06, 0.085]); head.add(c); F(c, { length: 0.016 }); return c; });
+  const cheeks = [-1, 1].map((s) => { const c = sph(0.045, side, [1, 0.9, 0.9], [s * 0.08, -0.06, 0.085]); head.add(c); F(c, { length: 0.01 }); return c; });
   // yeux exorbités, iris ambre, paupières lourdes
   const eyes = [-1, 1].map((s) => {
     const e = makeEye(0.068, back, 0xc98a1b, dark, s, 1.05);
@@ -69,28 +70,28 @@ export function createPepin({ fur: withFur = true } = {}) {
 
   // membres
   const limb = (p, upper, lower, end, m) => {
-    const sh = group(p); sh.add(F(cap(0.03, upper, m, [0, -upper / 2, 0]), { length: 0.014, shells: 10 }));
-    const el = group([0, -upper, 0]); sh.add(el); el.add(F(cap(0.024, lower, m, [0, -lower / 2, 0]), { length: 0.012, shells: 10 }));
+    const sh = group(p); sh.add(F(cap(0.017, upper, m, [0, -upper / 2, 0]), { length: 0.014, shells: 10 }));
+    const el = group([0, -upper, 0]); sh.add(el); el.add(F(cap(0.014, lower, m, [0, -lower / 2, 0]), { length: 0.012, shells: 10 }));
     const tip = group([0, -lower - 0.02, 0]); el.add(tip); tip.add(end);
     return { sh, el, tip };
   };
   const claw = mat(0x2a1d16, 0.4);
   const hand = () => { const g = group([0, 0, 0]); g.add(F(sph(0.032, belly, [1.1, 0.6, 1.2]), { length: 0.008, shells: 8 })); [-1, 0, 1].forEach((k) => { g.add(sph(0.012, belly, [1, 1, 1.6], [k * 0.017, -0.006, 0.03])); const c = new THREE.Mesh(new THREE.ConeGeometry(0.005, 0.02, 5), claw); c.rotation.x = Math.PI / 2 + 0.6; c.position.set(k * 0.017, -0.01, 0.05); g.add(c); }); return g; };
   const foot = () => { const g = group([0, 0, 0]); g.add(F(sph(0.036, belly, [0.95, 0.5, 2.0], [0, 0, 0.035]), { length: 0.008, shells: 8 })); [-1, 0, 1].forEach((k) => g.add(sph(0.013, belly, [1, 0.9, 1.4], [k * 0.02, -0.004, 0.1]))); return g; };
-  const arms = [-1, 1].map((s) => { const L = limb([s * 0.1, -0.02, 0.2], 0.075, 0.075, hand(), side); body.add(L.sh); L.s = s; return L; });
+  const arms = [-1, 1].map((s) => { const L = limb([s * 0.065, -0.02, 0.14], 0.11, 0.105, hand(), side); body.add(L.sh); L.s = s; return L; });
   const legs = [-1, 1].map((s) => {
-    const L = limb([s * 0.1, -0.02, -0.12], 0.085, 0.085, foot(), side); body.add(L.sh);
-    F((L.sh.add(sph(0.075, side, [0.8, 1, 1.15], [0, -0.02, 0])), L.sh.children.at(-1)), { length: 0.02 }); L.s = s; return L;
+    const L = limb([s * 0.065, -0.02, -0.13], 0.12, 0.12, foot(), side); body.add(L.sh);
+    F((L.sh.add(sph(0.045, side, [0.8, 1.1, 1.1], [0, -0.025, 0])), L.sh.children.at(-1)), { length: 0.01 }); L.s = s; return L;
   });
 
   // queue plate, très touffue
-  const tailSegs = []; let parent = group([0, 0.03, -0.24]); body.add(parent);
+  const tailSegs = []; let parent = group([0, 0.02, -0.19]); body.add(parent);
   const tailRoot = parent;
   for (let i = 0; i < 9; i++) {
     const seg = group([0, 0, i ? -0.085 : 0]); parent.add(seg);
-    const w = 0.04 + Math.sin((i / 8) * Math.PI * 0.85) * 0.05;
+    const w = 0.028 + Math.sin((i / 8) * Math.PI * 0.85) * 0.035;
     const m = sph(1, i === 8 ? dark : i % 2 ? side : back, [w, 0.032, 0.062], [0, 0, -0.04], 16); seg.add(m);
-    F(m, { length: 0.06, density: 140, comb: [0, 0.2, -0.9], shells: 12, tip: 0xfff2dc });
+    F(m, { length: 0.04, density: 160, comb: [0, 0.2, -0.9], shells: 12, tip: 0xfff2dc });
     tailSegs.push(seg); parent = seg;
   }
 
@@ -112,7 +113,7 @@ export function createPepin({ fur: withFur = true } = {}) {
   function pose(p = {}) {
     p = { ...P0, ...p };
     const s = p.squash; squash.scale.set(1 / Math.sqrt(s), s, 1 / Math.sqrt(s));
-    body.position.y = 0.17 + p.bodyY;
+    body.position.y = 0.22 + p.bodyY;
     body.rotation.set(p.pitch, p.yaw, p.roll);
     neck.rotation.set(p.headNod - p.pitch * 0.95, p.headTurn, p.headTilt);
     const setLimb = (L, [sw, sp, bd], leg) => { L.sh.rotation.set(-sw, 0, L.s * sp); L.el.rotation.set(leg ? bd : -bd, 0, 0); };
@@ -130,8 +131,8 @@ export function createPepin({ fur: withFur = true } = {}) {
     spikes.forEach((g, i) => { g.rotation.x = -0.5 + p.tuft * 0.5 - (p.tuft < 0 ? 0.6 * -p.tuft : 0) + (i % 2) * 0.15; g.scale.y = 1 + Math.max(0, p.tuft) * 0.35; });
     root.updateMatrixWorld(true);
     membranes.forEach(({ g, s: sd }, k) => {
-      Q[0].set(sd * 0.12, -0.01, 0.18); body.worldToLocal(arms[k].tip.getWorldPosition(Q[1]));
-      body.worldToLocal(legs[k].tip.getWorldPosition(Q[2])); Q[3].set(sd * 0.12, -0.01, -0.12);
+      Q[0].set(sd * 0.075, -0.005, 0.14); body.worldToLocal(arms[k].tip.getWorldPosition(Q[1]));
+      body.worldToLocal(legs[k].tip.getWorldPosition(Q[2])); Q[3].set(sd * 0.075, -0.005, -0.13);
       const pos = g.attributes.position; let n = 0; const span = Q[1].distanceTo(Q[2]);
       for (let j = 0; j <= NV; j++) {
         const v = j / NV;

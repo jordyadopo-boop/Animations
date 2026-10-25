@@ -1,7 +1,7 @@
 // Portrait de validation du style : Pépin sur sa branche, devant son trou d'arbre
 import { createPepin, POSE, blend } from '../characters/pepin.js';
 import { makeTrunk, makeCrown, makeBranch, makeHollow } from '../engine/canopy.js';
-export const duration = 3, fps = 30;
+export const duration = 5, fps = 30;
 export function build({ scene, setCamera, focusShadow, dof }) {
   const t1 = makeTrunk(1.6, -15, 34, 1); scene.add(t1);
   const cr = makeCrown(6, 10); cr.position.set(0, 35, 0); scene.add(cr);
@@ -17,8 +17,14 @@ export function build({ scene, setCamera, focusShadow, dof }) {
       { lid: 0.5, smirk: 1, smile: 0.5, browAng: -0.4, lookX: 0.25, tuft: 0.2 },
       { lid: 0, eyeScale: 1.25, mouth: 0.7, brow: 1, browAng: 0.6, tuft: 1, earBack: -0.2 },
       { lid: 0.55, cheeks: 1, smile: 0.6, browAng: 0.2, lookY: 0.2 },
+      { lid: 0.45, smirk: 0.6, lookX: 0.3, tuft: 0.3 },
+      { lid: 0.2, eyeScale: 1.1, mouth: 0.25, brow: 0.5, tuft: 0.8, earBack: 0.4 },
     ][v];
-    pep.pose({ ...blend(POSE.stand, POSE.sit, 1), headTurn: 0.25, headTilt: -0.08, ...expr });
+    if (v === 3) { pep.root.rotation.y = 0.9; pep.pose({ ...blend(POSE.sit, POSE.stand, 1), headTurn: -0.5, ...expr }); }
+    else if (v === 4) { pep.root.position.y += 0.6; pep.root.rotation.y = 0.5; pep.pose({ ...blend(POSE.sit, POSE.glide, 1), headNod: 0.2, ...expr }); }
+    else pep.pose({ ...blend(POSE.stand, POSE.sit, 1), headTurn: 0.25, headTilt: -0.08, ...expr });
+    if (v >= 3) { const b = pep.root.position; focusShadow(b.x, b.y, b.z);
+      setCamera({ pos: v === 3 ? [b.x + 0.15, b.y + 0.45, b.z + 1.5] : [b.x + 0.3, b.y + 1.0, b.z + 1.1], target: [b.x, b.y + 0.18, b.z], fov: 32 }); dof(1.5, 0.6); return; }
     focusShadow(1.3, 20, 1);
     const h = pep.parts.head.getWorldPosition(new pep.root.position.constructor());
     const cam = [h.x + 0.5, h.y + 0.02, h.z + 1.55];
