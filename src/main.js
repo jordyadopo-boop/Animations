@@ -41,6 +41,6 @@ const frame = ep.build({ ...world, fx, W, H });
 await document.fonts.load("150px 'Luckiest Guy'");
 
 window.EPISODE = { duration: ep.duration, fps: ep.fps || 30, width: W, height: H };
-window.renderFrame = (t) => { world.update(t); fx.iris(2); fx.set([]); fx.dim(0); fx.flash(0); fx.speed(0); frame(t); world.renderer.render(world.scene, world.camera); };
+window.renderFrame = (t) => { world.update(t); fx.iris(2); fx.set([]); fx.dim(0); fx.flash(0); fx.speed(0); world.dof?.(1, 0); frame(t); world.render ? world.render() : world.renderer.render(world.scene, world.camera); };
 window.renderFrame(Number(params.get('t') || 0));
 window.READY = true;

@@ -19,8 +19,8 @@ const outDir = path.join(ROOT, 'out'); fs.mkdirSync(path.join(outDir, 'stills'),
 const srv = await serve();
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage({ viewport: { width: 1920, height: 1920 } });
-page.on('console', (m) => m.type() === 'error' && console.error('[page]', m.text()));
-page.on('pageerror', (e) => console.error('[page]', e.message));
+page.on('console', (m) => { if (m.type() === 'error') { console.error('[page]', m.text()); if (/module|SyntaxError|not provide/.test(m.text())) process.exit(1); } });
+page.on('pageerror', (e) => { console.error('[page]', e.message); process.exit(1); });
 await page.goto(`http://localhost:${srv.address().port}/?ep=${ep}`);
 await page.waitForFunction(() => window.READY === true, null, { timeout: 120000 });
 const { duration, fps } = await page.evaluate(() => window.EPISODE);
