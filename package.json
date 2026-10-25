@@ -1,0 +1,16 @@
+{
+  "name": "zip-serie-animee",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "ZIP ! — série animée muette 9:16 (Three.js toon, rendu headless)",
+  "scripts": {
+    "audio": "node render/audio.js",
+    "render": "node render/render.js",
+    "preview": "node render/serve.js"
+  },
+  "dependencies": {
+    "@fontsource/luckiest-guy": "^5.3.0",
+    "three": "0.170.0"
+  }
+}
