@@ -4,7 +4,7 @@
 // Orienté vers +z.
 import * as THREE from 'three';
 import { mat, sph, cap, group, makeEye, poseEye } from './parts.js';
-import { addFur } from '../engine/fur.js';
+import { Sculpture } from '../engine/sculpt.js';
 
 // Plume : contour arrondi extrudé, dégradé de couleur racine -> pointe (couleurs de sommets)
 function featherGeo(len, w) {
@@ -30,38 +30,42 @@ export const B0 = {
 
 export function createBird(cfg) {
   const S = cfg.scale;
-  const F = (m, o) => addFur(m, { comb: [0, -0.2, -0.9], ...o });
-  const bodyMat = mat(cfg.body, 0.55), bellyMat = mat(cfg.belly, 0.7), headMat = mat(cfg.head ?? cfg.body, 0.55);
+  const PI = Math.PI;
+  const SC = new Sculpture({ cell: 0.0052 * S, color: cfg.body });
+  SC.mesh.material.sheen = cfg.gloss ? 0.2 : 0.4;
   const featherMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: cfg.gloss ? 0.35 : 0.7, metalness: cfg.gloss ? 0.15 : 0, side: THREE.DoubleSide });
   const root = new THREE.Group(), squash = new THREE.Group(); root.add(squash);
   const body = group([0, cfg.legLen * S + 0.16 * S, 0]); squash.add(body);
-  F((body.add(sph(0.16 * S, bodyMat, cfg.bodyShape, [0, 0, 0])), body.children.at(-1)), { length: 0.014 * S, density: 260 / S, shells: 10 });
-  F((body.add(sph(0.14 * S, bellyMat, cfg.bellyShape, [0, -0.04 * S, 0.06 * S])), body.children.at(-1)), { length: 0.016 * S, density: 260 / S, shells: 10, comb: [0, -0.6, -0.3] });
+  const r = (k, v) => v * k * S;
+  SC.add(body, 'ell', cfg.bodyShape.map((v) => v * 0.16 * S), { blend: 0.04 * S });
+  SC.add(body, 'ell', cfg.bellyShape.map((v) => v * 0.14 * S), { pos: [0, -0.04 * S, 0.06 * S], blend: 0.05 * S, color: cfg.body });
+  SC.add(body, 'ell', cfg.bellyShape.map((v) => v * 0.15 * S), { pos: [0, -0.06 * S, 0.08 * S], op: 'paint', color: cfg.belly, sharp: 0.012 * S });
 
-  // cou extensible + tête
+  // cou extensible + tête sculptés d'un bloc avec le bec
   const neck = group([0, 0.12 * S, 0.17 * S]); body.add(neck);
   const neckStem = group([0, 0, 0]); neckStem.rotation.x = 0.3; neck.add(neckStem);
-  F(neckStem.add(cap(cfg.neckR * S, 0.1 * S, cfg.neckMat === 'belly' ? bellyMat : headMat, [0, 0.06 * S, 0])) && neckStem.children.at(-1), { length: 0.012 * S, density: 260 / S, shells: 8 });
+  const headCol = cfg.head ?? cfg.body;
+  SC.add(neckStem, 'cone', [cfg.neckR * S * 1.15, cfg.neckR * S, 0.13 * S], { blend: 0.03 * S, color: cfg.neckMat === 'belly' ? cfg.belly : headCol });
   const head = group([0, 0.15 * S, 0.03 * S]); neck.add(head);
-  F((head.add(sph(0.11 * S, headMat, cfg.headShape)), head.children.at(-1)), { length: 0.012 * S, density: 300 / S, shells: 8, comb: [0, 0, -0.9] });
-  // bec : supérieur (crochu ou droit) + inférieur articulé
-  const beakMat = mat(cfg.beak, 0.35);
-  const upper = new THREE.Mesh(new THREE.ConeGeometry(cfg.beakW * S, cfg.beakLen * S, 16), beakMat);
-  upper.rotation.x = Math.PI / 2; upper.scale.set(1, 1, 0.7); upper.position.set(0, -0.005 * S, 0.1 * S + cfg.beakLen * S / 2); upper.castShadow = true; head.add(upper);
+  SC.add(head, 'ell', cfg.headShape.map((v) => v * 0.11 * S), { blend: 0.035 * S, color: headCol });
+  const bk = { blend: 0.012 * S, color: cfg.beak, sharp: 0.004 * S };
+  SC.add(head, 'cone', [cfg.beakW * S, cfg.beakW * 0.22 * S, cfg.beakLen * S], { pos: [0, -0.01 * S, 0.075 * S], rot: [PI / 2, 0, 0], ...bk });
   if (cfg.hook) {
-    upper.scale.set(1, 1, 1.0);
-    const tip = new THREE.Mesh(new THREE.ConeGeometry(cfg.beakW * 0.42 * S, cfg.beakLen * 0.35 * S, 12), beakMat);
-    tip.position.set(0, -0.03 * S, 0.1 * S + cfg.beakLen * S * 0.92); tip.rotation.x = Math.PI * 0.8; tip.castShadow = true; head.add(tip);
-    head.add(sph(0.055 * S, beakMat, [1.05, 0.75, 0.8], [0, 0.0, 0.11 * S])); // cire jaune à la base du bec
+    SC.add(head, 'cone', [cfg.beakW * 0.5 * S, 0.004 * S, cfg.beakLen * 0.38 * S], { pos: [0, -0.012 * S, 0.075 * S + cfg.beakLen * S * 0.9], rot: [PI * 0.82, 0, 0], ...bk });
+    SC.add(head, 'ell', [0.05 * S, 0.035 * S, 0.04 * S], { pos: [0, 0.0, 0.1 * S], ...bk }); // cire à la base du bec
   }
-  const jaw = group([0, -0.035 * S, 0.1 * S]); head.add(jaw);
-  const lower = new THREE.Mesh(new THREE.ConeGeometry(cfg.beakW * 0.75 * S, cfg.beakLen * 0.8 * S, 16), beakMat); lower.rotation.x = Math.PI / 2; lower.scale.set(1, 1, 0.5); lower.position.set(0, 0, cfg.beakLen * 0.4 * S); jaw.add(lower);
-  const tongue = sph(0.02 * S, mat(0xd8506a, 0.5), [1, 0.4, 2], [0, 0.01 * S, cfg.beakLen * 0.25 * S]); jaw.add(tongue);
-  // yeux + sourcils
-  const eyes = [-1, 1].map((s) => {
-    const e = makeEye(cfg.eyeR * S, headMat, cfg.iris, mat(cfg.brow, 0.8), s, cfg.irisScale ?? 1);
-    e.position.set(s * cfg.eyeX * S, 0.035 * S, cfg.eyeZ * S); e.userData.base = e.position.clone(); e.rotation.y = s * cfg.eyeYaw; head.add(e);
-    e.userData.brow.scale.set(...cfg.browScale); return e;
+  const jaw = group([0, -0.035 * S, 0.085 * S]); head.add(jaw);
+  SC.add(jaw, 'cone', [cfg.beakW * 0.75 * S, cfg.beakW * 0.15 * S, cfg.beakLen * 0.8 * S], { pos: [0, 0, 0], rot: [PI / 2, 0, 0], ...bk });
+  const tongue = sph(0.02 * S, mat(0xd8506a, 0.5), [1, 0.4, 2], [0, 0.012 * S, cfg.beakLen * 0.3 * S]); jaw.add(tongue);
+  head.add(sph(0.03 * S, mat(0x4a0f1a, 0.9), [1, 0.5, 2.2], [0, -0.028 * S, 0.12 * S]));
+  // arcades sculptées + orbites, yeux enfoncés
+  const brows = [-1, 1].map((sd) => { const b = group([sd * cfg.eyeX * S, 0.035 * S + cfg.eyeR * S * 1.15, cfg.eyeZ * S + cfg.eyeR * S * 0.2]); head.add(b);
+    SC.add(b, 'ell', [cfg.eyeR * S * 1.25 * cfg.browScale[0] / 2, cfg.eyeR * S * 0.32 * cfg.browScale[1], cfg.eyeR * S * 0.6], { blend: 0.025 * S, color: cfg.brow, sharp: 0.006 * S }); return b; });
+  [-1, 1].forEach((sd) => SC.add(head, 'ell', [cfg.eyeR * S * 1.05, cfg.eyeR * S * 1.0, cfg.eyeR * S * 0.8], { pos: [sd * cfg.eyeX * S, 0.035 * S, cfg.eyeZ * S], op: 'sub', blend: 0.01 * S }));
+  const eyes = [-1, 1].map((sd) => {
+    const e = makeEye(cfg.eyeR * S, mat(headCol, 0.6), cfg.iris, mat(cfg.brow, 0.8), sd, cfg.irisScale ?? 1);
+    e.position.set(sd * cfg.eyeX * S, 0.035 * S, cfg.eyeZ * S); e.userData.base = e.position.clone(); e.rotation.y = sd * cfg.eyeYaw; head.add(e);
+    e.userData.brow.visible = false; return e;
   });
   // huppe / plumes de tête
   const crest = group([0, 0.09 * S, -0.02 * S]); head.add(crest);
@@ -73,8 +77,9 @@ export function createBird(cfg) {
     const arm = group([0, 0, 0]); sh.add(arm);
     const fore = group([s * cfg.span * 0.32 * S, 0, 0]); arm.add(fore);
     const hand = group([s * cfg.span * 0.32 * S, 0, 0]); fore.add(hand);
-    arm.add(F(cap(0.045 * S, cfg.span * 0.28 * S, bodyMat, [s * cfg.span * 0.16 * S, 0, 0], [0, 0, Math.PI / 2]), { length: 0.012 * S, density: 260 / S, shells: 6 }));
-    fore.add(cap(0.035 * S, cfg.span * 0.28 * S, bodyMat, [s * cfg.span * 0.16 * S, 0, 0], [0, 0, Math.PI / 2]));
+    const bones = [SC.add(arm, 'cone', [0.05 * S, 0.04 * S, cfg.span * 0.32 * S], { rot: [0, 0, -s * PI / 2], blend: 0.03 * S }),
+      SC.add(fore, 'cone', [0.04 * S, 0.03 * S, cfg.span * 0.32 * S], { rot: [0, 0, -s * PI / 2], blend: 0.02 * S })];
+    bones.forEach((b) => (b.base = b.size.slice()));
     const feathers = [];
     const addF = (parent, n, len, w, x0, x1, kind) => {
       for (let i = 0; i < n; i++) {
@@ -89,13 +94,13 @@ export function createBird(cfg) {
     addF(arm, 5, cfg.span * 0.24, 0.13, 0.05 * cfg.span, 0.3 * cfg.span, 's');
     addF(fore, 7, cfg.span * 0.32, 0.14, 0.0, 0.3 * cfg.span, 's');
     addF(hand, 8, cfg.span * 0.44, 0.13, 0.0, 0.18 * cfg.span, 'p');
-    return { sh, arm, fore, hand, feathers, s };
+    return { sh, arm, fore, hand, feathers, s, bones };
   });
 
   // ailes repliées (affichées quand l'aile est fermée) : capot emplumé + longues primaires sur la queue
   const folded = [-1, 1].map((s) => {
     const g = group([s * 0.12 * S, 0.04 * S, -0.02 * S]); body.add(g);
-    F((g.add(sph(0.12 * S, bodyMat, [0.35, 0.75, 1.35])), g.children.at(-1)), { length: 0.01 * S, density: 260 / S, shells: 8, comb: [0, 0, -1] });
+    g.userData.cover = SC.add(g, 'ell', [0.042 * S, 0.09 * S, 0.165 * S], { blend: 0.03 * S }); g.userData.cover.base = g.userData.cover.size.slice();
     for (let i = 0; i < 4; i++) {
       const [cr, ct] = cfg.featherColors('p', i / 3); const L = cfg.span * 0.38 * (1 - i * 0.08);
       const f = new THREE.Mesh(colorFeather(featherGeo(L * S, 0.1 * S), cr, ct, L * S), featherMat); f.castShadow = true;
@@ -118,8 +123,8 @@ export function createBird(cfg) {
   const legMat = mat(cfg.legColor, 0.5), talon = mat(0x1d1712, 0.3);
   const legs = [-1, 1].map((s) => {
     const hip = group([s * 0.07 * S, -0.08 * S, 0.0]); body.add(hip);
-    F(hip.add(sph(0.06 * S, cfg.trousers ? bodyMat : bellyMat, [0.9, 1.3, 1], [0, -0.03 * S, 0])) && hip.children.at(-1), { length: 0.02 * S, density: 200 / S, shells: 8, comb: [0, -0.9, 0] });
-    hip.add(cap(0.018 * S, cfg.legLen * S, legMat, [0, -cfg.legLen * S / 2 - 0.05 * S, 0]));
+    SC.add(hip, 'ell', [0.055 * S, 0.075 * S, 0.06 * S], { pos: [0, -0.03 * S, 0], blend: 0.03 * S, color: cfg.trousers ? cfg.body : cfg.belly });
+    SC.add(hip, 'cone', [0.02 * S, 0.016 * S, cfg.legLen * S + 0.02 * S], { pos: [0, -0.05 * S, 0], rot: [PI, 0, 0], blend: 0.012 * S, color: cfg.legColor, sharp: 0.006 * S });
     const foot = group([0, -cfg.legLen * S - 0.07 * S, 0]); hip.add(foot);
     const toes = [];
     [[-0.5, 1], [0, 1], [0.5, 1], [Math.PI, 0.7]].forEach(([a, l]) => {
@@ -142,12 +147,15 @@ export function createBird(cfg) {
     eyes.forEach((e, i) => {
       const side = i ? 1 : -1;
       e.position.copy(e.userData.base).add(new THREE.Vector3(side * 0.015 * S * p.eyePop, 0.03 * S * p.eyePop, 0.02 * S * p.eyePop));
-      poseEye(e, { lookX: p.lookX + (i ? -1 : 1) * p.cross, lookY: p.lookY, lid: p.lid, lidLow: p.lidLow, tilt: p.tilt, pupil: p.pupil, browY: p.brow, browAng: p.browAng + (i ? -1 : 1) * p.smirk * 0.4, scale: p.eyeScale * (1 + p.eyePop * 0.5) });
+      poseEye(e, { lookX: p.lookX + (i ? -1 : 1) * p.cross, lookY: p.lookY, lid: p.lid, lidLow: p.lidLow, tilt: p.tilt, pupil: p.pupil, scale: p.eyeScale * (1 + p.eyePop * 0.5) });
     });
+    brows.forEach((b, i) => { const sd = i ? 1 : -1; b.position.y = 0.035 * S + cfg.eyeR * S * (1.15 + p.brow * 0.35 + p.eyePop * 0.6); b.rotation.z = sd * (-p.browAng * 0.55 + (i ? -1 : 1) * p.smirk * 0.25); });
     crest.rotation.x = -p.crest * 0.6;
     wings.forEach((w, i) => {
       const [open, flap, sweep] = i ? p.wingR : p.wingL, sd = w.s;
       const shown = open > 0.2; w.sh.visible = shown; folded[i].visible = !shown;
+      w.bones.forEach((b) => (b.size = shown ? b.base : [1e-4, 1e-4, 1e-4]));
+      const cv = folded[i].userData.cover; cv.size = shown ? [1e-4, 1e-4, 1e-4] : cv.base;
       const fold = Math.max(0, (0.6 - open) / 0.4) * 0.6;
       // repliée : bras vers l'arrière, avant-bras vers l'avant, main vers l'arrière (zig-zag) ; ouverte : alignés
       w.sh.rotation.set(0, sd * (fold * 1.35 - sweep * 0.5), sd * flap);
@@ -158,7 +166,9 @@ export function createBird(cfg) {
     tail.rotation.set(-p.tailLift - p.pitch * 0.3, p.tailWag, 0);
     tailF.forEach((g) => (g.rotation.y = -g.userData.k * (0.3 + p.tailSpread * 1.6)));
     legs.forEach((l, i) => { const [sw, bend] = i ? p.legR : p.legL; l.hip.rotation.x = -sw; l.foot.rotation.x = bend; l.toes.forEach((t, j) => (t.rotation.x = (j < 3 ? 1 : -1) * p.grip * 0.9)); });
+    SC.update(root);
   }
+  root.add(SC.mesh);
   pose();
   return { root, pose, parts: { head, body, jaw, legs: legs.map((l) => l.foot) } };
 }

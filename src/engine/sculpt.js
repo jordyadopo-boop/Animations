@@ -80,6 +80,7 @@ export class Sculpture {
       p.inv[0] = inv[0]; p.inv[1] = inv[4]; p.inv[2] = inv[8]; p.inv[3] = inv[12];
       p.inv[4] = inv[1]; p.inv[5] = inv[5]; p.inv[6] = inv[9]; p.inv[7] = inv[13];
       p.inv[8] = inv[2]; p.inv[9] = inv[6]; p.inv[10] = inv[10]; p.inv[11] = inv[14];
+      p.bound = p.type === 'cone' ? Math.max(p.size[0], p.size[1]) + p.size[2] : Math.max(...p.size);
       p.R = (p.bound + p.blend) * Math.max(1, 1 / p.scl);
       if (p.op === 'add') { lo.min(c.clone().subScalar(p.R)); hi.max(c.clone().addScalar(p.R)); }
     }

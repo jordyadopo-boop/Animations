@@ -93,7 +93,7 @@ export function createBouboule() {
     neck.rotation.set(p.headNod - p.lean * 0.9, p.headTurn, p.headTilt);
     jaw.rotation.x = p.mouth * 0.75;
     teeth.visible = p.grin > 0.2;
-    brows.forEach((b, i) => { const s = i ? 1 : -1; b.position.y = 0.052 + p.brow * 0.012; b.rotation.z = s * p.browAng * 0.6; });
+    brows.forEach((b, i) => { const s = i ? 1 : -1; b.position.y = 0.052 + p.brow * 0.012; b.rotation.z = -s * p.browAng * 0.6; });
     arms.forEach((a, i) => { const [fw, sp, bd] = i ? p.armR : p.armL; a.sh.rotation.set(-fw, 0, a.s * sp); a.el.rotation.set(-bd, 0, 0); });
     legs.forEach((l, i) => { const [fw, kn] = i ? p.legR : p.legL; l.th.rotation.set(-fw - p.lean * 0.4, 0, l.s * 0.12); l.kn.rotation.set(kn, 0, -l.s * 0.08); l.ft.rotation.set(-kn + fw * 0.5, 0, 0); });
     tail.forEach((g, i) => g.rotation.set(p.tailCurl * 0.3, 0, Math.sin(p.tailWag - i * 0.7) * 0.2));
