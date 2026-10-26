@@ -18,3 +18,9 @@ ep18/build/
 ep18/web/main.js
 ep18/cov/
 ep18/node_modules
+ep19/seg/
+ep19/tts_cache/
+ep19/build/
+ep19/web/main.js
+ep19/cov/
+ep19/node_modules
