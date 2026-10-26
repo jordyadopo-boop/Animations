@@ -38,3 +38,10 @@ ep21/cov/
 ep21/node_modules
 ep21/stills/
 ep*_rendu.log
+ep22/seg/
+ep22/tts_cache/
+ep22/build/
+ep22/web/main.js
+ep22/cov/
+ep22/node_modules
+ep22/stills/
