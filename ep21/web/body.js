@@ -311,7 +311,7 @@ SETS.copiste = () => {
   faceLight(scene, [0.1, 1.6, 0.6], 2.4, 0xffd8b0);
   const scr = new Human({ skin: 0xb07850, hair: 0x2a1a10, hairStyle: 'short', top: 0x5a4a3a, bottom: 0x4a3a2a, robe: 0x5a4a3a, robeL: 0.6, seed: 2104 }); scr.place(0, 0, -0.62, 0); scene.add(scr.root);
   const quill = at(box(0.006, 0.006, 0.2, M(0xf4f0e8)), 0, -0.04, 0.08); quill.rotation.x = 0.7; scr.hand.R.add(quill);
-  const ghosts = []; for (let i = 0; i < 5; i++) { const h = new Human({ holo: 0xffc070, seed: 300 + i, hairStyle: ['short', 'long', 'bald', 'curly', 'bun'][i] }); h.root.traverse(m => { if (m.isMesh && m.material && m.material.blending === THREE.AdditiveBlending) m.material.opacity = 0.22; }); const a = (i - 2) * 0.55; h.place(Math.sin(a) * 1.4, 0, -1.2 + Math.cos(a) * 0.2 - 0.2, -a * 0.6); scene.add(h.root); ghosts.push(h); }
+  const ghosts = []; for (let i = 0; i < 5; i++) { const h = new Human({ holo: 0xffc070, seed: 300 + i, hairStyle: ['short', 'long', 'bald', 'curly', 'bun'][i] }); h.root.traverse(m => { if (m.isMesh && m.material && m.material.blending === THREE.AdditiveBlending) m.material.opacity = 0.22; }); const x = [-1.55, -1.0, -0.5, 1.0, 1.55][i]; h.place(x, 0, -1.5, -x * 0.25); scene.add(h.root); ghosts.push(h); }
   const rig = claudeRig(scene, [1.05, 0, 0.75], -0.45, [-0.45, 0, 0.1], 0xffd070, 0.5, 0.3);
   const crown = new THREE.Group(); rig.holoG.add(crown);
   crown.add(holo(new THREE.CylinderGeometry(0.2, 0.2, 0.1, 10, 1, true), 0xffd070, 0.25));
@@ -389,7 +389,7 @@ SETS.ia = () => {
   const scan = new THREE.Mesh(new THREE.PlaneGeometry(3.1, 0.03), new THREE.MeshBasicMaterial({ color: new THREE.Color(0x7dffb0).multiplyScalar(1.4), transparent: true, opacity: 0.6, toneMapped: false })); scene.add(scan);
   const heb = label('HÉBREU ?', { w: 1.0, h: 0.26, color: '#ffd070', font: 'bold 150px Inter' }); heb.position.set(0, 2.1, -1.3); scene.add(heb);
   const rig = claudeRig(scene, [0.0, 0, 0.6], 0, [0.0, 0, 0.42], 0x55e6ff, 0.45, 0.3);
-  const hp = holoText(0.9, 0.6, '#9af0ff', 77); rig.holoG.add(hp); hp.position.y = 0.4;
+  const hp = holoText(0.9, 0.6, '#9af0ff', 77); rig.holoG.add(hp); hp.position.y = 0.3;
   const hc = hp.userData.canvas.userData; const marks = [];
   const pick = hc.words.filter((w, i) => hash(i * 13) < 0.22).slice(0, 10);
   for (const [x, y, w] of pick) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w / 1024 * 0.9, hc.s * 1.3 / 1024 * 0.9), new THREE.MeshBasicMaterial({ color: 0xffa040, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false })); m.position.set((x + w / 2) / 1024 * 0.9 - 0.45, 0.3 - (y - hc.s * 0.1) / 1024 * 0.9, 0.005); hp.add(m); marks.push(m); }
@@ -401,12 +401,12 @@ SETS.ia = () => {
     ...B, update(t) {
       const sy = 0.9 + ((t * 0.5) % 1) * 1.45; scan.position.set(0, sy, -1.44); fade(scan, 0.6 * win(t, C.ia, C.moi - 0.5));
       fade(heb, win(t, C.ia + 4.0, C.moi - 0.3, 0.3, 0.3) * (0.75 + 0.25 * Math.sin(t * 4)));
-      const mk = sstep(C.moi - 0.4, C.moi + 0.4, t); fade(hp, 0.9 * mk); beamOn(rig, mk, t);
+      const mk = sstep(C.moi - 0.4, C.moi + 0.4, t); fade(hp, 0.9 * mk); beamOn(rig, mk, t); screens.forEach(sc => fade(sc, 1 - 0.85 * mk));
       marks.forEach((m, i) => fade(m, 0.45 * sstep(C.moi + 1.0 + i * 0.25, C.moi + 1.3 + i * 0.25, t) * (1 - sstep(C.moi + 6.5, C.moi + 7.0, t))));
       fade(q, sstep(C.moi + 6.6, C.moi + 7.0, t) * (0.7 + 0.3 * Math.sin(t * 5)));
       rig.c.update(t, env('claude', t), { armsUp: 0.3 * sstep(C.moi + 6.6, C.moi + 7.1, t), squint: t > C.moi + 6.8 && t < C.moi + 7.8 });
       camKeys(cam, t, [{ t: C.ia, p: [0.0, 1.5, 4.4], l: [0, 1.25, -1.0], f: 46 }, { t: C.moi - 0.5, p: [0.3, 1.4, 4.0], l: [0, 1.2, -1.0], f: 46 },
-        { t: C.moi + 0.5, p: [0.0, 1.2, 3.1], l: [0, 0.9, 0.6], f: 44 }, { t: C.moi + 6.2, p: [0.0, 1.15, 2.9], l: [0, 0.88, 0.6], f: 44 }, { t: SC.hypo.start, p: [0.0, 1.1, 2.9], l: [0, 0.8, 0.6], f: 44 }]);
+        { t: C.moi + 0.5, p: [0.0, 1.2, 3.5], l: [0, 1.0, 0.6], f: 44 }, { t: C.moi + 6.2, p: [0.0, 1.15, 3.3], l: [0, 0.98, 0.6], f: 44 }, { t: SC.hypo.start, p: [0.0, 1.1, 3.3], l: [0, 0.95, 0.6], f: 44 }]);
       K.update(t);
     }
   };
@@ -431,7 +431,7 @@ SETS.hypo = () => {
   const bars = []; for (let i = 0; i < 12; i++) { const hgt = 1.3 / (i + 1); const b = holo(new THREE.BoxGeometry(0.13, hgt, 0.08), 0x55e6ff, 0.25); b.position.set(-0.85 + i * 0.155, hgt / 2, 0); zipf.add(b); bars.push([b, hgt]); }
   const curve = []; for (let i = 0; i < 40; i++) { const x = i / 39 * 11, y = 1.3 / (x + 1); curve.push(new THREE.Vector3(-0.85 + x * 0.155, y, 0.06)); }
   const cl = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(curve), 60, 0.012, 5), G(0xffb040, 1.6)); zipf.add(cl);
-  const zl = label('fréquence des mots', { w: 1.0, h: 0.13, color: '#9adfff', font: 'bold 90px Inter' }); zl.position.set(0.1, 1.45, 0); zipf.add(zl);
+  const zl = label('fréquence des mots', { w: 1.0, h: 0.13, color: '#9adfff', font: 'bold 90px Inter' }); zl.position.set(0.1, -0.12, 0.05); zipf.add(zl);
   const rig = claudeRig(scene, [-0.55, 0, 1.6], 0.35, [0.45, 0, 0.0], 0x55e6ff, 0.4, 0.25); rig.pr.visible = false;
   const K = cardsMgr(scene, cam);
   K('HYPOTHÈSES', { w: 1.2, h: 0.3, border: '#ffd070', color: '#ffe070' }, t => win(t, SC.hypo.start + 1.5, C.indice - 0.2, 0.3, 0.2));
