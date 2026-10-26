@@ -12,3 +12,9 @@ ep17/build/
 ep17/web/main.js
 ep17/cov/
 ep17/node_modules
+ep18/seg/
+ep18/tts_cache/
+ep18/build/
+ep18/web/main.js
+ep18/cov/
+ep18/node_modules
