@@ -5,6 +5,7 @@ VOICES = {
     "hugo": dict(voice="fr-CH-FabriceNeural", rate="+2%", pitch="+0Hz"),
     "malik": dict(voice="fr-FR-HenriNeural", rate="+8%", pitch="+2Hz"),
     "mei": dict(voice="fr-BE-CharlineNeural", rate="-4%", pitch="+0Hz"),
+    "nadia": dict(voice="fr-CH-ArianeNeural", rate="-4%", pitch="+0Hz"),
 }
 
 SCRIPT = [
@@ -53,27 +54,54 @@ SCRIPT = [
     ], "neutral"),
     ("pause", 0.3),
 
-    ("scene", "stade"),
+    ("scene", "bureau"),
     ("say", "claude", [
-        ("Et la vitesse ? Le psychologue Daniel Kahneman, prix Nobel, expliquait que nous avons tous deux façons de penser.", "And speed? Psychologist Daniel Kahneman, a Nobel laureate, explained that we all have two ways of thinking."),
-    ], "neutral"),
-    ("cue", "sys"),
-    ("say", "claude", [
-        ("Une rapide et automatique, qui reconnaît un visage en un instant.", "A fast, automatic one, that recognizes a face in an instant."),
-        ("Et une lente et attentive, pour résoudre un calcul difficile.", "And a slow, careful one, to solve a hard calculation."),
+        ("Et la vitesse ? Le psychologue Daniel Kahneman, prix Nobel, expliquait que nous avons tous deux façons de penser : une rapide et automatique, et une lente et attentive.",
+         "And speed? Psychologist Daniel Kahneman, a Nobel laureate, explained that we all have two ways of thinking: a fast, automatic one, and a slow, careful one."),
     ], "neutral"),
     ("cue", "malik"),
-    ("say", "malik", [("Au départ d'un cent mètres, je réagis au coup de pistolet en un clin d'œil !", "At the start of a 100 metres, I react to the starting gun in the blink of an eye!")], "joy"),
-    ("cue", "gun"),
-    ("say", "claude", [
-        ("En athlétisme, partir moins d'un dixième de seconde après le coup de pistolet compte comme un faux départ : on considère que c'est trop rapide pour un humain.",
-         "In athletics, leaving less than a tenth of a second after the gun counts as a false start: it's considered too fast for a human."),
-    ], "happy"),
+    ("say", "malik", [("J'ai une idée, tout de suite !", "I've got an idea, right now!")], "joy"),
     ("cue", "mei"),
     ("say", "mei", [("Moi, je prends mon temps. Je réponds moins vite… mais je vérifie tout.", "I take my time. I answer more slowly… but I check everything.")], "happy"),
-    ("cue", "rythme"),
+    ("cue", "limit"),
     ("say", "claude", [
-        ("Réagir vite ou réfléchir longtemps, ce n'est pas une question d'intelligence. Chacun a son rythme.", "Reacting fast or thinking long isn't a matter of intelligence. Everyone has their own pace."),
+        ("Même les plus rapides ont une limite : en athlétisme, partir moins d'un dixième de seconde après le coup de pistolet compte comme un faux départ.",
+         "Even the fastest have a limit: in athletics, leaving less than a tenth of a second after the gun counts as a false start."),
+        ("Réagir vite ou réfléchir longtemps, ce n'est pas une question d'intelligence.", "Reacting fast or thinking long isn't a matter of intelligence."),
+    ], "happy"),
+    ("cue", "nadia"),
+    ("say", "nadia", [("Euh… oui, oui, c'est clair.", "Um… yes, yes, it's clear.")], "neutral"),
+    ("cue", "silence"),
+    ("say", "claude", [
+        ("Nadia n'a pas compris… mais elle n'ose pas le dire, par peur d'avoir l'air bête. C'est très courant. Les chercheurs parlent de « silence organisationnel ».",
+         "Nadia didn't understand… but she doesn't dare say so, for fear of looking stupid. It's very common. Researchers call it \"organizational silence\"."),
+    ], "neutral"),
+    ("cue", "rope"),
+    ("say", "claude", [
+        ("Et en groupe, chacun en fait un peu moins en comptant sur les autres. L'ingénieur Maximilien Ringelmann l'a mesuré il y a plus d'un siècle : à plusieurs sur une corde, chacun tire moins fort que seul.",
+         "And in a group, everyone does a little less, counting on the others. Engineer Maximilien Ringelmann measured it over a century ago: pulling a rope together, each person pulls less hard than alone."),
+    ], "neutral"),
+    ("cue", "fix"),
+    ("say", "claude", [
+        ("La solution ? Reformuler, donner à chacun une tâche à son nom… et rendre normal de poser une question.", "The fix? Rephrase, give everyone a task with their name on it… and make asking questions normal."),
+    ], "happy"),
+    ("pause", 0.3),
+
+    ("scene", "vie"),
+    ("say", "claude", [
+        ("C'est pareil dans la vie. Certaines personnes pensent que leur vie dépend surtout de la chance ou des autres. D'autres, surtout d'elles-mêmes.",
+         "It's the same in life. Some people believe their life depends mostly on luck or on others. Others, mostly on themselves."),
+        ("En 1966, le psychologue Julian Rotter a appelé ça le « lieu de contrôle ».", "In 1966, psychologist Julian Rotter called this the \"locus of control\"."),
+    ], "neutral"),
+    ("cue", "helpless"),
+    ("say", "claude", [
+        ("Et après beaucoup d'échecs, le cerveau peut finir par se dire : « À quoi bon essayer ? ». Le psychologue Martin Seligman a appelé ça « l'impuissance apprise ».",
+         "And after many failures, the brain can end up thinking: \"Why bother trying?\". Psychologist Martin Seligman called it \"learned helplessness\"."),
+    ], "serious"),
+    ("cue", "hope"),
+    ("say", "claude", [
+        ("Ce n'est pas forcément de la paresse. Et la bonne nouvelle, c'est que ça se désapprend : un petit objectif, une première réussite… et le cerveau recommence à y croire.",
+         "It isn't necessarily laziness. And the good news is that it can be unlearned: a small goal, a first success… and the brain starts believing again."),
     ], "happy"),
     ("pause", 0.3),
 

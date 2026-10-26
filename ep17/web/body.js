@@ -193,7 +193,7 @@ SETS.parc = () => {
   const noVoice = label('« … »', { w: 0.5, h: 0.16, color: '#8090a0', font: 'bold 120px Inter' }); noVoice.position.set(-0.45, 2.0, 0.05); scene.add(noVoice);
   const K = cardsMgr(scene, cam);
   K('ANENDOPHASIE · 2024\npas de petite voix intérieure', { w: 1.6, h: 0.42, border: '#7dffb0', small: true }, t => win(t, C.anendo, subAt('These people'), 0.3, 0.2));
-  K('réfléchir… autrement', { w: 1.6, h: 0.3, border: '#55e6ff' }, t => win(t, subAt('These people') + 0.4, SC.stade.start, 0.3, 0.2));
+  K('réfléchir… autrement', { w: 1.6, h: 0.3, border: '#55e6ff' }, t => win(t, subAt('These people') + 0.4, SC.bureau.start, 0.3, 0.2));
   return {
     ...B, update(t) {
       hugo.pose(sitPose(0.49, { aL: [0.5, 0.15], aR: [0.5, 0.15], eL: 1.0, eR: 1.0, hp: -0.15 })); hugo.face(env('hugo', t), 'happy', t);
@@ -202,68 +202,119 @@ SETS.parc = () => {
       shapes.children.forEach((m, i) => { const a = t * 0.7 + i * 1.256; m.position.set(Math.cos(a) * 0.4, Math.sin(a * 1.3) * 0.12 + 0.05, Math.sin(a) * 0.3); m.rotation.set(t, t * 1.3, 0); m.scale.setScalar(ks); m.visible = ks > 0.01; });
       fade(noVoice, win(t, subAt('A voice talking') + 0.2, subAt('A voice talking') + 2.0, 0.3, 0.3));
       const T0 = SC.parc.start;
-      camKeys(cam, t, [{ t: T0, p: [1.5, 1.7, 4.2], l: [0, 1.3, 0], f: 44 }, { t: C.anendo, p: [0.8, 1.6, 2.8], l: [0.1, 1.5, 0], f: 44 }, { t: SC.stade.start, p: [-0.6, 1.9, 3.2], l: [0.1, 1.6, 0], f: 44 }]);
+      camKeys(cam, t, [{ t: T0, p: [1.5, 1.7, 4.2], l: [0, 1.3, 0], f: 44 }, { t: C.anendo, p: [0.8, 1.6, 2.8], l: [0.1, 1.5, 0], f: 44 }, { t: SC.bureau.start, p: [-0.6, 1.9, 3.2], l: [0.1, 1.6, 0], f: 44 }]);
       if (typeof K !== 'undefined') K.update(t);
     }
   };
 };
 function tree(seed, c = 0x3f8a45) { const g = new THREE.Group(); g.add(at(box(0.1, 0.5, 0.1, M(0x6a4a30)), 0, 0.25, 0)); for (let i = 0; i < 3; i++) g.add(at(new THREE.Mesh(new THREE.ConeGeometry(0.4 - i * 0.1, 0.45, 6), M(c, { emissive: new THREE.Color(c).multiplyScalar(0.2) })), 0, 0.6 + i * 0.25, 0)); g.scale.setScalar(0.8 + hash(seed) * 0.4); return g; }
 
-// ---------- stade + table d'echecs : vite ou lentement
-SETS.stade = () => {
-  const B = base({ sky: [0x4a8ae0, 0xf0e8d8, 0xb8d0ee], fog: [0xd0dcea, 25, 120], hemi: [0xffffff, 0x6a5a4a, 1.0], sun: [0xfff0d8, 2.2, [6, 10, 5]], shadowSize: 10, bloom: [0.35, 0.5, 0.9] });
+// ---------- bureau : vite, lentement, le silence, la corde
+const NADIA = { skin: 0xc68a5a, hair: 0x2a1a10, hairStyle: 'bun', top: 0x4a8ab0, bottom: 0x2a2a3a, seed: 1705 };
+SETS.bureau = () => {
+  const B = base({ bg: 0xd8dce4, hemi: [0xffffff, 0x5a5a6a, 1.1], sun: [0xfff4e8, 1.4, [3, 6, 4]], shadowSize: 6, bloom: [0.35, 0.5, 0.88], exposure: 1.15 });
   const { scene, cam } = B;
-  scene.add(at(box(80, 0.1, 80, M(0x4a8a3a)), 0, -0.06, 0));
-  scene.add(at(box(6, 0.04, 60, M(0xb04a3a)), 0, 0, -15));
-  for (let i = 0; i <= 6; i++) scene.add(at(box(0.04, 0.05, 60, M(0xf4f4f4)), -3 + i, 0.01, -15));
-  scene.add(at(box(6, 0.05, 0.08, M(0xf4f4f4)), 0, 0.01, 0.5));
-  for (let i = 0; i < 30; i++) { const h = 1 + hash(i) * 1.5; scene.add(at(box(2, h, 2, M([0x6a7a9a, 0x8a6a5a, 0x5a6a5a][i % 3])), (i % 2 ? 1 : -1) * 9, h / 2, -40 + i * 3)); }
-  const malik = new Human(MALIK); scene.add(malik.root);
-  const others = [0, 1].map(i => { const h = new Human({ ...looks(i + 4), shortSleeve: true, seed: 1730 + i }); scene.add(h.root); return h; });
-  const rig = claudeRig(scene, [3.6, 0, 0.0], -0.6, [0.4, 0, 0.1], 0xffe040, 0.5, 0.3);
-  const bl = bolt(); bl.scale.setScalar(0.9); rig.holoG.add(bl); const tu = turtle(); tu.position.x = 0.0; rig.holoG.add(tu);
-  // table d'echecs (Mei)
-  const ch = new THREE.Group(); ch.position.set(14, 0, 0); scene.add(ch);
-  ch.add(at(box(8, 0.06, 6, M(0xc8b8a0)), 0, 0, 0));
-  ch.add(at(box(0.9, 0.05, 0.9, M(0x6a4a30)), 0, 0.75, 0)); ch.add(at(box(0.08, 0.75, 0.08, M(0x2a2a2a)), 0, 0.37, 0));
-  for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) if ((i + j) % 2) ch.add(at(box(0.08, 0.01, 0.08, M(0x2a2018)), -0.28 + i * 0.08, 0.78, -0.28 + j * 0.08)); else ch.add(at(box(0.08, 0.01, 0.08, M(0xf0e8d8)), -0.28 + i * 0.08, 0.78, -0.28 + j * 0.08));
-  for (let k = 0; k < 10; k++) ch.add(at(new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.026, 0.07 + hash(k) * 0.05, 8), M(k < 5 ? 0xf4f0e8 : 0x1a1a1a)), -0.28 + hash(k + 3) * 0.56, 0.82, -0.28 + hash(k + 9) * 0.56));
-  ch.add(at(box(0.42, 0.05, 0.42, M(0x3a2a20)), 0, 0.45, -0.6));
-  const mei = new Human(MEI); mei.place(14, 0, -0.6, 0); scene.add(mei.root);
-  const tu2 = turtle(); tu2.scale.setScalar(1.3); tu2.position.set(14.55, 2.0, -0.4); scene.add(tu2);
+  scene.add(at(box(14, 0.1, 12, M(0x6a6e78)), 0, -0.05, 0));
+  scene.add(at(box(14, 4, 0.2, M(0xe4e6ea)), 0, 2, -3));
+  scene.add(at(box(0.2, 4, 12, M(0xd0d4dc)), -4.5, 2, 0));
+  for (let i = 0; i < 3; i++) scene.add(at(box(1.0, 2.2, 0.05, G(0xd8ecff, 1.1)), 1.8 + i * 1.2, 2.1, -2.88));
+  const wb = at(box(2.0, 1.1, 0.05, M(0xf8f8f8)), -2.0, 1.8, -2.88); scene.add(wb);
+  [0.3, 0.55, 0.42, 0.75].forEach((h, i) => scene.add(at(box(0.25, h, 0.02, M([0xD97757, 0x55a8ff, 0x7dd090, 0xffb040][i])), -2.6 + i * 0.4, 1.3 + h / 2, -2.84)));
+  scene.add(at(box(3.4, 0.08, 1.2, M(0x8a6a4a)), 0, 0.75, -0.6));
+  for (const x of [-1.4, 1.4]) for (const z of [-1.0, -0.2]) scene.add(at(box(0.08, 0.75, 0.08, M(0x3a3a3a)), x, 0.37, z));
+  const seats = [[-1.1, 0.3, Math.PI], [0, 0.3, Math.PI], [1.1, 0.3, Math.PI], [-1.1, -1.5, 0], [0.4, -1.5, 0]];
+  const ppl = [MALIK, MEI, NADIA, looks(6), looks(7)].map((lk, i) => { const h = new Human({ ...lk, shortSleeve: false, seed: 1740 + i }); const [x, z, r] = seats[i]; h.place(x, 0, z, r); scene.add(h.root); scene.add(at(box(0.45, 0.05, 0.42, M(0x2a2a30)), x, 0.45, z)); return h; });
+  const [malik, mei, nadia] = ppl;
+  const boss = new Human({ skin: 0xe0b890, hair: 0x6a6a6a, hairStyle: 'short', top: 0xf0f0f0, bottom: 0x2a2a3a, jacket: 0x2a3040, seed: 1750 }); boss.place(-2.4, 0, -2.0, 0.6); scene.add(boss.root);
+  const note = at(box(0.2, 0.01, 0.28, M(0xf8f4e0)), 0.0, 0.8, -0.15); scene.add(note);
+  const rig = claudeRig(scene, [0.75, 0.79, -0.7], 0.2, [0.32, 0, 0.05], 0x55e6ff, 0.45, 0.25); rig.c.g.scale.setScalar(0.5); rig.pr.scale.setScalar(0.7);
+  const hg = rig.holoG; hg.position.y -= 0.12;
+  const bl = bolt(); bl.scale.setScalar(0.7); hg.add(bl);
+  const tu = turtle(); tu.scale.setScalar(0.8); hg.add(tu);
+  // la corde de Ringelmann
+  const rope = new THREE.Group(); hg.add(rope); rope.position.y = 0.05;
+  rope.add(beam([-0.6, 0.25, 0], [0.6, 0.25, 0], 0.015, G(0xffd070, 1.6)));
+  const pullers = [0, 1, 2].map(i => { const h = holoFig(0x55e6ff, { s: 0.28, op: 0.4, seed: 1760 + i }); h.place(-0.15 + i * 0.18, -0.05, 0, Math.PI / 2); rope.add(h.root); return h; });
+  const solo = holoFig(0xffb070, { s: 0.28, op: 0.4, seed: 1770 }); solo.place(-0.5, -0.05, 0, Math.PI / 2); rope.add(solo.root);
+  const bN = bubble(0x4a8ab0, 0.22); scene.add(bN);
+  const qN = label('?', { w: 0.3, h: 0.3, color: '#9ad0ff', font: 'bold 220px Inter' }); bN.userData.inner.add(qN);
   const K = cardsMgr(scene, cam);
-  K('DANIEL KAHNEMAN\nprix Nobel 2002 · « Système 1 / Système 2 »', { w: 1.6, h: 0.42, border: '#ffe040', small: true }, t => win(t, SC.stade.start + 2.5, C.sys, 0.3, 0.2));
-  K('RAPIDE\nautomatique', { w: 1.6, h: 0.42, border: '#ffe040', small: true }, t => win(t, C.sys, subAt('And a slow'), 0.3, 0.2));
-  K('LENTE\nattentive', { w: 1.6, h: 0.42, border: '#7dffb0', small: true }, t => win(t, subAt('And a slow'), C.malik, 0.3, 0.2));
-  K('FAUX DÉPART\nmoins de 0,1 s après le coup de pistolet', { w: 1.6, h: 0.42, border: '#ff6a5a', small: true }, t => win(t, C.gun + 1.5, C.mei, 0.3, 0.2));
-  K('CHACUN SON RYTHME', { w: 1.6, h: 0.3, border: '#7dffb0' }, t => win(t, C.rythme + 0.5, SC.studio.start, 0.3, 0.2));
-  const flash = new THREE.PointLight(0xffe0a0, 0, 6, 1.5); flash.position.set(-2.5, 1.6, 0.8); scene.add(flash);
+  K('DANIEL KAHNEMAN · prix Nobel\nrapide et automatique · lente et attentive', { w: 1.6, h: 0.42, border: '#ffe040', small: true }, t => win(t, SC.bureau.start + 0.5, C.malik, 0.3, 0.2), -0.6);
+  K('FAUX DÉPART\nmoins de 0,1 s après le coup de pistolet', { w: 1.6, h: 0.42, border: '#ff6a5a', small: true }, t => win(t, C.limit + 1.5, subAt('Reacting fast'), 0.3, 0.2), -0.6);
+  K('ce n\'est pas une question d\'intelligence', { w: 1.6, h: 0.3, border: '#7dffb0' }, t => win(t, subAt('Reacting fast'), C.nadia, 0.3, 0.2), -0.6);
+  K('SILENCE ORGANISATIONNEL\nne pas oser dire « je n\'ai pas compris »', { w: 1.6, h: 0.42, border: '#9ad0ff', small: true }, t => win(t, C.silence + 4.5, C.rope, 0.3, 0.2), -0.6);
+  K('RINGELMANN · il y a plus d\'un siècle\nà plusieurs, chacun tire moins fort', { w: 1.6, h: 0.42, border: '#ffd070', small: true }, t => win(t, C.rope + 4.0, C.fix, 0.3, 0.2), -0.6);
+  K('reformuler · une tâche à son nom\noser poser des questions', { w: 1.6, h: 0.42, border: '#7dffb0' }, t => win(t, C.fix + 1.0, SC.vie.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
-      rig.c.update(t, env('claude', t), {}); beamOn(rig, win(t, C.sys - 0.3, C.malik, 0.4, 0.3), t);
-      fade(bl, win(t, C.sys, subAt('And a slow'), 0.3, 0.2)); bl.rotation.y = t * 1.5;
-      fade(tu, win(t, subAt('And a slow'), C.malik, 0.3, 0.2)); tu.rotation.y = t * 0.6;
-      const run = Math.max(0, t - C.gun);
-      const crouch = { py: 0.42, lean: 1.15, lL: 1.9, kL: 1.9, lR: 1.1, kR: 1.4, aL: [1.3, 0.1], aR: [1.3, 0.1], eL: 0.05, eR: 0.05, hp: -0.7, hideSkirt: true };
-      const pose = (h, x, delay = 0) => {
-        const r = Math.max(0, run - delay);
-        if (t < C.malik + 1.0) { h.place(x, 0, 0.8, Math.PI); h.pose({ py: 0.88, hp: 0, aL: [0.1, 0.1], aR: [0.1, 0.1] }); }
-        else if (r <= 0) { h.place(x, 0, 0.85, Math.PI); h.pose(crouch); }
-        else { const z = 0.85 - (r * r * 3 < r * 9 - 0.7 ? r * r * 3 : r * 9 - 0.7); h.place(x, 0, z, Math.PI); h.pose(L.walkPose(r * 14, 1.6, { lean: 0.35 * Math.max(0, 1 - r) + 0.15 })); }
-      };
-      pose(malik, -0.5); others.forEach((h, i) => pose(h, i ? 0.5 : -1.5, 0.12 + i * 0.05));
-      malik.face(env('malik', t), 'joy', t); others.forEach(h => h.face(0, 'neutral', t));
-      flash.intensity = Math.max(0, 1 - (t - (C.gun - 0.25)) * 6) * (t > C.gun - 0.25 ? 30 : 0);
-      mei.pose(sitPose(0.47, { aL: [0.9, 0.15], aR: [1.6 + 0.2 * Math.sin(t), 0.3], eL: 1.0, eR: 2.2, hp: 0.35 })); mei.face(env('mei', t), env('mei', t) > 0.05 ? 'happy' : 'neutral', t);
-      fade(tu2, win(t, C.mei + 1.0, SC.studio.start, 0.4, 0.3)); tu2.rotation.y = t * 0.5;
-      const T0 = SC.stade.start, mz = malik.root.position.z;
+      const sit = (h, ex = {}) => { h.pose(sitPose(0.47, { aL: [0.9, 0.15], aR: [0.9, 0.15], eL: 1.0, eR: 1.0, ...ex })); h.root.position.y = 0; };
+      const mHand = win(t, C.malik - 0.3, C.malik + 2.0, 0.3, 0.4);
+      sit(malik, { aR: [lerp(0.9, 2.9, mHand), 0.2], eR: lerp(1.0, 0.1, mHand) }); malik.face(env('malik', t), 'joy', t);
+      sit(mei, { aR: [1.0, 0.25], eR: 1.3, hp: 0.35 * (1 - win(t, C.mei, C.mei + 3.5, 0.3, 0.3)) }); mei.face(env('mei', t), 'happy', t);
+      const nod = t > C.nadia - 0.5 && t < C.silence + 3 ? 0.15 * Math.sin(t * 7) : 0;
+      sit(nadia, { hp: 0.05 + nod }); nadia.face(env('nadia', t), t > C.nadia ? 'fear' : 'neutral', t);
+      ppl.slice(3).forEach((h, i) => { sit(h, { hp: 0.05 + (C.rope < t && t < C.fix ? 0.3 : 0) }); h.face(0, 'neutral', t); });
+      boss.pose({ aR: [1.2 + 0.3 * Math.sin(t * 2), 0.4], eR: 0.5, aL: [0.3, 0.15], hy: 0.2 * Math.sin(t * 0.8) }); boss.face(t < C.malik ? 0.3 * Math.abs(Math.sin(t * 8)) : 0, 'happy', t);
+      rig.c.update(t, env('claude', t), {});
+      const beamK = win(t, SC.bureau.start + 2, C.malik, 0.4, 0.3) + win(t, C.rope - 0.3, C.fix, 0.4, 0.3);
+      beamOn(rig, beamK, t);
+      fade(bl, win(t, SC.bureau.start + 3.5, C.malik, 0.3, 0.2)); bl.position.x = -0.18; bl.rotation.y = t * 1.5;
+      fade(tu, win(t, SC.bureau.start + 6.5, C.malik, 0.3, 0.2)); tu.position.x = 0.2; tu.rotation.y = t * 0.6;
+      fade(rope, win(t, C.rope - 0.2, C.fix, 0.4, 0.3)); rope.rotation.y = 0.3 + 0.2 * Math.sin(t * 0.5);
+      const pull = Math.sin(t * 3) * 0.02; pullers.forEach((h, i) => { h.pose({ lean: -0.35, aL: [1.4, 0.1], aR: [1.4, 0.1], eL: 0.2, eR: 0.2, lL: 0.3, kL: 0.3 }); h.root.position.x = -0.15 + i * 0.18 + pull; });
+      const soloK = sstep(C.rope + 6.0, C.rope + 6.6, t); solo.root.visible = soloK > 0.01; solo.pose({ lean: -0.5, aL: [1.4, 0.1], aR: [1.4, 0.1], eL: 0.2, eR: 0.2, lL: 0.4, kL: 0.3 });
+      bN.position.set(nadia.root.position.x + 0.25, 1.75, nadia.root.position.z); bN.lookAt(cam.position); fade(bN, win(t, C.nadia + 0.3, C.rope, 0.4, 0.4));
+      const T0 = SC.bureau.start, nx = nadia.root.position.x;
       camKeys(cam, t, [
-        { t: T0, p: [6.0, 1.8, 4.0], l: [3.5, 1.1, -0.2], f: 46 }, { t: C.sys, p: [5.2, 1.5, 2.4], l: [3.9, 1.3, 0.0], f: 44 },
-        { t: C.malik - 0.3, p: [0.6, 1.4, -1.8], l: [-0.6, 1.2, 0.8], f: 46 }, { t: C.gun - 0.4, p: [1.4, 0.9, -1.4], l: [-0.6, 0.6, 0.8], f: 46 },
-        { t: C.gun + 2.5, p: [3.0, 2.2, -10.0], l: [-0.5, 1.0, -12], f: 50 }, { t: C.mei - 0.05, p: [3.0, 2.4, -14.0], l: [-0.5, 1.0, -16], f: 50 },
-        { t: C.mei, p: [15.4, 1.6, 1.6], l: [14.0, 1.3, -0.4], f: 44, lin: false }, { t: SC.studio.start, p: [15.0, 1.7, 1.2], l: [14.1, 1.4, -0.4], f: 42 },
+        { t: T0, p: [2.6, 2.4, 3.4], l: [-0.4, 1.0, -1.0], f: 48 }, { t: C.malik - 1.2, p: [1.7, 1.6, 1.6], l: [0.75, 1.15, -0.6], f: 44 },
+        { t: C.malik - 0.1, p: [-1.3, 1.5, -1.2], l: [-1.1, 1.3, 0.3], f: 44 }, { t: C.mei - 0.1, p: [0.2, 1.45, -1.0], l: [0.0, 1.25, 0.3], f: 44 },
+        { t: C.limit, p: [0.2, 3.4, 2.8], l: [0.0, 0.8, -0.6], f: 50 }, { t: C.nadia - 0.4, p: [1.7, 1.75, -1.7], l: [1.1, 1.5, 0.3], f: 46 },
+        { t: C.silence + 3, p: [1.9, 1.85, -2.0], l: [1.1, 1.5, 0.3], f: 48 }, { t: C.rope - 0.3, p: [2.7, 1.8, -0.3], l: [1.07, 1.6, -0.65], f: 44 },
+        { t: C.fix - 0.2, p: [2.5, 1.75, -0.4], l: [1.07, 1.6, -0.65], f: 44 }, { t: C.fix + 0.4, p: [2.8, 2.3, 3.0], l: [-0.6, 1.0, -1.2], f: 48 },
+        { t: SC.vie.start, p: [2.2, 2.0, 2.4], l: [-0.6, 1.0, -1.2], f: 46 },
       ]);
-      if (t > C.gun - 0.2 && t < C.mei) { const r = sstep(C.gun - 0.2, C.gun + 0.8, t); cam.position.set(lerp(1.4, 3.0, r), lerp(0.9, 1.5, r), mz + lerp(-2.2, 2.6, r)); cam.lookAt(-0.5, 1.0, mz - lerp(-1.5, 0.6, r)); }
+      if (typeof K !== 'undefined') K.update(t);
+    }
+  };
+};
+
+// ---------- la vie : le carrefour
+SETS.vie = () => {
+  const B = base({ sky: [0x5a7ab0, 0xe8d8c8, 0xb0c0d8], fog: [0xc8d0dc, 20, 80], hemi: [0xffffff, 0x5a5a6a, 1.0], sun: [0xfff0d8, 1.8, [5, 8, 3]], shadowSize: 8, bloom: [0.4, 0.5, 0.88] });
+  const { scene, cam } = B;
+  scene.add(at(box(60, 0.1, 60, M(0x7a9a5a)), 0, -0.06, 0));
+  scene.add(at(box(3, 0.04, 60, M(0x3a3a40)), 0, 0, 0)); scene.add(at(box(60, 0.04, 3, M(0x3a3a40)), 0, 0.005, 0));
+  for (let z = -28; z < 28; z += 2) scene.add(at(box(0.1, 0.05, 1, M(0xf0f0f0)), 0, 0.02, z));
+  const sign = (txt, c, x, z, ry) => { const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = Math.atan2(4.5 - x, 6.5 - z); scene.add(g); g.add(at(box(0.08, 2.2, 0.08, M(0x5a5a60)), 0, 1.1, 0)); const pl = card(txt, { w: 1.1, h: 0.3, border: c, color: c }); pl.material.depthTest = true; pl.renderOrder = 0; pl.position.set(0.5, 2.0, 0.05); g.add(pl); return pl; };
+  const sChance = sign('LA CHANCE', '#ffd070', 1.8, -1.8, -0.4), sAutres = sign('LES AUTRES', '#9ad0ff', -1.9, -1.9, 0.4), sMoi = sign('MOI', '#7dffb0', 1.8, 1.9, -0.9);
+  scene.add(at(box(1.4, 0.08, 0.42, M(0x8a5a3a)), -2.4, 0.45, 1.9)); scene.add(at(box(1.4, 0.4, 0.06, M(0x8a5a3a)), -2.4, 0.72, 1.7));
+  const yann = new Human({ skin: 0xd8a070, hair: 0x3a2a1a, hairStyle: 'curly', top: 0x6a6a7a, bottom: 0x3a3a4a, jacket: 0x8a5a3a, seed: 1780 }); scene.add(yann.root);
+  const bus = new THREE.Group(); bus.add(at(box(2.4, 2.4, 7, M(0xD97757)), 0, 1.4, 0)); bus.add(at(box(2.45, 0.8, 6.8, M(0x1a2a3a)), 0, 1.9, 0)); scene.add(bus);
+  const cloud = L.makeCloud(7, 0.18, 0x6a7080); scene.add(cloud);
+  const star = new THREE.Mesh(new THREE.OctahedronGeometry(0.12), G(0xffe070, 2.4)); scene.add(star);
+  const c = L.makeClaude(); c.g.scale.setScalar(0.45); c.g.position.set(-1.6, 0.49, 1.95); scene.add(c.g);
+  const K = cardsMgr(scene, cam);
+  K('LIEU DE CONTRÔLE\nJulian Rotter, 1966', { w: 1.6, h: 0.42, border: '#7dffb0', small: true }, t => win(t, subAt('In 1966'), C.helpless, 0.3, 0.2), -0.6);
+  K('IMPUISSANCE APPRISE\nMartin Seligman', { w: 1.6, h: 0.42, border: '#9aa0b0', small: true }, t => win(t, C.helpless + 4.0, C.hope, 0.3, 0.2), -0.6);
+  K('ça se désapprend\nun petit objectif · une première réussite', { w: 1.6, h: 0.42, border: '#ffe070', small: true }, t => win(t, C.hope + 3.0, SC.studio.start, 0.3, 0.2), -0.6);
+  return {
+    ...B, update(t) {
+      const T0 = SC.vie.start;
+      const up = sstep(C.hope + 4.0, C.hope + 5.0, t), walk = Math.max(0, t - (C.hope + 5.0));
+      if (up < 0.01) { yann.place(-2.4, 0, 1.95, 0); yann.pose(sitPose(0.49, { aL: [0.6, 0.15], aR: [0.6, 0.15], eL: 1.2, eR: 1.2, hp: 0.1 + 0.4 * sstep(C.helpless, C.helpless + 1.5, t), lean: 0.25 * sstep(C.helpless, C.helpless + 1.5, t) })); yann.root.position.y = 0; }
+      else { const d = Math.min(walk * 0.9, 3.4); yann.place(-2.4 + d, 0, 2.2, Math.PI / 2); yann.pose(walk > 0 && d < 3.4 ? L.walkPose(walk * 5, 0.8) : { py: lerp(0.55, 0.88, up), lL: lerp(1.5, 0, up), lR: lerp(1.5, 0, up), kL: lerp(1.5, 0, up), kR: lerp(1.5, 0, up) }); }
+      yann.face(0, t > C.hope + 3 ? 'happy' : (t > C.helpless ? 'sad' : 'neutral'), t);
+      const bx = ((t - T0) * 7 % 50) - 25; bus.position.set(bx, 0, -0.8); bus.rotation.y = Math.PI / 2;
+      cloud.position.set(-2.3, 2.6, 1.9); fade(cloud, win(t, C.helpless + 0.5, C.hope + 2.0, 0.8, 0.8));
+      star.position.set(yann.root.position.x + 0.3, 2.3 + 0.05 * Math.sin(t * 3), yann.root.position.z); star.rotation.y = t * 2; fade(star, sstep(C.hope + 6.0, C.hope + 6.6, t)); star.scale.setScalar(1 + 0.2 * Math.sin(t * 6));
+      [sChance, sAutres].forEach(sg => { const k = win(t, T0 + 2, subAt('In 1966'), 0.3, 0.3); sg.scale.setScalar(1 + 0.15 * k * Math.abs(Math.sin(t * 4))); });
+      sMoi.scale.setScalar(1 + 0.2 * win(t, subAt('In 1966') - 3.0, subAt('In 1966'), 0.3, 0.3) + 0.25 * sstep(C.hope + 5, C.hope + 6, t));
+      c.update(t, env('claude', t), {});
+      camKeys(cam, t, [
+        { t: T0, p: [3.5, 3.6, 7.5], l: [-0.6, 1.0, 0.4], f: 52 }, { t: C.helpless - 0.5, p: [-0.2, 1.8, 5.2], l: [-2.0, 1.1, 1.8], f: 44 },
+        { t: C.hope, p: [-0.6, 1.5, 4.4], l: [-2.3, 1.2, 1.9], f: 42 }, { t: C.hope + 5.0, p: [0.6, 1.8, 5.8], l: [-0.8, 1.2, 2.0], f: 46 },
+        { t: SC.studio.start, p: [2.8, 1.9, 5.2], l: [1.0, 1.4, 1.8], f: 46 },
+      ]);
       if (typeof K !== 'undefined') K.update(t);
     }
   };
@@ -348,6 +399,6 @@ SETS.cover = () => {
 };
 
 const SHOTS = [
-  ['intro', 0, SC.cafe.start], ['cafe', SC.cafe.start, SC.parc.start], ['parc', SC.parc.start, SC.stade.start],
-  ['stade', SC.stade.start, SC.studio.start], ['studio', SC.studio.start, SC.final.start], ['final', SC.final.start, 1000], ['cover', 1000, 1e9],
+  ['intro', 0, SC.cafe.start], ['cafe', SC.cafe.start, SC.parc.start], ['parc', SC.parc.start, SC.bureau.start],
+  ['bureau', SC.bureau.start, SC.vie.start], ['vie', SC.vie.start, SC.studio.start], ['studio', SC.studio.start, SC.final.start], ['final', SC.final.start, 1000], ['cover', 1000, 1e9],
 ];

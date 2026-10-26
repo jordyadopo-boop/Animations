@@ -230,12 +230,18 @@ async def main():
     sfx += noise_bed(s["start"], s["end"], 1500, 6000, 0.008, 1.0, 1.0, 0.6)
     for k in range(6): bell(s["start"] + 1.0 + k * 1.9, 0.012, [2400, 2700, 2200][k % 3])
     music += pad([[50, 57, 62, 66], [55, 59, 62, 67], [52, 59, 64, 67]], s["start"], s["end"] + 0.4, 3.2, 0.045, 2200)
-    s = sc["stade"]
-    music += bounce(s["start"], cues["gun"], 0.03, (62, 66, 69, 74, 69, 66), 0.2)
-    sfx += noise_bed(cues["malik"] - 0.5, cues["mei"], 300, 2000, 0.02, 0.6, 1.0, 1.0)
-    boom(cues["gun"] - 0.25, 0.35, 120); thunk(cues["gun"] - 0.25, 0.25)
-    music += pad([[50, 57, 62, 66], [47, 54, 59, 62]], cues["gun"], s["end"] + 0.4, 3, 0.045, 1600)
-    for k in range(int((s["end"] - cues["mei"]) / 2.2)): thunk(cues["mei"] + 0.6 + k * 2.2, 0.08)
+    s = sc["bureau"]
+    sfx += noise_bed(s["start"], s["end"], 200, 1500, 0.012, 1.0, 1.0, 0.3)
+    music += bounce(s["start"], cues["nadia"], 0.024, (62, 66, 69, 74, 69, 66), 0.25)
+    bell(cues["malik"], 0.04, 1319)
+    boom(cues["limit"] + 0.2, 0.18, 110)
+    music += pad([[50, 57, 62, 65], [46, 53, 58, 62]], cues["nadia"], cues["fix"], 3, 0.045, 1200)
+    music += pad([[50, 57, 62, 66], [55, 59, 62, 67]], cues["fix"], s["end"] + 0.4, 3, 0.05, 2000)
+    s = sc["vie"]
+    sfx += noise_bed(s["start"], s["end"], 80, 600, 0.03, 1.5, 1.5, 0.5)
+    music += pad([[45, 52, 57, 60], [41, 48, 53, 57]], s["start"], cues["hope"], 3.5, 0.05, 1000)
+    music += pad([[48, 55, 60, 64], [53, 60, 65, 69], [55, 62, 67, 71]], cues["hope"], s["end"] + 0.5, 3, 0.055, 2400)
+    music += pluck_seq([72, 76, 79, 84], cues["hope"] + 2.0, s["end"], 0.4, 0.02)
     s = sc["studio"]
     music += pad([[45, 52, 57, 60], [48, 55, 60, 64], [43, 50, 55, 59], [45, 52, 57, 60]], s["start"], s["end"] + 0.4, 3, 0.05, 1800)
     boom(cues["myth"] + 3.5, 0.25, 70)
