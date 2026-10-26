@@ -30,3 +30,10 @@ ep20/build/
 ep20/web/main.js
 ep20/cov/
 ep20/node_modules
+ep21/seg/
+ep21/tts_cache/
+ep21/build/
+ep21/web/main.js
+ep21/cov/
+ep21/node_modules
+ep21/stills/
