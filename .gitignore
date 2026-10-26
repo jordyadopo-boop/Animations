@@ -6,3 +6,9 @@ ep16/tts_cache/
 ep16/build/
 ep16/web/main.js
 __pycache__/
+ep17/seg/
+ep17/tts_cache/
+ep17/build/
+ep17/web/main.js
+ep17/cov/
+ep17/node_modules
