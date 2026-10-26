@@ -51,7 +51,25 @@ function curvy(h, k = 1, mat) {
   h.root.traverse(o => { if (o.isMesh) o.castShadow = true; });
   return h;
 }
-function woman(o, k = 1) { const h = new Human(o); return curvy(h, k); }
+// trois silhouettes differentes, toutes avec un fessier volumineux : ronde, mince, type BBL
+function woman(o, type = 'mince') {
+  const h = curvy(new Human(o), 1);
+  const P = {
+    ronde: { torso: [1.2, 1.3], arms: 1.15, hips: [1.5, 1.3], butt: Math.cbrt(3) * 1.05, bx: 1.3, bz: -0.08, thigh: [1.35, 1.3], hipX: 1.2, belly: true },
+    mince: { torso: [0.72, 0.85], arms: 0.85, hips: [1.15, 1.0], butt: Math.cbrt(3), bx: 1.1, bz: -0.06, thigh: [0.9, 0.95], hipX: 1.0 },
+    bbl: { torso: [0.62, 0.8], arms: 0.8, hips: [1.5, 1.1], butt: Math.cbrt(3) * 1.2, bx: 1.25, bz: -0.1, thigh: [1.05, 1.0], hipX: 1.05 },
+  }[type];
+  h.spine.children[0].scale.set(P.torso[0], 1, P.torso[1]);
+  for (const k of ['L', 'R']) { h.sh[k].position.x *= P.arms; h.hip[k].position.x *= P.hipX; h.hip[k].children[0].scale.set(P.thigh[0], 1, P.thigh[1]); }
+  h.pelvis.children.forEach(m => {
+    if (!m.isMesh || m.geometry.type !== 'IcosahedronGeometry') return;
+    if (m.position.z < -0.05) { m.scale.multiplyScalar(P.butt); m.position.z += P.bz; m.position.y -= 0.02; m.position.x *= P.bx; }
+    else { m.scale.x *= P.hips[0]; m.scale.z *= P.hips[1]; }
+  });
+  if (P.belly) h.spine.add(at(new THREE.Mesh(new THREE.IcosahedronGeometry(0.15, 1), h.mats.top), 0, 0.12, 0.08));
+  h.root.traverse(m => { if (m.isMesh) m.castShadow = true; });
+  return h;
+}
 function holoWoman(color, k, op = 0.3) {
   const h = new Human({ holo: color, hairStyle: 'long', robe: color, robeL: 0.5, seed: 9 });
   curvy(h, k, holoMat(color, 0.45));
@@ -73,31 +91,32 @@ function street(scene) {
 }
 const looksW = [
   { skin: 0x8a5a3a, hair: 0x141010, hairStyle: 'curly', top: 0xe0c040, bottom: 0x3a4a7a, seed: 2301 },
-  { skin: 0xf0c8a0, hair: 0x6a3a1a, hairStyle: 'long', top: 0x3a8a7a, bottom: 0x2a2a3a, seed: 2302 },
+  { skin: 0xf0c8a0, hair: 0x6a3a1a, hairStyle: 'bun', top: 0x3a8a7a, bottom: 0x4a5a8a, seed: 2302 },
+  { skin: 0xc68a5a, hair: 0x1a1010, hairStyle: 'long', top: 0xc04a6a, bottom: 0x2a2a34, seed: 2305 },
 ];
 function cafeScene(B, o = {}) {
   const { scene } = B; street(scene);
   const man = new Human({ skin: 0xc89a72, hair: 0x2a1a10, hairStyle: 'short', beard: 'side', top: 0x4a6a9a, bottom: 0x2a2a3a, seed: 2303 }); man.place(-1.2, 0, -0.35, Math.PI / 2); scene.add(man.root);
-  const w1 = woman(looksW[0], 1.1), w2 = woman(looksW[1], 1.0); scene.add(w1.root, w2.root);
-  return { man, w1, w2 };
+  const w1 = woman(looksW[0], 'bbl'), w2 = woman(looksW[1], 'mince'), w3 = woman(looksW[2], 'ronde'); scene.add(w1.root, w2.root, w3.root);
+  return { man, w1, w2, w3 };
 }
 
 // ---------- intro : la terrasse
 SETS.intro = () => {
   const B = base({ sky: [0x7ab8e8, 0xe8f0f8], hemi: [0xffffff, 0x6a6050, 1.1], sun: [0xfff0d8, 1.6, [4, 8, 5]], shadowSize: 6, bloom: [0.3, 0.5, 0.93], exposure: 1.05, target: [0, 0.8, 0] });
-  const { scene, cam } = B; const { man, w1, w2 } = cafeScene(B);
+  const { scene, cam } = B; const { man, w1, w2, w3 } = cafeScene(B);
   faceLight(scene, [-0.6, 1.5, 0.8], 1.4);
-  const rig = claudeRig(scene, [0.9, 0, 1.4], -0.4, [-0.45, 0, 0.1], 0x55e6ff, 0.45, 0.28); rig.pr.visible = false;
+  const rig = claudeRig(scene, [-0.9, 0, 1.6], -0.6, [-0.45, 0, 0.1], 0x55e6ff, 0.45, 0.28); rig.pr.visible = false; rig.c.g.visible = false;
   return {
     ...B, update(t) {
-      const x1 = lerp(-0.1, 1.5, t / 10), x2 = x1 - 0.55;
-      w1.place(x1, 0, 0.1, Math.PI / 2); w2.place(x2, 0, -0.25, Math.PI / 2);
-      w1.pose(L.walkPose(t * 4, 0.6)); w2.pose(L.walkPose(t * 4 + 1.3, 0.6)); w1.face(0, 'happy', t); w2.face(0, 'neutral', t);
+      const z1 = lerp(1.7, -0.6, t / 10);
+      w1.place(-0.4, 0, z1, Math.PI + 0.05); w2.place(0.03, 0, z1 + 0.2, Math.PI); w3.place(0.5, 0, z1 + 0.05, Math.PI - 0.05);
+      w1.pose(L.walkPose(t * 4, 0.6)); w2.pose(L.walkPose(t * 4 + 1.3, 0.6)); w3.pose(L.walkPose(t * 4 + 2.4, 0.6)); w3.face(0, 'happy', t); w1.face(0, 'happy', t); w2.face(0, 'neutral', t);
       // la tete de l'homme suit les passantes
       const look = 0.15 * sstep(1, 4, t);
       man.pose(L.sitPose(0.46, { aL: [0.9, 0.1], aR: [0.5, 0.15], eL: 1.2, eR: 0.9, hy: -look * 0.6, hp: 0.05 })); man.face(0, 'neutral', t);
       rig.c.update(t, env('claude', t), {});
-      camKeys(cam, t, [{ t: 0, p: [-0.45, 1.35, 4.4], l: [-0.35, 0.95, -0.1], f: 46 }, { t: C.title, p: [0.0, 1.3, 4.6], l: [0.1, 0.9, 0.3], f: 46 }, { t: SC.venus.start, p: [0.1, 1.3, 4.7], l: [0.2, 0.9, 0.3], f: 46 }]);
+      camKeys(cam, t, [{ t: 0, p: [-0.3, 1.45, 4.9], l: [-0.3, 1.0, 0.3], f: 56 }, { t: C.title, p: [-0.3, 1.5, 4.6], l: [-0.3, 1.0, 0.0], f: 56 }, { t: SC.venus.start, p: [-0.3, 1.5, 4.55], l: [-0.3, 1.0, 0.0], f: 56 }]);
     }
   };
 };
@@ -259,8 +278,8 @@ SETS.culture = () => {
 };
 SETS.cafe = () => {
   const B = base({ sky: [0x7ab8e8, 0xe8f0f8], hemi: [0xffffff, 0x6a6050, 1.1], sun: [0xfff0d8, 1.6, [4, 8, 5]], shadowSize: 6, bloom: [0.3, 0.5, 0.93], exposure: 1.05, target: [0, 0.8, 0] });
-  const { scene, cam } = B; const { man, w1, w2 } = cafeScene(B);
-  w2.root.visible = false;
+  const { scene, cam } = B; const { man, w1, w2, w3 } = cafeScene(B);
+  w2.root.visible = false; w3.root.visible = false;
   faceLight(scene, [-0.3, 1.6, 0.9], 1.8);
   const K = cardsMgr(scene, cam);
   imagined(K, 'personnages imaginés', C.nadia - 0.2, SC.fin.start);
@@ -296,14 +315,14 @@ SETS.fin = () => {
 // ---------- couverture : un homme de profil regarde deux femmes de dos
 SETS.cover = () => {
   const B = base({ sky: [0x7ab8e8, 0xe8f0f8], hemi: [0xffffff, 0x6a6050, 1.15], sun: [0xfff0d8, 1.6, [2, 8, 6]], shadowSize: 6, bloom: [0.3, 0.5, 0.93], exposure: 1.05, target: [0, 0.8, 0] });
-  const { scene, cam } = B; const { man, w1, w2 } = cafeScene(B);
+  const { scene, cam } = B; const { man, w1, w2, w3 } = cafeScene(B);
   faceLight(scene, [-1.0, 1.5, 0.6], 1.6);
   return {
     ...B, update(t) {
-      w1.place(-0.1, 0, -0.25, Math.PI / 2 + 0.25); w2.place(0.15, 0, 0.45, Math.PI / 2 + 0.1);
-      w1.pose(L.walkPose(1.0, 0.8)); w2.pose(L.walkPose(2.4, 0.8));
+      w1.place(-0.4, 0, 0.55, Math.PI + 0.05); w2.place(0.03, 0, 0.75, Math.PI); w3.place(0.5, 0, 0.6, Math.PI - 0.05);
+      w1.pose(L.walkPose(1.0, 0.8)); w2.pose(L.walkPose(2.4, 0.8)); w3.pose(L.walkPose(3.5, 0.8));
       man.pose(L.sitPose(0.46, { aL: [0.9, 0.1], aR: [0.5, 0.15], eL: 1.2, eR: 0.9, hy: -0.15, hp: 0.12 })); man.face(0, 'awe', t);
-      cam.position.set(-1.6, 1.4, 2.9); cam.fov = 50; cam.updateProjectionMatrix(); cam.lookAt(-0.32, 1.05, -0.1);
+      cam.position.set(-0.32, 1.4, 4.4); cam.fov = 58; cam.updateProjectionMatrix(); cam.lookAt(-0.32, 0.75, 0.1);
     }
   };
 };
