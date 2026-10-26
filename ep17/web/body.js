@@ -222,12 +222,12 @@ SETS.bureau = () => {
   [0.3, 0.55, 0.42, 0.75].forEach((h, i) => scene.add(at(box(0.25, h, 0.02, M([0xD97757, 0x55a8ff, 0x7dd090, 0xffb040][i])), -2.6 + i * 0.4, 1.3 + h / 2, -2.84)));
   scene.add(at(box(3.4, 0.08, 1.2, M(0x8a6a4a)), 0, 0.75, -0.6));
   for (const x of [-1.4, 1.4]) for (const z of [-1.0, -0.2]) scene.add(at(box(0.08, 0.75, 0.08, M(0x3a3a3a)), x, 0.37, z));
-  const seats = [[-1.1, 0.3, Math.PI], [0, 0.3, Math.PI], [1.1, 0.3, Math.PI], [-1.1, -1.5, 0], [0.4, -1.5, 0]];
-  const ppl = [MALIK, MEI, NADIA, looks(6), looks(7)].map((lk, i) => { const h = new Human({ ...lk, shortSleeve: false, seed: 1740 + i }); const [x, z, r] = seats[i]; h.place(x, 0, z, r); scene.add(h.root); scene.add(at(box(0.45, 0.05, 0.42, M(0x2a2a30)), x, 0.45, z)); return h; });
+  const seats = [[-1.1, 0.3, Math.PI], [0, 0.3, Math.PI], [1.1, 0.3, Math.PI]];
+  const ppl = [MALIK, MEI, NADIA].map((lk, i) => { const h = new Human({ ...lk, shortSleeve: false, seed: 1740 + i }); const [x, z, r] = seats[i]; h.place(x, 0, z, r); scene.add(h.root); scene.add(at(box(0.45, 0.05, 0.42, M(0x2a2a30)), x, 0.45, z)); return h; });
   const [malik, mei, nadia] = ppl;
   const boss = new Human({ skin: 0xe0b890, hair: 0x6a6a6a, hairStyle: 'short', top: 0xf0f0f0, bottom: 0x2a2a3a, jacket: 0x2a3040, seed: 1750 }); boss.place(-2.4, 0, -2.0, 0.6); scene.add(boss.root);
   const note = at(box(0.2, 0.01, 0.28, M(0xf8f4e0)), 0.0, 0.8, -0.15); scene.add(note);
-  const rig = claudeRig(scene, [0.75, 0.79, -0.7], 0.2, [0.32, 0, 0.05], 0x55e6ff, 0.45, 0.25); rig.c.g.scale.setScalar(0.5); rig.pr.scale.setScalar(0.7);
+  const rig = claudeRig(scene, [0.75, 0.79, -0.7], Math.PI, [0.32, 0, -0.05], 0x55e6ff, 0.45, 0.25); rig.c.g.scale.setScalar(0.5); rig.pr.scale.setScalar(0.7);
   const hg = rig.holoG; hg.position.y -= 0.12;
   const bl = bolt(); bl.scale.setScalar(0.7); hg.add(bl);
   const tu = turtle(); tu.scale.setScalar(0.8); hg.add(tu);
@@ -253,8 +253,7 @@ SETS.bureau = () => {
       sit(mei, { aR: [1.0, 0.25], eR: 1.3, hp: 0.35 * (1 - win(t, C.mei, C.mei + 3.5, 0.3, 0.3)) }); mei.face(env('mei', t), 'happy', t);
       const nod = t > C.nadia - 0.5 && t < C.silence + 3 ? 0.15 * Math.sin(t * 7) : 0;
       sit(nadia, { hp: 0.05 + nod }); nadia.face(env('nadia', t), t > C.nadia ? 'fear' : 'neutral', t);
-      ppl.slice(3).forEach((h, i) => { sit(h, { hp: 0.05 + (C.rope < t && t < C.fix ? 0.3 : 0) }); h.face(0, 'neutral', t); });
-      boss.pose({ aR: [1.2 + 0.3 * Math.sin(t * 2), 0.4], eR: 0.5, aL: [0.3, 0.15], hy: 0.2 * Math.sin(t * 0.8) }); boss.face(t < C.malik ? 0.3 * Math.abs(Math.sin(t * 8)) : 0, 'happy', t);
+            boss.pose({ aR: [1.2 + 0.3 * Math.sin(t * 2), 0.4], eR: 0.5, aL: [0.3, 0.15], hy: 0.2 * Math.sin(t * 0.8) }); boss.face(t < C.malik ? 0.3 * Math.abs(Math.sin(t * 8)) : 0, 'happy', t);
       rig.c.update(t, env('claude', t), {});
       const beamK = win(t, SC.bureau.start + 2, C.malik, 0.4, 0.3) + win(t, C.rope - 0.3, C.fix, 0.4, 0.3);
       beamOn(rig, beamK, t);
@@ -266,12 +265,12 @@ SETS.bureau = () => {
       bN.position.set(nadia.root.position.x + 0.25, 1.75, nadia.root.position.z); bN.lookAt(cam.position); fade(bN, win(t, C.nadia + 0.3, C.rope, 0.4, 0.4));
       const T0 = SC.bureau.start, nx = nadia.root.position.x;
       camKeys(cam, t, [
-        { t: T0, p: [2.6, 2.4, 3.4], l: [-0.4, 1.0, -1.0], f: 48 }, { t: C.malik - 1.2, p: [1.7, 1.6, 1.6], l: [0.75, 1.15, -0.6], f: 44 },
-        { t: C.malik - 0.1, p: [-1.3, 1.5, -1.2], l: [-1.1, 1.3, 0.3], f: 44 }, { t: C.mei - 0.1, p: [0.2, 1.45, -1.0], l: [0.0, 1.25, 0.3], f: 44 },
-        { t: C.limit, p: [0.2, 3.4, 2.8], l: [0.0, 0.8, -0.6], f: 50 }, { t: C.nadia - 0.4, p: [1.7, 1.75, -1.7], l: [1.1, 1.5, 0.3], f: 46 },
+        { t: T0, p: [1.6, 2.2, -2.6], l: [-0.4, 1.0, 0.0], f: 50 }, { t: C.malik - 1.2, p: [1.6, 1.7, -2.0], l: [0.9, 1.3, -0.6], f: 44 },
+        { t: C.malik - 0.1, p: [-1.3, 1.5, -1.2], l: [-1.1, 1.3, 0.3], f: 44 }, { t: C.mei - 0.1, p: [0.15, 1.5, -1.1], l: [0.0, 1.3, 0.3], f: 44 },
+        { t: C.limit, p: [-1.4, 2.3, -2.6], l: [0.3, 1.0, 0.0], f: 50 }, { t: C.nadia - 0.4, p: [1.7, 1.75, -1.7], l: [1.1, 1.5, 0.3], f: 46 },
         { t: C.silence + 3, p: [1.9, 1.85, -2.0], l: [1.1, 1.5, 0.3], f: 48 }, { t: C.rope - 0.3, p: [2.7, 1.8, -0.3], l: [1.07, 1.6, -0.65], f: 44 },
-        { t: C.fix - 0.2, p: [2.5, 1.75, -0.4], l: [1.07, 1.6, -0.65], f: 44 }, { t: C.fix + 0.4, p: [2.8, 2.3, 3.0], l: [-0.6, 1.0, -1.2], f: 48 },
-        { t: SC.vie.start, p: [2.2, 2.0, 2.4], l: [-0.6, 1.0, -1.2], f: 46 },
+        { t: C.fix - 0.2, p: [2.5, 1.75, -0.4], l: [1.07, 1.6, -0.65], f: 44 }, { t: C.fix + 0.4, p: [1.8, 2.3, -2.6], l: [-0.6, 1.0, -0.2], f: 50 },
+        { t: SC.vie.start, p: [1.4, 2.1, -2.4], l: [-0.6, 1.0, -0.2], f: 48 },
       ]);
       if (typeof K !== 'undefined') K.update(t);
     }
