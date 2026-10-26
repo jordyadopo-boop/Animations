@@ -2,7 +2,7 @@
 const { chromium } = require('playwright');
 const http = require('http'), fs = require('fs'), path = require('path'), { spawn } = require('child_process');
 const ROOT = __dirname;
-const TYPES = { '.js': 'text/javascript', '.html': 'text/html', '.json': 'application/json' };
+const TYPES = { '.js': 'text/javascript', '.html': 'text/html', '.json': 'application/json', '.jpg': 'image/jpeg' };
 function serve() {
   return new Promise(res => {
     const srv = http.createServer((req, r) => {

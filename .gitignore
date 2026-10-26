@@ -1,3 +1,7 @@
 node_modules/
 out/
 *.wav
+ep16/seg/
+ep16/tts_cache/
+ep16/build/
+ep16/web/main.js

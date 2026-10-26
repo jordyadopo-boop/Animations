@@ -2,7 +2,7 @@ import asyncio, ssl, os, json, hashlib, subprocess, sys
 import numpy as np
 from scipy.signal import butter, sosfilt
 import edge_tts, edge_tts.communicate
-from script_ep15 import SCRIPT, VOICES
+from script_ep16 import SCRIPT, VOICES
 
 edge_tts.communicate._SSL_CTX = ssl.create_default_context(cafile="/root/.ccr/ca-bundle.crt")
 # Force le francais : edge-tts code en dur xml:lang='en-US', ce qui fait lire certaines phrases en anglais aux voix multilingues
@@ -183,52 +183,63 @@ async def main():
         sfx[i0:i1] += vol * n * (0.5 + 0.5 * np.sin(2 * np.pi * 9 * x)) * np.sin(np.pi * x / d)
 
     # ---- music & ambience per scene
-    S = [type("Sub", (), {"start": x["start"], "end": x["end"]}) for x in subs]
     def bell(at, vol=0.08, f=660):
         i = int(at * SR); L = int(SR * 3)
         if i + L >= N: return
         x = np.arange(L) / SR
         sfx[i:i + L] += vol * np.exp(-x * 1.2) * (np.sin(2 * np.pi * f * x) + 0.5 * np.sin(2 * np.pi * f * 2.76 * x) + 0.3 * np.sin(2 * np.pi * f * 5.4 * x))
-    def alarm(at, n=6):
-        for k in range(n):
-            for j in range(4):
-                a = at + k * 0.5 + j * 0.07; i = int(a * SR); L = int(SR * 0.05)
-                if i + L < N: sfx[i:i + L] += 0.07 * np.sign(np.sin(2 * np.pi * 2000 * np.arange(L) / SR))
-    def bounce(s, e, vol=0.03):
-        out = np.zeros(N); seq = [60, 64, 67, 72, 67, 64]; k = 0; ts = s
-        while ts < e - 0.2:
-            f = mtof(seq[k % 6]); i0 = int(ts * SR); L = int(SR * 0.25); i1 = min(N, i0 + L); x = np.arange(i1 - i0) / SR
-            out[i0:i1] += vol * np.exp(-x * 14) * np.sign(np.sin(2 * np.pi * f * x)) * 0.5
-            bs = mtof(36 + [0, 5, 7, 5][(k // 2) % 4]); out[i0:i1] += vol * 1.2 * np.exp(-x * 10) * np.sin(2 * np.pi * bs * x)
-            k += 1; ts += 0.25
-        return lp(out, 3500) * seg_env(s, e, 0.3, 0.8)
+    def riser(s, e, vol=0.12, lo=200, hi=2500):
+        i0, i1 = int(s * SR), min(N, int(e * SR)); L = i1 - i0
+        x = np.arange(L) / L
+        n = rng.standard_normal(L)
+        a1 = bp(n, lo, lo * 3); a2 = bp(n, hi / 3, hi)
+        sig = (a1 * (1 - x) + a2 * x) * (x ** 2.2)
+        # cluster de cordes qui monte
+        for m in (62, 63, 68, 69):
+            f = mtof(m) * (1 + 0.06 * x)
+            sig += 0.25 * (x ** 2) * np.sin(2 * np.pi * np.cumsum(f) / SR) * (1 + 0.3 * np.sin(2 * np.pi * 6 * x * (e - s)))
+        sfx[i0:i1] += vol * sig * np.clip((1 - x) / 0.03, 0, 1)
+    def train(s, e, vol=0.05):
+        return noise_bed(s, e, 40, 260, vol, 1.5, 2.0, 0.6)
+    def heart(s, e, period=1.1, vol=0.25):
+        ts_ = s
+        while ts_ < e:
+            for d, g in ((0, 1), (0.22, 0.7)):
+                i0 = int((ts_ + d) * SR); L = int(SR * 0.25); i1 = min(N, i0 + L); x = np.arange(i1 - i0) / SR
+                sfx[i0:i1] += vol * g * np.exp(-x * 22) * np.sin(2 * np.pi * 52 * x)
+            ts_ += period
+    Dm = [[38, 50, 53, 57], [34, 46, 50, 53], [36, 48, 52, 55], [33, 45, 49, 52]]
     s = sc["intro"]
-    alarm(0.3, 5)
-    music += bounce(cues["title"] - 0.3, s["end"] + 0.3, 0.035)
-    bell(cues["title"], 0.07, 784)
-    s = sc["genesis"]
-    music += pad([[52, 59, 64, 68, 71], [57, 64, 69, 73]], s["start"], s["end"] + 0.5, 4, 0.06, 2400)
-    music += pluck_seq([76, 79, 83, 79, 76, 71], cues["days"], cues["rest"], 0.32, 0.02)
-    bell(cues["rest"] + 0.3, 0.05, 523)
-    s = sc["sky"]
-    music += pad([[45, 52, 57, 64], [43, 50, 55, 62]], s["start"], s["end"] + 0.5, 4, 0.055, 1500)
-    music += pluck_seq([69, 72, 76, 81], s["start"] + 0.5, s["end"], 0.45, 0.018)
-    s = sc["names"]
-    music += pad([[48, 55, 60, 64], [53, 57, 60, 65], [55, 59, 62, 67], [48, 55, 60, 64]], s["start"], s["end"] + 0.4, 3, 0.05, 2000)
-    for i in range(5): bell(S[[i for i in range(len(subs)) if subs[i]["start"] >= cues["lundi"] - 0.01][0] + i].start, 0.04, [523, 587, 659, 698, 784][i])
-    s = sc["weekend"]
-    music += bounce(s["start"], s["end"], 0.025)
-    s = sc["marc"]
-    music += pad([[45, 48, 52, 57], [43, 47, 50, 55]], s["start"], s["end"] + 0.4, 3, 0.05, 1200)
-    sfx += noise_bed(s["start"], cues["why"], 100, 1200, 0.06, 0.5, 1, 0.4)
-    s = sc["myths"]
-    music += pad([[50, 57, 62, 65], [48, 55, 60, 64]], s["start"], s["end"] + 0.4, 3, 0.05, 1800)
-    s = sc["lovers"]
-    music += bounce(s["start"], s["end"], 0.03)
-    s = sc["tips"]
-    music += pad([[53, 60, 65, 69], [55, 62, 67, 71], [57, 64, 69, 72]], s["start"], s["end"] + 1, 3, 0.055, 2400)
-    music += pluck_seq([77, 81, 84, 81, 77, 72], cues["question"], s["end"], 0.3, 0.028)
-    for sc_ in scenes[1:]: whoosh(sc_["start"], 0.1, 0.8)
+    sfx += train(0, s["end"] + 0.5, 0.05)
+    sfx += noise_bed(0, s["end"], 300, 2000, 0.012, 1.0, 1.0, 0.5)
+    music += pad(Dm, 0.2, s["end"] + 0.5, 4, 0.06, 900)
+    heart(0.3, cues["title"], 1.15, 0.22)
+    boom(cues["title"], 0.45, 48); whoosh(cues["title"], 0.14, 1.0)
+    bell(cues["title"] + 0.05, 0.035, 1175)
+    s = sc["ekeberg"]
+    sfx += noise_bed(s["start"], s["end"], 200, 1400, 0.035, 1.5, 1.5, 0.8)
+    music += pad([[38, 45, 50, 53], [37, 44, 49, 52]], s["start"], s["end"] + 0.5, 4, 0.05, 1100)
+    riser(cues["diary"], cues["cover"] + 0.2, 0.11)
+    boom(cues["cover"] + 0.15, 0.3, 40)
+    s = sc["tableau"]
+    music += pad([[38, 50, 53, 57], [41, 48, 53, 56], [36, 48, 51, 55], [37, 49, 52, 56]], s["start"], s["end"] + 0.5, 4.5, 0.055, 1200)
+    music += pluck_seq([74, 77, 81, 80, 77, 74, 73, 77], s["start"] + 0.4, s["end"], 0.62, 0.016, 3.0)
+    music += pad([[26, 38]], cues["angels"], s["end"] + 0.4, 6, 0.06, 300)
+    s = sc["secret"]
+    music += pad([[26, 33, 38]], s["start"], s["end"] + 0.4, 8, 0.07, 500)
+    heart(s["start"] + 0.2, cues["reveal"], 0.95, 0.25)
+    boom(cues["reveal"] - 0.05, 0.42, 44); whoosh(cues["reveal"] - 0.1, 0.12, 1.2)
+    bell(cues["reveal"] + 0.1, 0.03, 1397)
+    s = sc["debat"]
+    sfx += noise_bed(s["start"], cues["stand"], 250, 1600, 0.04, 1.0, 0.4, 1.0)
+    sfx += noise_bed(cues["hurt"], s["end"], 250, 1600, 0.015, 0.8, 1.0, 1.0)
+    thunk(cues["stand"] - 0.15, 0.3)
+    music += pad([[45, 52, 57, 60], [41, 48, 53, 57]], cues["hurt"], s["end"] + 0.5, 4, 0.05, 1000)
+    s = sc["outro"]
+    sfx += train(s["start"], s["end"], 0.035)
+    music += pad([[38, 50, 53, 57], [41, 53, 57, 60], [43, 50, 55, 58], [45, 52, 57, 61]], s["start"], s["end"] + 1, 3.5, 0.055, 1500)
+    music += pluck_seq([74, 77, 81, 77, 74, 69], cues["question"], s["end"], 0.42, 0.022)
+    for sc_ in scenes[1:]: whoosh(sc_["start"], 0.09, 0.8)
 
     # ducking
     venv = lp(np.abs(voice).astype(np.float64), 4)
