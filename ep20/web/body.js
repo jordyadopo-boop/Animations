@@ -209,7 +209,7 @@ SETS.apprendre = () => {
   const taxi = box(0.12, 0.08, 0.2, M(0x1a1a1a, { emissive: new THREE.Color(0x111111) })); taxi.add(at(box(0.04, 0.02, 0.04, G(0xffd070, 2)), 0, 0.05, 0)); map.add(taxi);
   const br = makeBrain(0x55e6ff, { holo: true }); br.scale.setScalar(1.0); br.position.set(0.15, 2.2, 0); scene.add(br);
   const hippo = new THREE.Mesh(new THREE.IcosahedronGeometry(0.1, 1), G(0xffd070, 2.2)); hippo.scale.set(1, 0.6, 1.8); hippo.position.set(0.15 + 0.2, 2.05, -0.1); scene.add(hippo);
-  const lea = new Human({ skin: 0xf0d0b0, hair: 0xc89a5a, hairStyle: 'long', top: 0xc04a6a, bottom: 0x2a3a5a, seed: 2020 }); lea.place(0.15, 0, 0.2, 0); scene.add(lea.root);
+  const lea = new Human({ skin: 0xf0d0b0, hair: 0xc89a5a, hairStyle: 'bun', top: 0xc04a6a, bottom: 0x2a3a5a, seed: 2020 }); lea.place(0.15, 0, 0.2, 0); scene.add(lea.root); { const fl = new THREE.PointLight(0xfff0e0, 2.5, 4, 1.2); fl.position.set(0.15, 1.5, 1.4); scene.add(fl); }
   const balls = [0xff6a5a, 0x7dffb0, 0x55c8ff].map(c => { const b = new THREE.Mesh(new THREE.IcosahedronGeometry(0.06, 1), G(c, 1.6)); scene.add(b); return b; });
   const rig = claudeRig(scene, [-1.0, 0, 1.4], 0.4, [0.45, 0, 0], 0x55e6ff, 0.5, 0.3); rig.pr.visible = false;
   const K = cardsMgr(scene, cam);
