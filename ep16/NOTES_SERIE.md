@@ -12,3 +12,8 @@
   pas d'image choquante ; faits du passé sourcés.
 - Vues faibles : image forte et connue dès la 1re seconde, durée visée 75–100 s,
   couvertures plus variées (vraie image en grand).
+
+## Rendu
+- Toujours lancer le rendu complet avec `./rendu.sh epN` en tâche de fond : il attend les 4 rendus
+  par leur PID, vérifie le nombre d'images de chaque morceau puis assemble. Ne jamais surveiller
+  avec `pgrep node` (confond avec d'autres programmes node et avec la commande de surveillance elle-même).
