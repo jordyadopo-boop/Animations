@@ -234,12 +234,13 @@ SETS.formes = () => {
   const rk2 = makeRocket(0.7); rk2.rotation.y = Math.PI / 2; bx.add(rk2);
   for (let i = 0; i < 25; i++) bx.add(at(miniGalaxy(i + 50, 0.12, 50), (hash(i) - 0.5) * 3.6, (hash(i * 3) - 0.5) * 2, (hash(i * 5) - 0.5) * 2));
   const K = cardsMgr(scene, cam);
+  K('FINI, SANS BORD', { w: 1.4, h: 0.3, border: '#ffd070', color: '#ffd070' }, t => win(t, C.ballon + 0.5, C.retour, 0.3, 0.2), -0.6, 0.6);
   K('INFINI', { w: 1.2, h: 0.3, border: '#9adfff', color: '#9adfff' }, t => win(t, SC.formes.start + 1.5, C.ballon, 0.3, 0.2), 0.3, 0.5);
   K('comme dans un vieux jeu vidéo :\nsortir à droite, revenir à gauche', { w: 1.6, h: 0.42, border: '#9adfff', small: true }, t => win(t, C.retour + 0.5, SC.planck.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
       const T0 = SC.formes.start, B1 = C.ballon, R1 = C.retour;
-      fade(lInf, 0); lFin.lookAt(cam.position); fade(lFin, win(t, B1 + 0.5, R1, 0.3, 0.3));
+      fade(lInf, 0); plane.visible = t < B1 - 0.2; fade(lFin, 0);
       // fourmi : grand cercle
       const u = clamp((t - B1 - 1.5) / (R1 - B1 - 2.5), 0, 1); ant.rotation.x = u * Math.PI * 2; tr.userData.set(v => { const a = v * u * Math.PI * 2; return [0, Math.cos(a) * 1.23, -Math.sin(a) * 1.23]; }, Math.max(2, Math.floor(200 * u)));
       // fusee dans la boite
