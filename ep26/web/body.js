@@ -146,8 +146,8 @@ SETS.pont = () => {
   const l2 = label('trou blanc', { w: 0.7, h: 0.14, color: '#dff4ff', font: 'bold 100px Inter' }); l2.position.set(1.2, -0.75, 0.3); scene.add(l2);
   const rig = claudeOnRock(scene, [0.0, -1.3, 1.6], 0.0);
   const K = cardsMgr(scene, cam);
-  K('1935 · Einstein et Rosen\nun « pont » entre deux régions de l\'espace', { w: 1.6, h: 0.42, border: '#7dd8ff', small: true }, t => win(t, SC.pont.start + 1.0, C.novikov, 0.3, 0.2), 0.42);
-  K('années 1960 · Novikov et Ne\'eman\n« ils existent peut-être »', { w: 1.6, h: 0.42, border: '#dff4ff', small: true }, t => win(t, C.novikov + 0.6, SC.instable.start, 0.3, 0.2), 0.42);
+  K('1935 · Einstein et Rosen\nun « pont » entre deux régions de l\'espace', { w: 1.6, h: 0.42, border: '#7dd8ff', small: true }, t => win(t, SC.pont.start + 1.0, C.novikov, 0.3, 0.2), -0.6);
+  K('années 1960 · Novikov et Ne\'eman\n« ils existent peut-être »', { w: 1.6, h: 0.42, border: '#dff4ff', small: true }, t => win(t, C.novikov + 0.6, SC.instable.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
       const T0 = SC.pont.start;
