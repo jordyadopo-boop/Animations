@@ -138,6 +138,7 @@ SETS.merer = () => {
       W.update(t, 0.05);
       bt.position.x = lerp(-1.2, 1.4, (t - SC.merer.start) / 15); bt.position.y = 0.02 * Math.sin(t * 1.5); bt.rotation.z = 0.02 * Math.sin(t * 1.2);
       mer.pose({ aL: [0.2, 0.15], aR: [0.4 + 0.5 * win(t, C.merer_dit, C.nil, 0.3, 0.3), 0.3], eR: 0.9 }); mer.face(env('merer', t), 'neutral', t);
+      { mer.root.updateWorldMatrix(true, false); const mp = mer.root.getWorldPosition(new THREE.Vector3()); const tg = new THREE.Vector3(cam.position.x, mp.y, cam.position.z); mer.root.lookAt(tg); }
       rowers.forEach((w, i) => { w.pose(L.kneelPose({ aL: [0.9 + 0.4 * Math.sin(t * 2.4), 0.1], aR: [0.9 + 0.4 * Math.sin(t * 2.4), 0.1], lean: 0.2 })); w.face(0, 'neutral', t); });
       const bx = bt.position.x;
       camKeys(cam, t, [{ t: SC.merer.start, p: [bx + 1.5, 1.2, 3.6], l: [bx, 0.5, 0], f: 46 }, { t: C.merer_dit - 0.3, p: [bx + 1.5, 1.2, 3.4], l: [bx, 0.5, 0], f: 46 }, { t: C.merer_dit + 0.2, p: [bx + 0.45, 1.05, 1.9], l: [bx + 0.05, 0.95, 0.6], f: 42 }, { t: C.nil, p: [bx + 0.45, 1.05, 1.9], l: [bx + 0.05, 0.95, 0.6], f: 42 }, { t: C.nil + 1.0, p: [bx + 2.4, 2.4, 5.0], l: [bx, 0.4, -0.5], f: 48 }, { t: SC.traineau.start, p: [bx + 2.4, 2.4, 5.0], l: [bx, 0.4, -0.5], f: 48 }]);
@@ -167,11 +168,11 @@ SETS.traineau = () => {
       sl.position.set(0, 0, z); wet.position.z = z + 0.95;
       pull.forEach((w, i) => { w.place((i % 2 ? 0.28 : -0.28), 0, z + 1.6 + Math.floor(i / 2) * 0.5, 0); w.pose(L.walkPose(t * 3 + i, 0.5, { aL: [1.3, 0.1], aR: [1.3, 0.1], eL: 0.2, eR: 0.2, lean: 0.3 })); w.face(0, 'neutral', t); });
       ropes[0].position.set(0.12, 0.12, z + 1.6); ropes[0].scale.set(1, 1, 1.2); ropes[1].position.set(-0.12, 0.12, z + 1.6); ropes[1].scale.set(1, 1, 1.2);
-      pour.place(0.55, 0, z + 0.75, -Math.PI / 2 + 0.3); pour.pose({ aL: [0.3, 0.1], aR: [1.1, 0.2], eR: 0.6, lean: 0.25, hp: 0.3 }); pour.face(0, 'neutral', t);
+      pour.place(0.55, 0, z + 0.75, Math.PI / 2 - 0.4); pour.pose({ aL: [0.3, 0.1], aR: [1.1, 0.2], eR: 0.6, lean: 0.25, hp: 0.3 }); pour.face(0, 'neutral', t);
       jar.updateWorldMatrix(true, false); const jp = jar.getWorldPosition(new THREE.Vector3());
       drops.forEach((d, i) => { const ph = (t * 2 + i / 12) % 1; d.position.set(jp.x - 0.05 - ph * 0.08, jp.y - ph * jp.y, jp.z + 0.02 * Math.sin(i)); });
       const hk = win(t, C.sable + 1.0, SC.rampes.start, 0.3, 0.3); fade(half, hk); half.position.set(0, 1.0, z + 0.2); half.lookAt(cam.position);
-      camKeys(cam, t, [{ t: SC.traineau.start, p: [3.2, 2.0, z + 3.4], l: [0, 0.4, z + 1.2], f: 46 }, { t: C.sable - 0.5, p: [2.4, 1.3, z + 1.0], l: [0.3, 0.3, z + 0.9], f: 44 }, { t: C.sable + 0.5, p: [-1.6, 2.6, z - 0.6], l: [0, 0.4, z + 0.5], f: 48 }, { t: SC.rampes.start, p: [-1.6, 2.6, z - 0.6], l: [0, 0.4, z + 0.5], f: 48 }]);
+      camKeys(cam, t, [{ t: SC.traineau.start, p: [3.2, 2.0, z + 3.4], l: [0, 0.4, z + 1.2], f: 46 }, { t: C.sable - 0.5, p: [2.8, 1.7, z + 1.4], l: [0.3, 0.7, z + 1.0], f: 46 }, { t: C.sable + 0.5, p: [-1.4, 1.8, z + 4.6], l: [0, 0.5, z + 1.2], f: 48 }, { t: SC.rampes.start, p: [-1.4, 1.8, z + 4.6], l: [0, 0.5, z + 1.2], f: 48 }]);
       K.update(t);
     }
   };
