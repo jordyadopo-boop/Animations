@@ -52,3 +52,10 @@ ep23/web/main.js
 ep23/cov/
 ep23/node_modules
 ep23/stills/
+ep24/seg/
+ep24/tts_cache/
+ep24/build/
+ep24/web/main.js
+ep24/cov/
+ep24/node_modules
+ep24/stills/
