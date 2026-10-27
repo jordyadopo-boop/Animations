@@ -214,7 +214,7 @@ SETS.abbaye = () => {
   const hil = new Human({ skin: 0xe0b890, hair: 0x6a5a4a, hairStyle: 'bald', top: 0x2a2018, bottom: 0x2a2018, robe: 0x2a2018, robeL: 0.85, seed: 3412 }); hil.place(40, 0, 0, 0); scene.add(hil.root);
   const codex2 = new THREE.Group(); codex2.add(box(0.22, 0.28, 0.06, M(0x8a1a1a))); codex2.add(at(box(0.16, 0.2, 0.065, G(0xffc040, 0.9)), 0, 0, 0.001)); hil.hand.R.add(codex2); codex2.position.set(0, -0.08, 0.08); codex2.rotation.x = -0.5;
   // hologramme : saint Denis, martyr de Paris (portant sa tete selon la legende ? non : simple aureole)
-  const rig = claudeRig(scene, [41.0, 0, 0.2], -0.35, [-0.45, 0, 0.1], 0xffd070, 0.45, 0.28);
+  const rig = claudeRig(scene, [41.45, 0, 0.3], -0.35, [-0.45, 0, 0.1], 0xffd070, 0.45, 0.28);
   const dn = new Human({ holo: 0xffd070, robe: 0xffffff, robeL: 0.8, hairStyle: 'short', beard: 'full', seed: 3413 }); dn.root.scale.setScalar(0.22); dn.place(0, -0.2, 0, 0); rig.holoG.add(dn.root);
   const halo = holo(new THREE.TorusGeometry(0.05, 0.006, 4, 24), 0xffd070, 0.6); halo.position.set(0, 0.2, -0.01); rig.holoG.add(halo);
   const eq = label('Denys d\'Athènes = saint Denis ?', { w: 0.9, h: 0.1, color: '#ffd070', font: 'bold 70px Inter' }); eq.position.set(0, 0.32, 0); rig.holoG.add(eq);
@@ -236,7 +236,7 @@ SETS.abbaye = () => {
       const dk = win(t, C.hilduin + 0.5, SC.gothique.start, 0.4, 0.3); beamOn(rig, dk, t); fade(dn.root, dk * 0.6); fade(halo, dk); fade(eq, sstep(C.hilduin + 1.2, C.hilduin + 1.6, t) * dk); eq.lookAt(cam.position); dn.pose({});
       rig.c.update(t, env('claude', t), {});
       camKeys(cam, t, [{ t: T0, p: [0.2, 2.2, 5.2], l: [0, 1.2, -0.6], f: 46 }, { t: T0 + 3.4, p: [-0.3, 1.7, 3.2], l: [0.3, 1.1, -0.6], f: 44 }, { t: T0 + 6.0, p: [-0.4, 1.6, 2.8], l: [0.25, 1.15, -0.7], f: 42 }, { t: C.hilduin - 0.3, p: [-0.45, 1.6, 2.8], l: [0.25, 1.15, -0.7], f: 42 },
-        { t: C.hilduin - 0.2, p: [40.6, 1.55, 2.4], l: [40.3, 1.25, 0], f: 44 }, { t: C.hilduin + 1.0, p: [40.4, 1.5, 3.8], l: [40.4, 1.05, 0.0], f: 46 }, { t: SC.gothique.start, p: [40.4, 1.5, 3.7], l: [40.4, 1.05, 0.0], f: 46 }]);
+        { t: C.hilduin - 0.2, p: [40.6, 1.55, 2.4], l: [40.3, 1.25, 0], f: 44 }, { t: C.hilduin + 1.0, p: [40.6, 1.5, 3.9], l: [40.6, 1.05, 0.0], f: 46 }, { t: SC.gothique.start, p: [40.6, 1.5, 3.8], l: [40.6, 1.05, 0.0], f: 46 }]);
       K.update(t);
     }
   };
@@ -319,7 +319,7 @@ SETS.valla = () => {
   const ticks = [['50', -0.3, '#9adfff'], ['500', -0.05, '#ffd070'], ['1457', 0.3, '#ff8a7a']].map(([s, x, c]) => { const l = label(s, { w: 0.3, h: 0.08, color: c, font: 'bold 80px Inter' }); l.position.set(x, -0.2, 0); tl.add(l); tl.add(at(new THREE.Mesh(new THREE.OctahedronGeometry(0.02), G(new THREE.Color(c).getHex(), 1.5)), x, -0.12, 0)); return l; });
   const K = cardsMgr(scene, cam);
   K('LORENZO VALLA\nhumaniste italien · 1407 – 1457', { w: 1.6, h: 0.42, border: '#ff8a7a', small: true }, t => win(t, SC.valla.start + 2.8, C.an500, 0.3, 0.2), -0.55);
-  K('« Pseudo-Denys » : un auteur inconnu\nproche du philosophe grec Proclus', { w: 1.6, h: 0.42, border: '#ffd070', small: true }, t => win(t, C.an500 + 1.0, SC.fin.start, 0.3, 0.2), 0.12);
+  K('« Pseudo-Denys » : un auteur inconnu\nproche du philosophe grec Proclus', { w: 1.6, h: 0.42, border: '#ffd070', small: true }, t => win(t, C.an500 + 1.0, SC.fin.start, 0.3, 0.2), -0.55);
   imagined(K, 'scène imaginée', SC.valla.start + 2.6, C.an500);
   return {
     ...B, update(t) {
