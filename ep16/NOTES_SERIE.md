@@ -49,7 +49,8 @@
 
 ## Mises à jour (épisodes 32 à 34, oct. 2026)
 - Épisodes faits : 32 Le Soleil fonce à 830 000 km/h (orbites, canon de Newton, d'après une vidéo modèle), 33 L'Ange déchu (Cabanel),
-  34 Les neuf chœurs des anges / Pseudo-Denys (tableau de Botticini). Les trois ont été demandés d'après des vidéos modèles de Mr A,
+  34 Les neuf chœurs des anges / Pseudo-Denys (tableau de Botticini), 35 Le cœur (tachycardie, bradycardie, arrêt cardiaque),
+  36 L'espace est-il infini ? Les trois ont été demandés d'après des vidéos modèles de Mr A,
   à faire « l'un après l'autre » sans validation intermédiaire.
 - assemble.sh : les anciens dossiers écrivent dans /home/user/Animations (A majuscule) ; depuis l'ép. 32, chemin relatif `livrables/...`.
 - Images d'œuvres : Wikimedia renvoie souvent 429 (trop de requêtes). Essayer `commons.wikimedia.org/wiki/Special:FilePath/<nom>`
@@ -62,3 +63,9 @@
 - Encadrés : éviter qu'un trait lumineux passe derrière (le bloom efface le texte) ; monter l'encadré (yf ≈ 0,1) si besoin.
 - Voix : une phrase faite seulement d'une liste de noms (« Séraphins, Chérubins, Trônes… ») est lue en anglais par la voix multilingue.
   L'insérer dans une vraie phrase française (« Il y a d'abord les séraphins… ») et toujours lancer langcheck.py avant le rendu.
+- Livraison : Mr A veut recevoir la couverture, la vidéo et la légende de chaque épisode dès qu'il est fini, un par un.
+- Couverture de l'ép. 32 refaite à sa demande : le Soleil qui fonce vers nous, les planètes qui le suivent en spirale (SETS.cover2).
+- Santé (ép. 35) : rester factuel, mention « pas un avis médical » + numéros d'urgence (15, 112) dans la légende ; arrêt cardiaque
+  montré sans image choquante (écran ECG, schéma de massage). Éviter deux disques clairs côte à côte sur un organe (effet « yeux »).
+- Attente d'un rendu : ne jamais faire `until ! pgrep -f "motif"` (la commande se détecte elle-même) ; attendre la notification de fin.
+- Lignes fines (GridHelper) peu visibles en perspective : pour un sol « infini », utiliser de fines bandes (box) additives.
