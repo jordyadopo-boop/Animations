@@ -34,3 +34,15 @@
   sous-titres anglais, et que les hologrammes additifs restent visibles sur fond clair (sinon matériau opaque).
 - Si un rendu est interrompu (redémarrage de la machine), relancer `./rendu.sh epN` ; pour corriger un seul passage,
   refaire uniquement le morceau concerné (render.js a b seg/sK.mp4, vérifier le nombre d'images) puis `bash assemble.sh`.
+
+## Mises à jour (épisodes 28 à 31, oct. 2026)
+- Épisodes faits : 28 Colisée rempli d'eau, 29 tardigrades, 30 Arche d'alliance, 31 Machiavel (d'après une vidéo modèle de Mr A).
+- Titres : Mr A préfère les titres affirmatifs et intrigants aux questions plates
+  (ép. 28 : « ILS ONT ESSAYÉ DE REMPLIR LE COLISÉE D'EAU » au lieu de « Le Colisée était-il rempli d'eau ? »).
+- Rendu : lancer `./rendu.sh epN` en tâche de fond avec la limite de temps maximale (timeout 7200000) ;
+  la limite par défaut (30 min) coupe le rendu. Si c'est arrivé : compter les images de seg/s*.mp4, puis `bash assemble.sh`.
+- Humains : la coiffure 'wrap' de lib.js masque le visage. Pour un turban ou un voile, utiliser hairStyle 'short' + hat 'cap'.
+- Éclairage : placer le soleil du côté de la caméra quand des personnages marchent vers elle (sinon les visages sont à contre-jour).
+- Les étiquettes 3D (label) dans un groupe orienté avec lookAt peuvent disparaître : pour un texte important, utiliser une carte (cardsMgr)
+  avec un yf entre 0,05 et 0,35 (sous les sous-titres).
+- Décors à l'échelle 1 = 10 m (Colisée) : garder la caméra dans le volume de l'arène ou bien au-dessus des murs, sinon elle traverse les gradins.
