@@ -101,3 +101,10 @@ ep30/web/main.js
 ep30/cov/
 ep30/node_modules
 ep30/stills/
+ep31/seg/
+ep31/tts_cache/
+ep31/build/
+ep31/web/main.js
+ep31/cov/
+ep31/node_modules
+ep31/stills/
