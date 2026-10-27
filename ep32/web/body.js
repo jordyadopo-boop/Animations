@@ -369,7 +369,26 @@ SETS.cover = () => {
     cam.position.set(5.5, 2.8, 6.5); cam.fov = 50; cam.updateProjectionMatrix(); cam.lookAt(0, -0.9, -1.5); } };
 };
 
+// ---------- couverture 2 : le Soleil fonce vers nous, les planetes le suivent
+SETS.cover2 = () => {
+  const B = spaceBase({ hemiK: 0.3, sun: [0xfff4e0, 0.2, [3, 4, 5]], bloom: [0.7, 0.5, 0.7] }); const { scene, cam } = B;
+  const sun = makeSun(1.0); sun.position.set(0, 1.2, 0); scene.add(sun); sun.userData.update(1);
+  // trainees de vitesse (etoiles etirees vers nous)
+  for (let i = 0; i < 160; i++) { const a = hash(i * 3.3) * Math.PI * 2, r = 1.8 + hash(i * 5.1) * 9, len = 2 + hash(i) * 6; const m = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.015, len), new THREE.MeshBasicMaterial({ color: 0xbfd8ff, transparent: true, opacity: 0.35 + 0.4 * hash(i * 9), blending: THREE.AdditiveBlending, depthWrite: false })); m.position.set(Math.cos(a) * r, 1.2 + Math.sin(a) * r, -6 - hash(i * 7) * 25); scene.add(m); }
+  // planetes : sous le Soleil, elles le suivent en spirale (trainees vers l'arriere)
+  const P = [[0.08, 1.2, 0xb0a090, 2.4], [0.12, 1.8, 0xe8c080, 1.9], [0.14, 2.5, 0x2a62b8, 1.6], [0.1, 3.1, 0xd0603a, 1.3], [0.35, 4.2, 0xd8b080, 0.9], [0.3, 5.2, 0xe8d8a0, 0.7]];
+  P.forEach(([r, R, c, w], i) => {
+    const ph = 1.0 + i * 0.25; // toutes en bas, devant
+    const pos = (u) => { const tt = -u * 9; const a = ph + tt * w * 0.35; return [Math.cos(a) * R * 0.75, 1.2 - 0.9 - Math.abs(Math.sin(a)) * R * 0.32 - 0.15 * R, Math.sin(a) * R * 0.25 + tt * 1.6]; };
+    const pl = i === 2 ? makeEarth(r) : new THREE.Mesh(new THREE.IcosahedronGeometry(r, 2), M(c)); pl.position.set(...pos(0)); scene.add(pl);
+    if (i === 4) { const rg = new THREE.Mesh(new THREE.RingGeometry(r * 1.4, r * 2.1, 32), new THREE.MeshBasicMaterial({ color: 0xe8d8a0, side: THREE.DoubleSide, transparent: true, opacity: 0.7 })); rg.rotation.x = 1.2; pl.add(rg); }
+    const tr = makeTrail(260, [0xb0a090, 0xe8c080, 0x7dd8ff, 0xff8a6a, 0xe8c080, 0xe8d8a0][i], 0.06); tr.userData.set(u => pos(1 - u)); scene.add(tr);
+  });
+  const trS = makeTrail(200, 0xffb060, 0.12); trS.userData.set(u => [0, 1.2, -16 * (1 - u)]); scene.add(trS);
+  return { ...B, update() { cam.position.set(0.0, 0.0, 7.5); cam.fov = 58; cam.updateProjectionMatrix(); cam.lookAt(0, -1.1, -2); } };
+};
+
 const SHOTS = [
   ['intro', 0, SC.canon.start], ['canon', SC.canon.start, SC.lune.start], ['lune', SC.lune.start, SC.terre.start], ['terre', SC.terre.start, SC.eclipse.start],
-  ['eclipse', SC.eclipse.start, SC.galaxie.start], ['galaxie', SC.galaxie.start, SC.fin.start], ['fin', SC.fin.start, 1000], ['cover', 1000, 1e9],
+  ['eclipse', SC.eclipse.start, SC.galaxie.start], ['galaxie', SC.galaxie.start, SC.fin.start], ['fin', SC.fin.start, 1000], ['cover', 1000, 1999], ['cover2', 2000, 1e9],
 ];
