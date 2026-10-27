@@ -46,3 +46,19 @@
 - Les étiquettes 3D (label) dans un groupe orienté avec lookAt peuvent disparaître : pour un texte important, utiliser une carte (cardsMgr)
   avec un yf entre 0,05 et 0,35 (sous les sous-titres).
 - Décors à l'échelle 1 = 10 m (Colisée) : garder la caméra dans le volume de l'arène ou bien au-dessus des murs, sinon elle traverse les gradins.
+
+## Mises à jour (épisodes 32 à 34, oct. 2026)
+- Épisodes faits : 32 Le Soleil fonce à 830 000 km/h (orbites, canon de Newton, d'après une vidéo modèle), 33 L'Ange déchu (Cabanel),
+  34 Les neuf chœurs des anges / Pseudo-Denys (tableau de Botticini). Les trois ont été demandés d'après des vidéos modèles de Mr A,
+  à faire « l'un après l'autre » sans validation intermédiaire.
+- assemble.sh : les anciens dossiers écrivent dans /home/user/Animations (A majuscule) ; depuis l'ép. 32, chemin relatif `livrables/...`.
+- Images d'œuvres : Wikimedia renvoie souvent 429 (trop de requêtes). Essayer `commons.wikimedia.org/wiki/Special:FilePath/<nom>`
+  avec un User-Agent explicite ; sinon le serveur IIIF du musée (National Gallery : `server.iip?IIIF=...`, 800 px max par requête,
+  assembler les tuiles avec PIL). Toujours prendre la pleine résolution pour les gros plans (frac ≥ 0,15 dans pview).
+- Sous-titres anglais sur un tableau clair (ciel) : contour 4,5 et ombre 2,5 dans le style Sub (voir ep33/build_audio.py).
+- Soleil en 3D : halo en sprite à dégradé radial (makeSun dans ep32/web/body.js), pas des sphères concentriques (anneaux visibles).
+- Vue de côté Soleil–Terre en format vertical : rapprocher les objets (le champ horizontal est étroit, ≈ 0,56 × le vertical).
+- faster-whisper : si `av.open(... metadata_errors)` plante, lui passer un tableau numpy (langcheck.py le fait déjà via ffmpeg).
+- Encadrés : éviter qu'un trait lumineux passe derrière (le bloom efface le texte) ; monter l'encadré (yf ≈ 0,1) si besoin.
+- Voix : une phrase faite seulement d'une liste de noms (« Séraphins, Chérubins, Trônes… ») est lue en anglais par la voix multilingue.
+  L'insérer dans une vraie phrase française (« Il y a d'abord les séraphins… ») et toujours lancer langcheck.py avant le rendu.
