@@ -66,3 +66,17 @@ ep25/web/main.js
 ep25/cov/
 ep25/node_modules
 ep25/stills/
+ep26/seg/
+ep26/tts_cache/
+ep26/build/
+ep26/web/main.js
+ep26/cov/
+ep26/node_modules
+ep26/stills/
+ep27/seg/
+ep27/tts_cache/
+ep27/build/
+ep27/web/main.js
+ep27/cov/
+ep27/node_modules
+ep27/stills/
