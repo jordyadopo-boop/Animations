@@ -144,3 +144,10 @@ ep36/cov/
 ep36/node_modules
 ep36/stills/
 ep32/cov2/
+ep37/seg/
+ep37/tts_cache/
+ep37/build/
+ep37/web/main.js
+ep37/cov/
+ep37/node_modules
+ep37/stills/
