@@ -73,3 +73,15 @@
   détailler davantage (plusieurs exemples concrets, chiffres, origine des faits, culture populaire), viser 2 min 30 à 3 min.
 - Quand Mr A n'envoie pas de vidéo modèle : construire le sujet à notre manière, sans s'inspirer d'une vidéo existante.
 - Occultisme / démons (ép. 37) : raconter l'histoire du texte « selon les textes », sans mode d'emploi ; sceaux : les vrais sceaux (édition de 1904, domaine public) sont acceptés par Mr A, il les a demandés sur la couverture.
+
+## Série biblique « on remonte la Bible » (à partir de l'ép. 39, oct. 2026)
+- On raconte la Bible à l'envers, SCÈNE PAR SCÈNE (pas livre par livre ni chapitre par chapitre) : chaque épisode = un passage
+  de quelques versets qui se suivent, décortiqué en détail (2 min 30 à 3 min). L'épisode suivant = la scène juste avant dans le texte.
+- Début : accroche mystérieuse + rappel « on remonte la Bible scène par scène, de la dernière page à la première ».
+- Fin : « Cette histoire est la suite de… » + le mystère de la scène d'avant (= prochain épisode), carte « PROCHAIN ÉPISODE · réf. ».
+- Titre accrocheur (pas « épisode 1 », pas le nom du livre seul) ; la référence exacte (livre, chapitre, versets) en bas de l'écran
+  et dans la légende. Citations : Louis Segond 1910 (fr), King James (sous-titres en) — domaine public.
+- Ton « selon les textes », sans prendre parti ; scènes imaginées signalées ; une voix grave (fr-FR-HenriNeural) lit les citations.
+- Plan prévu : 39 Ap 22,16-21 · 40 Ap 22,6-15 · 41 Ap 22,1-5 · 42 Ap 21,9-27 · 43 Ap 21,1-8 · 44 Ap 20,11-15 · 45 Ap 20,7-10
+  · 46 Ap 20,1-6 · 47 Ap 19,11-21 · … jusqu'à Genèse 1,1. Ensuite les lettres : ne garder que les passages qui racontent une scène.
+- Le brouillon « 5e dimension » est rangé dans brouillon_5e_dimension/ (à reprendre plus tard si Mr A le demande).
