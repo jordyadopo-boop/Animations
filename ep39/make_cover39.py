@@ -17,7 +17,7 @@ for y in range(1920):
     k = max(0.0, min(1.0, (y - 1180) / 260)); gd.line([(0, y), (1080, y)], fill=int(215 * min(1, k * 1.6)))
 im = Image.composite(Image.new('RGB', im.size, (12, 8, 6)), im, grad)
 d = ImageDraw.Draw(im)
-f = ImageFont.truetype(BOLD, 100); lines = ['LES DERNIERS', 'MOTS DE', 'LA BIBLE']
+f = ImageFont.truetype(BOLD, 100); lines = ['IL REVIENT', 'BIENTÔT']
 fb = ImageFont.truetype(BOLD, 52); lab = 'ÉPISODE 39'; tw = d.textlength(lab, font=fb)
 y0 = 1250
 d.rounded_rectangle([(540 - tw / 2 - 34, y0), (540 + tw / 2 + 34, y0 + 92)], radius=46, fill=ORANGE)
@@ -29,6 +29,6 @@ sh = sh.filter(ImageFilter.GaussianBlur(14)); im.paste(sh, (0, 8), sh); d = Imag
 for i, ln in enumerate(lines): d.text((540, y + i * lh), ln, font=f, fill='white', anchor='ma', stroke_width=5, stroke_fill=(10, 8, 6))
 yb = y + len(lines) * lh + 26
 d.rectangle([(450, yb), (630, yb + 10)], fill=ORANGE)
-d.text((540, yb + 40), 'The last words of the Bible', font=ImageFont.truetype(MED, 44), fill=(235, 228, 215), anchor='ma', stroke_width=3, stroke_fill=(10, 8, 6))
+d.text((540, yb + 40), 'He is coming back soon', font=ImageFont.truetype(MED, 44), fill=(235, 228, 215), anchor='ma', stroke_width=3, stroke_fill=(10, 8, 6))
 im.save(os.path.join(OUT, 'couverture_ep39.jpg'), quality=93)
 print('ok')

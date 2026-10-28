@@ -18,7 +18,7 @@ SCRIPT = [
          "In this series, we go back through the Bible scene by scene, from the last page to the very first. And we start… at the end."),
     ], "happy"),
     ("cue", "title"),
-    ("title", "LES DERNIERS MOTS\\NDE LA BIBLE", "The last words of the Bible", 2.8),
+    ("title", "IL REVIENT\\NBIENTÔT", "He is coming back soon", 2.8),
     ("pause", 2.6),
 
     ("scene", "patmos"),
@@ -78,8 +78,8 @@ SCRIPT = [
 
     ("scene", "bientot"),
     ("say", "claude", [
-        ("Et enfin, les toutes dernières paroles :",
-         "And finally, the very last words:"),
+        ("Et enfin, Jésus prononce ses toutes dernières paroles :",
+         "And finally, Jesus speaks his very last words:"),
     ], "neutral"),
     ("say", "voix", [
         ("« Oui, je viens bientôt. »", "\"Surely I come quickly.\""),
