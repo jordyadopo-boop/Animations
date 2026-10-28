@@ -35,7 +35,7 @@
   .win .bar i { width: 15px; height: 15px; border-radius: 50%; background: #3a3846; display: block; }
   .win .bar i:first-child { background: var(--red); }
   .win .bar b { margin-left: 14px; font: 500 22px 'Inter'; color: #a9a5b8; background: #26242f; padding: 7px 18px; border-radius: 10px; }
-  .win .view { position: relative; overflow: hidden; }
+  .win .view { position: relative; overflow: hidden; height: calc(100% - 56px); }
   .win .view img { width: 100%; display: block; }
   .logoCard { background: #fff; display: flex; align-items: center; justify-content: center; }
   .logoCard img { width: 82%; display: block; }
@@ -156,7 +156,7 @@ let rs = 11; const rnd = () => ((rs = (rs * 16807) % 2147483647) / 2147483647);
 // extraits vidéo : séquences d'images à 30 i/s, préchargées puis dessinées dans un canvas (une <video> ne se repositionne
 // pas de façon fiable image par image au rendu : les extraits restaient figés)
 const loadSeq = (name, n) => Promise.all(Array.from({ length: n }, (_, i) => { const im = new Image(); im.src = `assets/frames/${name}/${String(i + 1).padStart(3, '0')}.jpg`; return im.decode().then(() => im); }));
-const SEQ = { a: await loadSeq('clip-a', 39), b: await loadSeq('clip-b', 54), dash: await loadSeq('powerbi', 96) };
+const SEQ = { a: await loadSeq('clip-a', 39), b: await loadSeq('clip-b', 54), dash: await loadSeq('powerbi', 96), site: await loadSeq('site', 66) };  // site : vraie navigation (record-site.mjs)
 function drawSeq(cv, seq, time) {
   const im = seq[clamp(Math.floor(time * 30), 0, seq.length - 1)], g = cv.getContext('2d');
   const r = Math.max(cv.width / im.width, cv.height / im.height), w = im.width * r, h = im.height * r;  // remplissage façon « cover »
@@ -189,7 +189,7 @@ const svcEls = SERVICES.map((s) => el('div', 'sv', `${s.pre} <span class="red">$
 // une carte de réalisation par type (réutilisée par l'accroche et les preuves)
 function makeShow(kind, parent) {
   const c = el('div', 'card', null, parent);
-  if (kind === 'site') { c.classList.add('win'); c.innerHTML = '<div class="bar"><i></i><i></i><i></i><b>jordyadopo-boop.github.io/business-sites</b></div><div class="view"><img src="assets/site.jpg" alt=""></div>'; }
+  if (kind === 'site') { c.classList.add('win'); c.innerHTML = '<div class="bar"><i></i><i></i><i></i><b>jordyadopo-boop.github.io/business-sites</b></div><div class="view"><canvas class="seq" width="900" height="604" style="width:100%;height:100%;display:block"></canvas></div>'; }
   if (kind === 'logo') { c.classList.add('logoCard'); c.innerHTML = '<img src="assets/logo-glaceur.png" alt=""><div class="shine"></div>'; }
   if (kind === 'poster') { c.classList.add('poster'); c.innerHTML = '<img src="assets/affiche-tarifs.jpg" alt="">'; }
   if (kind === 'edit') { c.classList.add('phone'); c.innerHTML = '<canvas class="seq" width="540" height="904"></canvas><div class="abs rec" style="left:34px;top:34px"></div>'; }
@@ -231,7 +231,7 @@ async function sceneHook(t) {
     show(c, on);
     if (on) css(c, { transform: `translateY(${(1 - sp) * 260}px) scale(${lerp(0.7, 1, clamp(sp, 0, 1.1)) * (1 - out * 0.85)}) rotate(${(1 - clamp(sp)) * (i % 2 ? 6 : -6)}deg)`, opacity: clamp(sp * 2) * (1 - out), filter: `blur(${(1 - clamp(sp)) * 12 + out * 10}px)` });
     // effets propres à chaque réalisation
-    if (s.kind === 'site' && on) css(c.querySelector('.view img'), { transform: `translateY(${-eInOut(prog(t, s.t + 0.25, s.t + s.d)) * 900}px)` });
+    if (s.kind === 'site' && on) drawSeq(c.querySelector('canvas.seq'), SEQ.site, (t - s.t + 0.05) * 2.1);  // navigation réelle, jouée en accéléré
     if (s.kind === 'logo' && on) { css(c.querySelector('img'), { clipPath: `inset(0 ${(1 - eOut(prog(t, s.t + 0.05, s.t + 0.4))) * 100}% 0 0)` }); css(c.querySelector('.shine'), { left: `${lerp(-40, 130, prog(t, s.t + 0.35, s.t + 0.75))}%` }); }
     if (s.kind === 'edit' && on) {
       const lt = t - s.t, cut = EDIT.cut - s.t, inB = lt >= cut;
@@ -331,7 +331,7 @@ async function sceneSkills(t) {
 
 // ---------- preuves en rafale ----------
 const featCards = PROOFS.items.map((it) => { const c = makeShow(it.kind, $('feat')); css(c, { left: 0, top: 0, width: '380px', height: '475px' }); return c; });
-featCards.forEach((c, i) => { if (PROOFS.items[i].kind === 'edit') { c.querySelector('.rec').remove(); drawSeq(c.querySelector('canvas.seq'), SEQ.a, 0.6); } if (PROOFS.items[i].kind === 'site') c.querySelector('.bar b').textContent = 'je.fais.ton.site'; });
+featCards.forEach((c, i) => { if (PROOFS.items[i].kind === 'edit') { c.querySelector('.rec').remove(); drawSeq(c.querySelector('canvas.seq'), SEQ.a, 0.6); } if (PROOFS.items[i].kind === 'site') { c.querySelector('.bar b').textContent = 'je.fais.ton.site'; drawSeq(c.querySelector('canvas.seq'), SEQ.site, 1.8); } });
 const stripEls = Array.from({ length: 14 }, (_, i) => { const it = PROOFS.items[i % 6]; const th = el('div', 'thumb', it.kind === 'edit' ? '' : `<img src="${THUMB_SRC[it.kind]}" alt="">`, $('strip')); if (it.kind === 'logo') { th.style.background = '#fff'; th.querySelector('img').style.objectFit = 'contain'; } if (it.kind === 'edit') { const cv = el('canvas', null, null, th); cv.width = 140; cv.height = 175; cv.style.cssText = 'width:100%;height:100%'; th.dataset.edit = 1; } return th; });
 async function sceneProofs(t) {
   if (!show($('proofs'), inWin(t, T.proofs))) return;
@@ -347,6 +347,7 @@ async function sceneProofs(t) {
   const it = PROOFS.items[cur], a = PROOFS.from + cur * PROOFS.step, ek = eOut(prog(t, a + 0.04, a + 0.2));
   $('eq').innerHTML = `= <span class="red">${it.label}</span>`;
   css($('eq'), { opacity: t >= PROOFS.from ? ek : 0, transform: `translateY(${(1 - ek) * 40}px)`, filter: `blur(${(1 - ek) * 10}px)` });
+  if (t < PROOFS.from + PROOFS.step + 0.1) drawSeq(featCards[0].querySelector('canvas.seq'), SEQ.site, 1.2 + Math.max(0, t - PROOFS.from) * 2);
   if (t >= PROOFS.from + 3 * PROOFS.step - 0.05 && t < PROOFS.from + 4 * PROOFS.step + 0.1) drawSeq(featCards[3].querySelector('canvas.seq'), SEQ.b, 0.3 + (t - PROOFS.from - 3 * PROOFS.step));
 }
 

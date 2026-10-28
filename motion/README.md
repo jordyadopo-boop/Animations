@@ -66,6 +66,7 @@ Prix, produits, communes et numéro viennent de `src/js/config.js` du site Le Gl
 | 21,4 – 25 s | Cerveau, JorDEV, bouton WhatsApp, « Et arrête de chercher. » |
 
 Les extraits vidéo sont des séquences d'images à 30 i/s (`jordev/assets/frames/`), dessinées image par image dans un canvas. La photo et les noms du faire-part sont floutés.
+Le site « Je fais ton site » est une vraie navigation enregistrée par `jordev/record-site.mjs` (curseur, clic sur Portfolio, défilement, cerveau piloté en mode vidéo du site) : `node motion/jordev/record-site.mjs <chemin de business-sites>`.
 
 ## Commandes
 
