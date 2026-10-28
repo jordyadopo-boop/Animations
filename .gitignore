@@ -179,3 +179,11 @@ ep40/web/main.js
 ep40/cov/
 ep40/node_modules
 ep40/stills/
+ep41/seg/
+ep41/tts_cache/
+ep41/build/
+ep41/web/main.js
+ep41/cov/
+ep41/node_modules
+ep41/stills/
+ep41/sheet.jpg
