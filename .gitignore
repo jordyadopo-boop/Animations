@@ -172,3 +172,10 @@ ep39/web/main.js
 ep39/cov/
 ep39/node_modules
 ep39/stills/
+ep40/seg/
+ep40/tts_cache/
+ep40/build/
+ep40/web/main.js
+ep40/cov/
+ep40/node_modules
+ep40/stills/
