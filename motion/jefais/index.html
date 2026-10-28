@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Je fais ton site · motion</title>
+<!--
+  Auto-promo « Je fais ton site » (9:16, 14 s), style interface iPhone : accroche, recherche, profil, devis, message.
+  Une seule fonction renderFrame(t) place tout à l'instant t.
+  Aperçu : node render/serve.js puis http://localhost:5173/motion/jefais/index.html   (?t=5 fige une image)
+  Rendu  : node motion/render.js jefais
+-->
+<style>
+  @font-face { font-family: 'JB'; font-weight: 700; src: url(../portfolio/assets/jetbrains-mono-latin-700-normal.woff2) format('woff2'); }
+  :root { --red: #ff3b4e; --ios: #0a84ff; --ink: #111; --mute: #8a8a8e; --light: #eef0f4; --teal: #3ee6a8; --cyan: #37c8ff; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #000; overflow: hidden; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #000; font-family: 'Inter', system-ui, sans-serif; color: var(--ink); }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; }
+  .red { color: var(--red); }
+
+  /* A. accroche */
+  #hook { background: radial-gradient(90% 60% at 50% 45%, #15161c 0%, #000 70%); }
+  .hl { position: absolute; left: 0; width: 1080px; text-align: center; font: 700 100px/1 'Inter'; letter-spacing: -3px; color: #fff; white-space: nowrap; }
+  .hw { display: inline-block; position: relative; }
+  .blk { position: absolute; border-radius: 18px; }
+  .par { display: inline-block; font-weight: 300; color: #fff; }
+
+  /* B. recherche */
+  #search { background: var(--light); }
+  #pill { left: 540px; top: 900px; height: 116px; border-radius: 58px; background: #fff; box-shadow: 0 18px 50px rgba(20,20,40,.10), 0 2px 6px rgba(20,20,40,.06);
+    display: flex; align-items: center; padding: 0 40px; gap: 26px; font: 500 46px 'Inter'; color: #1c1c1e; white-space: nowrap; overflow: hidden; }
+  #pill svg { width: 46px; height: 46px; flex: none; }
+  #pTxt { flex: 1; overflow: hidden; }
+  #ph { color: #a1a1a6; }
+  #caret { display: inline-block; width: 4px; height: 52px; background: var(--ios); vertical-align: -10px; margin-left: 2px; }
+  .side { top: 900px; width: 116px; height: 116px; border-radius: 58px; background: #fff; box-shadow: 0 18px 50px rgba(20,20,40,.10); display: flex; align-items: center; justify-content: center; }
+  .side svg { width: 48px; height: 48px; }
+  #dot { width: 30px; height: 30px; border-radius: 15px; background: #111; }
+  #glowS { left: 540px; top: 958px; width: 900px; height: 900px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,59,78,.55), rgba(140,80,255,.35) 50%, rgba(140,80,255,0)); filter: blur(30px); }
+
+  /* C. profil */
+  #profile { background: var(--light); }
+  #pWrap { left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 540px 700px; }
+  #avatar { left: 400px; top: 400px; width: 280px; height: 280px; border-radius: 50%; padding: 8px; background: conic-gradient(from 200deg, #3ee6a8, #37c8ff, #c86bff, #ff4fa3, #3ee6a8); }
+  #avatar img { width: 264px; height: 264px; border-radius: 50%; display: block; border: 6px solid #fff; object-fit: cover; }
+  #pName { left: 0; top: 720px; width: 1080px; text-align: center; font: 800 92px/1 'Inter'; letter-spacing: -3px; }
+  #pTag { left: 0; top: 830px; width: 1080px; text-align: center; font: 500 42px 'Inter'; color: #5c5c62; }
+  #chips { left: 0; top: 920px; width: 1080px; display: flex; justify-content: center; gap: 18px; }
+  .chip { display: flex; align-items: center; gap: 12px; padding: 16px 28px; border-radius: 40px; font: 700 34px 'Inter'; white-space: nowrap; }
+  .chip i { font: 700 30px 'JB'; font-style: normal; }
+  #rTitle { left: 70px; top: 1090px; font: 800 70px 'Inter'; letter-spacing: -2px; }
+  .thumb { top: 1200px; width: 300px; height: 300px; border-radius: 40px; overflow: hidden; background: #fff; box-shadow: 0 20px 50px rgba(20,20,40,.14); }
+  .thumb img { width: 480px; height: 300px; object-fit: cover; object-position: 0 0; display: block; }
+  .thumb b { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 20px 16px; font: 700 28px 'Inter'; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.65)); }
+  #hand { left: 0; top: 0; width: 130px; height: 160px; filter: drop-shadow(0 12px 18px rgba(0,0,0,.25)); }
+  .tapring { width: 140px; height: 140px; border-radius: 50%; border: 6px solid rgba(255,255,255,.9); box-shadow: 0 0 30px rgba(10,132,255,.5); }
+
+  /* D. réalisations */
+  #works { background: radial-gradient(100% 60% at 50% 60%, #121420 0%, #000 75%); }
+  #wTitle { left: 0; top: 330px; width: 1080px; text-align: center; font: 800 96px/1.05 'Inter'; letter-spacing: -3px; color: #fff; }
+  #wTitle .g { background: linear-gradient(90deg, #3ee6a8, #37c8ff 60%, #c86bff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .ww { display: inline-block; }
+  #fanWrap { left: 0; top: 0; width: 1080px; height: 1920px; perspective: 1800px; perspective-origin: 540px 1050px; }
+  #fan { position: absolute; left: 270px; top: 900px; width: 540px; height: 338px; transform-style: preserve-3d; }
+  .fcard { position: absolute; left: 0; top: 0; width: 540px; height: 338px; border-radius: 28px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.6); border: 2px solid rgba(255,255,255,.12); }
+  .fcard img { width: 540px; height: 338px; object-fit: cover; display: block; }
+  .fcard .sh { position: absolute; inset: 0; background: #000; }
+
+  /* E. devis */
+  #devis { background: radial-gradient(80% 60% at 50% 50%, #ffffff 0%, #e4e6ec 100%); }
+  #band { left: 190px; top: -40px; width: 700px; height: 2000px; background: linear-gradient(90deg, #ff3b4e 0 50%, #e8263b 50% 100%); box-shadow: 0 0 120px rgba(255,59,78,.35); }
+  #tile { left: 290px; top: 700px; width: 500px; height: 200px; border-radius: 48px; background: #fff; box-shadow: 0 30px 70px rgba(0,0,0,.25), inset 0 0 0 10px #ffe1e5;
+    display: flex; align-items: center; justify-content: center; font: 700 64px 'JB'; letter-spacing: -2px; color: #111; }
+  #dTxt { left: 0; top: 960px; width: 1080px; text-align: center; color: #fff; }
+  #dTxt .a { font: 600 84px/1 'Inter'; letter-spacing: -2px; }
+  #dTxt .b { font: 900 190px/0.95 'Inter'; letter-spacing: -6px; }
+  .lt { display: inline-block; }
+
+  /* F. message */
+  #chat { background: #f2f2f7; }
+  #bub { right: 120px; top: 880px; height: 150px; border-radius: 75px; background: var(--ios); color: #fff; font: 600 56px 'Inter'; letter-spacing: -1px;
+    display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: visible; transform-origin: 100% 100%; }
+  #bub svg.tail { position: absolute; right: -14px; bottom: -4px; width: 60px; height: 50px; }
+  #dots { display: flex; gap: 16px; position: absolute; }
+  #dots i { width: 24px; height: 24px; border-radius: 12px; background: rgba(255,255,255,.9); display: block; }
+  #msg { position: absolute; padding: 0 56px; }
+  .mw { display: inline-block; margin-right: 14px; }
+  #wa { left: 0; top: 1110px; width: 1080px; display: flex; justify-content: center; }
+  #wa span { display: flex; align-items: center; gap: 16px; padding: 22px 38px; border-radius: 50px; background: #25d366; color: #fff; font: 700 40px 'Inter'; box-shadow: 0 16px 40px rgba(37,211,102,.35); }
+  #wa svg { width: 48px; height: 48px; }
+  #read { left: 0; top: 1040px; width: 960px; text-align: right; font: 500 30px 'Inter'; color: var(--mute); }
+
+  /* G. fin */
+  #end { background: #000; }
+  #logo { left: 0; top: 860px; width: 1080px; text-align: center; font: 700 82px 'JB'; letter-spacing: -3px; color: #fff; white-space: nowrap; }
+  #endSub { left: 0; top: 1000px; width: 1080px; text-align: center; font: 500 40px 'Inter'; color: #9a9aa0; }
+  #fade { background: #000; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- A. accroche -->
+  <div id="hook" class="layer"><div id="hl1" class="hl" style="top:820px"></div><div id="hl2" class="hl" style="top:950px"></div><div id="blocks"></div></div>
+
+  <!-- B. recherche -->
+  <div id="search" class="layer">
+    <div id="glowS" class="abs"></div>
+    <div id="bBack" class="abs side"><svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></div>
+    <div id="bTabs" class="abs side"><svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2" stroke-linejoin="round"><rect x="7" y="7" width="12" height="12" rx="3"/><path d="M5 15V7a2 2 0 0 1 2-2h8"/></svg></div>
+    <div id="pill" class="abs">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      <div id="pTxt"><span id="ph">rechercher…</span><span id="typed"></span><span id="caret"></span></div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg>
+    </div>
+    <div id="dot" class="abs"></div>
+  </div>
+
+  <!-- C. profil -->
+  <div id="profile" class="layer"><div id="pWrap" class="abs">
+    <div id="avatar" class="abs"><img src="assets/avatar.jpg" alt=""></div>
+    <div id="pName" class="abs">Jordy Adopo</div>
+    <div id="pTag" class="abs">Je fais ton site internet</div>
+    <div id="chips" class="abs"></div>
+    <div id="rTitle" class="abs">Mes réalisations</div>
+    <div id="thumbs"></div>
+  </div></div>
+
+  <!-- D. réalisations -->
+  <div id="works" class="layer">
+    <div id="wTitle" class="abs"></div>
+    <div id="fanWrap" class="abs"><div id="fan"></div></div>
+  </div>
+
+  <!-- E. devis -->
+  <div id="devis" class="layer">
+    <div id="band" class="abs"></div>
+    <div id="dTxt" class="abs"><div class="a" id="dA"></div><div class="b" id="dB"></div></div>
+    <div id="tile" class="abs">&lt;je.fais<span class="red">/</span>&gt;</div>
+  </div>
+
+  <!-- F. message -->
+  <div id="chat" class="layer">
+    <div id="bub" class="abs"><div id="dots"><i></i><i></i><i></i></div><div id="msg"></div>
+      <svg class="tail" viewBox="0 0 60 50"><path d="M0 0 C 6 26, 24 44, 58 48 C 34 50, 14 44, 0 36 Z" fill="#0a84ff"/></svg></div>
+    <div id="read" class="abs">Distribué</div>
+    <div id="wa" class="abs"><span><svg viewBox="0 0 32 32" fill="#fff"><path d="M16 3C8.8 3 3 8.7 3 15.8c0 2.3.6 4.5 1.8 6.5L3 29l6.9-1.8c1.9 1 4 1.6 6.1 1.6 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm5.9 15.5c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2s0-.5.1-.6l.5-.6c.2-.2.2-.4.3-.6s0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.4 3.4c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.7.8.3 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5s.3-1.4.2-1.5c-.1-.2-.3-.3-.7-.4z"/></svg><b id="waTxt"></b></span></div>
+  </div>
+
+  <!-- G. fin -->
+  <div id="end" class="layer"><div id="logo" class="abs"></div><div id="endSub" class="abs"></div></div>
+
+  <!-- main (commune aux scènes) -->
+  <svg id="hand" class="abs" viewBox="0 0 64 80"><path d="M22 10a6 6 0 0 1 12 0v22a6 6 0 0 1 11 1v2a6 6 0 0 1 11 2v16c0 13-9 21-21 21h-5c-8 0-12-4-16-9L4 48a6 6 0 0 1 9-8l9 9Z" fill="#fff" stroke="#111" stroke-width="3" stroke-linejoin="round"/><path d="M34 32v12M45 35v10" stroke="#111" stroke-width="2.6" stroke-linecap="round"/></svg>
+  <div id="ring" class="abs tapring"></div>
+  <div id="fade" class="layer"></div>
+</div>
+
+<script type="module">
+import * as S from './score.js';
+const { T, HOOK, SEARCH, PROFILE, CHIPS, SITES, WORKS, DEVIS, CHAT, END, CONTACT } = S;
+
+// ---------- outils ----------
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, html, parent) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; if (parent) parent.appendChild(e); return e; };
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const eOut = (k) => 1 - Math.pow(1 - k, 3);
+const eOutExpo = (k) => (k >= 1 ? 1 : 1 - Math.pow(2, -10 * k));
+const eIn = (k) => k * k * k;
+const eInOut = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+const spring = (dt, w = 17, z = 8) => (dt <= 0 ? 0 : 1 - Math.exp(-z * dt) * Math.cos(w * dt));
+const show = (e, on) => { e.style.display = on ? '' : 'none'; return on; };
+const css = (e, o) => Object.assign(e.style, o);
+const inWin = (t, [a, b]) => t >= a && t < b;
+const esc = (s) => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// entrée « flou → net » (le style de la référence)
+const blurIn = (k, dy = 40) => ({ opacity: clamp(k * 1.4), filter: `blur(${(1 - k) * 22}px)`, transform: `translateY(${(1 - k) * dy}px)` });
+
+await document.fonts.load("700 80px 'JB'"); await document.fonts.load("700 80px 'Inter'"); await document.fonts.load("300 80px 'Inter'"); await document.fonts.load("900 80px 'Inter'");
+await document.fonts.ready;
+
+// =============== A. accroche ===============
+const HW = [[['Toujours', 0], ['à la', 0], ['recherche', 0]], [["d'un", 0], ['(', 2], ['développeur', 1], [')', 2], ['?', 0]]];
+const hookWords = [];
+HW.forEach((line, li) => line.forEach(([w, kind]) => {
+  const s = el('span', kind === 2 ? 'hw par' : 'hw', w, $(li ? 'hl2' : 'hl1'));
+  if (kind === 1) s.style.color = '#fff';
+  if (kind !== 2) $(li ? 'hl2' : 'hl1').appendChild(document.createTextNode(' '));
+  hookWords.push({ s, kind });
+}));
+const BLK_COLORS = ['#37c8ff', '#0a84ff', '#7b5cff', '#3ee6a8', '#5b7bff', '#ff3b4e', '#c86bff'];
+const stageR = $('stage').getBoundingClientRect();
+const blocks = hookWords.filter((w) => w.kind !== 2).map((w, i) => {
+  const r = w.s.getBoundingClientRect();
+  const b = el('div', 'blk abs', null, $('blocks'));
+  css(b, { left: `${r.left - stageR.left}px`, top: `${r.top - stageR.top + r.height * 0.18}px`, width: `${r.width}px`, height: `${r.height * 0.7}px`, background: BLK_COLORS[i % BLK_COLORS.length] });
+  return { b, w, i, from: i % 2 ? 700 : -700 };
+});
+const parens = hookWords.filter((w) => w.kind === 2);
+function sceneHook(t) {
+  if (!show($('hook'), inWin(t, T.hook))) return;
+  blocks.forEach(({ b, w, i, from }) => {
+    const a = HOOK.blocks + i * 0.05, k = eOutExpo(prog(t, a, a + 0.35));
+    const morph = prog(t, HOOK.words + i * 0.05, HOOK.words + i * 0.05 + 0.25);
+    css(b, { transform: `translateX(${(1 - k) * from}px) scaleX(${lerp(0.25, 1, k) * (1 - morph * 0.15)}) scaleY(${1 - morph * 0.6})`, opacity: k > 0 ? 1 - morph : 0, filter: `blur(${(1 - k) * 10}px)` });
+    css(w.s, { opacity: morph, filter: `blur(${(1 - morph) * 12}px)` });
+  });
+  // parenthèses : partent du mot et s'écartent avec un ressort
+  const pk = spring(t - HOOK.paren, 15, 8);
+  parens.forEach(({ s }, j) => css(s, { opacity: t >= HOOK.paren ? 1 : 0, transform: `translateX(${(1 - pk) * (j ? -120 : 120)}px) scale(${lerp(0.4, 1, clamp(pk, 0, 1.2))})` }));
+  const dev = hookWords.find((w) => w.kind === 1).s;
+  css(dev, { color: t >= HOOK.paren ? '#ff3b4e' : '#fff' });
+  const out = eIn(prog(t, 1.82, 2.05));
+  css($('hook'), { opacity: 1 - out });
+  [$('hl1'), $('hl2')].forEach((h) => css(h, { transform: `scale(${lerp(1, 1.12, out)})`, filter: `blur(${out * 20}px)` }));
+}
+
+// =============== B. recherche ===============
+function sceneSearch(t) {
+  if (!show($('search'), inWin(t, T.search))) return;
+  const ik = spring(t - SEARCH.pill, 14, 8), ex = eOutExpo(prog(t, SEARCH.expand, SEARCH.expand + 0.35));
+  const w = lerp(560, 680, ex), press = Math.exp(-Math.pow((t - SEARCH.enter) / 0.05, 2)) + Math.exp(-Math.pow((t - SEARCH.dot - 0.13) / 0.04, 2)) * 0.6;
+  const out = eIn(prog(t, SEARCH.enter + 0.15, 4.6));
+  css($('pill'), { width: `${w}px`, transform: `translate(-50%,0) scale(${lerp(0.6, 1, clamp(ik, 0, 1.1)) * (1 - press * 0.05) * (1 + out * 0.6)})`, filter: `blur(${clamp(1 - ik) * 24 + out * 30}px)`, opacity: clamp(ik * 2) * (1 - out) });
+  // boutons latéraux qui sortent de la barre
+  [[$('bBack'), -1], [$('bTabs'), 1]].forEach(([b, s]) => {
+    const k = spring(t - SEARCH.expand - 0.05, 15, 8);
+    css(b, { left: `${540 + s * (w / 2 + 20 + 58) - 58 + (1 - k) * -s * 140}px`, opacity: t >= SEARCH.expand ? 1 - out : 0, transform: `scale(${clamp(k, 0, 1.2)})`, filter: `blur(${out * 30}px)` });
+  });
+  // point qui tombe et « clique » la barre
+  const dk = prog(t, SEARCH.dot - 0.1, SEARCH.dot + 0.13), dOut = prog(t, SEARCH.dot + 0.13, SEARCH.dot + 0.3);
+  css($('dot'), { left: '525px', top: `${lerp(700, 943, dk * dk)}px`, opacity: t > SEARCH.dot - 0.1 && dOut < 1 ? 1 : 0, transform: `scale(${1 - dOut})` });
+  // texte : placeholder flou qui part, puis frappe
+  const n = Math.floor(SEARCH.query.length * prog(t, SEARCH.typeFrom, SEARCH.typeTo));
+  css($('ph'), { display: t < SEARCH.typeFrom - 0.05 ? '' : 'none', filter: `blur(${prog(t, SEARCH.expand, SEARCH.typeFrom) * 14}px)`, opacity: 1 - prog(t, SEARCH.expand, SEARCH.typeFrom - 0.05) });
+  $('typed').textContent = SEARCH.query.slice(0, n);
+  css($('caret'), { opacity: t > SEARCH.expand + 0.1 && t < SEARCH.enter && (n < SEARCH.query.length || Math.floor(t * 4) % 2 === 0) ? 1 : 0 });
+  // halo rouge-violet à la validation
+  const gk = eOut(prog(t, SEARCH.enter, 4.5));
+  css($('glowS'), { opacity: gk * (1 - eIn(prog(t, 4.45, 4.6))), transform: `translate(-50%,-50%) scale(${lerp(0.2, 1.4, gk)})` });
+}
+
+// =============== C. profil ===============
+CHIPS.forEach((c) => { const e = el('div', 'chip', `<i>${c.ic}</i>${c.t}`, $('chips')); css(e, { background: c.bg, color: c.fg }); });
+const thumbs = SITES.slice(0, 3).map((s, i) => { const e = el('div', 'abs thumb', `<img src="assets/${s.img}.jpg" alt=""><b>${s.name}</b>`, $('thumbs')); e.style.left = `${60 + i * 330}px`; return e; });
+const SCROLL = -300, tapThumb = 1;
+const thumbCenter = (i) => ({ x: 60 + i * 330 + 150, y: 1200 + 150 + SCROLL });
+function sceneProfile(t) {
+  if (!show($('profile'), inWin(t, T.profile))) return;
+  const op = eOut(prog(t, T.profile[0], T.profile[0] + 0.25));
+  css($('profile'), { opacity: op });
+  const sc = eInOut(prog(t, PROFILE.scroll, PROFILE.scroll + 0.45));
+  const zin = eIn(prog(t, PROFILE.tap + 0.15, T.profile[1]));
+  const tc = thumbCenter(tapThumb);
+  css($('pWrap'), { transform: `translateY(${sc * SCROLL}px)` });
+  const ak = spring(t - PROFILE.avatar, 14, 8);
+  css($('avatar'), { transform: `scale(${clamp(ak, 0, 1.2)})`, opacity: t >= PROFILE.avatar ? 1 : 0 });
+  css($('pName'), blurIn(eOut(prog(t, PROFILE.name, PROFILE.name + 0.35))));
+  css($('pTag'), blurIn(eOut(prog(t, PROFILE.name + 0.1, PROFILE.name + 0.45))));
+  [...$('chips').children].forEach((c, i) => { const k = spring(t - PROFILE.chips - i * 0.07, 16, 8); css(c, { transform: `scale(${clamp(k, 0, 1.2)})`, opacity: k > 0.02 ? 1 : 0 }); });
+  css($('rTitle'), blurIn(eOut(prog(t, PROFILE.thumbs - 0.1, PROFILE.thumbs + 0.25))));
+  thumbs.forEach((e, i) => {
+    const k = spring(t - PROFILE.thumbs - i * 0.08, 15, 8), hit = i === tapThumb ? Math.exp(-Math.pow((t - PROFILE.tap) / 0.06, 2)) : 0;
+    css(e, { transform: `translateY(${(1 - k) * 160}px) scale(${clamp(k, 0, 1.1) * (1 - hit * 0.08)})`, opacity: t >= PROFILE.thumbs + i * 0.08 ? 1 : 0, boxShadow: i === tapThumb && t > PROFILE.tap ? `0 0 0 ${8 * (1 - zin)}px #0a84ff, 0 20px 50px rgba(20,20,40,.14)` : '' });
+  });
+  // la vignette touchée grossit jusqu'à remplir l'écran
+  css($('pWrap'), { transform: `translateY(${sc * SCROLL}px)`, transformOrigin: `${tc.x}px ${tc.y - SCROLL}px` });
+  if (zin > 0) css($('pWrap'), { transform: `translateY(${SCROLL}px) scale(${1 + zin * 5})`, filter: `blur(${zin * 12}px) brightness(${1 - zin * 0.9})` });
+  else css($('pWrap'), { filter: 'none' });
+}
+
+// =============== D. réalisations ===============
+['Des sites qui', '<span class="g">travaillent</span>', '<span class="g">pour toi.</span>'].forEach((w, i) => { el('span', 'ww', w, $('wTitle')); if (i === 0) el('br', null, null, $('wTitle')); else $('wTitle').appendChild(document.createTextNode(' ')); });
+const fcards = SITES.map((s) => { const e = el('div', 'fcard', `<img src="assets/${s.img}.jpg" alt=""><div class="sh"></div>`, $('fan')); return { e, sh: e.querySelector('.sh') }; });
+function sceneWorks(t) {
+  if (!show($('works'), inWin(t, T.works))) return;
+  const op = eOut(prog(t, T.works[0], T.works[0] + 0.2)), out = eIn(prog(t, 8.62, 8.85));
+  css($('works'), { opacity: op });
+  [...$('wTitle').querySelectorAll('.ww')].forEach((w, i) => css(w, blurIn(eOut(prog(t, WORKS.title + i * 0.12, WORKS.title + i * 0.12 + 0.4)))));
+  css($('wTitle'), { opacity: 1 - out, filter: `blur(${out * 20}px)` });
+  const rot = lerp(-38, -18, eOut(prog(t, 7.0, 8.8)));
+  css($('fan'), { transform: `rotateX(8deg) rotateY(${rot}deg) translateY(${Math.sin(t * 3) * 6}px) scale(${1.22 - out * 0.3})`, opacity: 1 - out });
+  const lift = Math.exp(-Math.pow((t - WORKS.tap - 0.15) / 0.25, 2));
+  fcards.forEach(({ e, sh }, i) => {
+    const k = spring(t - 7.1 - i * 0.08, 13, 8), c = i - 1.5;
+    const z = (i === 2 ? lift * 140 : 0);
+    css(e, { transform: `translateX(${c * 175 * clamp(k, 0, 1.1)}px) translateZ(${-Math.abs(c) * 120 + z}px) rotateY(${c * 6}deg) translateY(${(1 - k) * 500}px)`, opacity: t > 7.1 + i * 0.08 ? 1 : 0 });
+    sh.style.opacity = i === 2 ? 0.25 - lift * 0.25 : 0.3 + Math.abs(c) * 0.1;
+  });
+}
+
+// =============== E. devis ===============
+'demande ton'.split('').forEach((c) => el('span', 'lt', c === ' ' ? '&nbsp;' : c, $('dA')));
+'DEVIS'.split('').forEach((c) => el('span', 'lt', c, $('dB')));
+function sceneDevis(t) {
+  if (!show($('devis'), inWin(t, T.devis))) return;
+  const bk = eOutExpo(prog(t, DEVIS.band, DEVIS.band + 0.25)), zk = eInOut(prog(t, DEVIS.zoom, DEVIS.zoom + 0.4));
+  css($('band'), { transform: `translateY(${(1 - bk) * -2000}px) scaleX(${1 - zk})` });
+  const tk = spring(t - DEVIS.tile, 13, 7);
+  css($('tile'), { opacity: t >= DEVIS.tile ? 1 : 0, transform: `translateY(${(1 - tk) * -500 + zk * 130}px) rotate(${(1 - clamp(tk)) * -14 + zk * -7}deg) scale(${lerp(1, 0.86, zk)})` });
+  [...$('dA').children, ...$('dB').children].forEach((s, i) => { const k = spring(t - DEVIS.text - i * 0.025, 18, 9); css(s, { transform: `translateY(${(1 - k) * 90}px) scale(${clamp(k, 0, 1.15)})`, opacity: t > DEVIS.text + i * 0.025 ? 1 - zk : 0 }); });
+  const out = eIn(prog(t, 10.15, 10.35));
+  css($('tile'), { filter: `blur(${out * 18}px)` });
+}
+
+// =============== F. message ===============
+const words = CHAT.msg.split(' ').map((w) => el('span', 'mw', w, $('msg')));
+$('waTxt').textContent = `WhatsApp · ${CONTACT.phone}`;
+const msgW = (() => { const r = $('msg').getBoundingClientRect(); return r.width; })();
+function sceneChat(t) {
+  if (!show($('chat'), inWin(t, T.chat))) return;
+  const bk = spring(t - CHAT.typing, 15, 8), gw = eInOut(prog(t, CHAT.text - 0.05, CHAT.text + 0.3));
+  css($('bub'), { width: `${lerp(220, msgW, gw)}px`, transform: `scale(${clamp(bk, 0, 1.15)})`, opacity: t >= CHAT.typing ? 1 : 0 });
+  [...$('dots').children].forEach((d, i) => css(d, { transform: `translateY(${Math.sin((t - CHAT.typing) * 14 - i * 0.9) * -8}px)`, opacity: 1 - gw }));
+  words.forEach((w, i) => css(w, blurIn(eOut(prog(t, CHAT.text + 0.1 + i * 0.07, CHAT.text + 0.4 + i * 0.07)), 20)));
+  css($('read'), { opacity: eOut(prog(t, CHAT.wa - 0.2, CHAT.wa)) });
+  const wk = spring(t - CHAT.wa, 15, 8);
+  css($('wa'), { opacity: t >= CHAT.wa ? 1 : 0, transform: `translateY(${(1 - clamp(wk)) * 40}px) scale(${clamp(wk, 0, 1.15)})` });
+  const out = eIn(prog(t, 11.85, 12.05));
+  css($('chat'), { opacity: 1 - out, filter: `blur(${out * 20}px)` });
+}
+
+// =============== G. fin ===============
+$('logo').innerHTML = esc(CONTACT.logo).replace(/\./g, '<span class="red">.</span>').replace('&lt;', '<span class="red">&lt;</span>').replace('/&gt;', '<span class="red">/&gt;</span>');
+$('endSub').textContent = `${CONTACT.name} · ${CONTACT.phone}`;
+function sceneEnd(t) {
+  if (!show($('end'), t >= T.end[0])) return;
+  const k = eOutExpo(prog(t, END.logo, END.logo + 0.6)), pulse = 0.5 + 0.5 * Math.sin((t - END.logo) * 4);
+  css($('logo'), { opacity: k, transform: `scale(${lerp(1.25, 1, k)})`, filter: `blur(${(1 - k) * 24}px)`, textShadow: `0 0 ${20 + pulse * 25}px rgba(255,255,255,${0.35 + pulse * 0.25}), 0 0 80px rgba(255,59,78,${0.25 + pulse * 0.2})` });
+  css($('endSub'), blurIn(eOut(prog(t, END.name, END.name + 0.4)), 20));
+}
+
+// =============== main (curseur) ===============
+function sceneHand(t) {
+  let p = null, press = 0, tapAt = null;
+  if (t >= PROFILE.hand && t < PROFILE.tap + 0.35) {
+    const tc = thumbCenter(tapThumb), k = eOut(prog(t, PROFILE.hand, PROFILE.tap - 0.02));
+    p = { x: lerp(980, tc.x, k), y: lerp(1800, tc.y, k) }; tapAt = PROFILE.tap;
+  } else if (t >= WORKS.tap - 0.5 && t < WORKS.tap + 0.4) {
+    const k = eOut(prog(t, WORKS.tap - 0.5, WORKS.tap - 0.02)), o = eIn(prog(t, WORKS.tap + 0.15, WORKS.tap + 0.4));
+    p = { x: lerp(940, 600, k) + o * 400, y: lerp(1750, 1090, k) + o * 500 }; tapAt = WORKS.tap;
+  }
+  show($('hand'), !!p); show($('ring'), !!p);
+  if (!p) return;
+  press = Math.exp(-Math.pow((t - tapAt) / 0.05, 2));
+  css($('hand'), { transform: `translate(${p.x - 36}px, ${p.y - 8}px) scale(${1 - press * 0.12}) rotate(-8deg)` });
+  const rk = prog(t, tapAt, tapAt + 0.35);
+  css($('ring'), { opacity: rk > 0 && rk < 1 ? 1 - rk : 0, transform: `translate(${p.x - 70}px, ${p.y - 70}px) scale(${0.4 + eOut(rk) * 1.2})` });
+}
+
+// ---------- une image ----------
+function renderFrame(t) {
+  sceneHook(t); sceneSearch(t); sceneProfile(t); sceneWorks(t); sceneDevis(t); sceneChat(t); sceneEnd(t); sceneHand(t);
+  $('fade').style.opacity = eIn(prog(t, 13.75, S.duration));
+}
+
+await Promise.all([...document.images].map((i) => (i.complete ? 0 : new Promise((r) => (i.onload = i.onerror = r)))));
+window.renderFrame = renderFrame;
+window.FILM = { fps: S.fps, duration: S.duration, width: S.width, height: S.height };
+window.READY = true;
+const q = new URLSearchParams(location.search);
+if (q.has('t')) renderFrame(Number(q.get('t')));
+else if (!q.has('render')) { const t0 = performance.now(); const loop = () => { renderFrame(((performance.now() - t0) / 1000) % S.duration); requestAnimationFrame(loop); }; loop(); }
+</script>
+</body>
+</html>

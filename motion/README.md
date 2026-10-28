@@ -9,6 +9,7 @@ Chaque film est **une seule page HTML** : la fonction `renderFrame(t)` place tou
 | --- | --- | --- | --- |
 | Portfolio Jordy Adopo, « Je fais ton site internet » | `portfolio/` | 16 s | `rendus/portfolio.mp4` |
 | Le Glaceur, « La fraîcheur sous toutes ses formes » | `glaceur/` | 21 s | `rendus/glaceur.mp4` |
+| Auto-promo « Je fais ton site », style interface iPhone | `jefais/` | 14 s | `rendus/jefais.mp4` |
 
 ### Portfolio : déroulé (120 BPM, une coupe par temps fort)
 
@@ -38,6 +39,18 @@ Tout le minutage est dans `portfolio/score.js`, partagé par l'image et le son.
 
 Prix, produits, communes et numéro viennent de `src/js/config.js` du site Le Glaceur (photos et polices Barlow du site).
 
+### Je fais ton site : déroulé (120 BPM, style interface iPhone)
+
+| Temps | Scène |
+| --- | --- |
+| 0 – 2 s | Accroche sur fond noir : des blocs de couleur deviennent « Toujours à la recherche d'un (développeur) ? » |
+| 2 – 4,6 s | Barre de recherche : un point la touche, elle s'élargit, on tape `je.fais.ton.site`, halo à la validation |
+| 4,5 – 7 s | Carte de profil (avatar de la page, pastilles Vitrine / Devis / Apps / Google), défilement vers « Mes réalisations », la main touche AMD Design |
+| 7 – 8,8 s | « Des sites qui travaillent pour toi. » : les 4 sites en éventail 3D |
+| 8,8 – 10,3 s | Bande rouge, carte `<je.fais/>` et « demande ton DEVIS » |
+| 10,3 – 12 s | Bulle de message « On fait ton site ensemble ? » + WhatsApp |
+| 12 – 14 s | Logo `<je.fais.ton.site/>` lumineux, nom et numéro |
+
 ## Commandes
 
 ```bash
@@ -48,6 +61,7 @@ node motion/portfolio/audio.js                # bande-son synthétisée -> out/p
 node motion/render.js portfolio               # film -> out/portfolio.mp4 (flou de mouvement : 4 sous-images par image)
 node motion/render.js portfolio --stills 3,8  # images fixes -> out/stills/
 node motion/glaceur/audio.js && node motion/render.js glaceur   # film Le Glaceur (WebGL logiciel, plus lent)
+node motion/jefais/audio.js && node motion/render.js jefais     # auto-promo Je fais ton site
 ```
 
-Polices : Space Grotesk, JetBrains Mono et Barlow, licence SIL OFL (`*/assets/OFL-*.txt`).
+Polices : Space Grotesk, JetBrains Mono et Barlow (Inter pour « Je fais ton site », police du système), licence SIL OFL (`*/assets/OFL-*.txt`).
