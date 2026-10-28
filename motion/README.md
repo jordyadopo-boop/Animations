@@ -65,7 +65,7 @@ Prix, produits, communes et numéro viennent de `src/js/config.js` du site Le Gl
 | 18,8 – 21,4 s | « JorDEV donne à ton business l'image qu'il mérite. » |
 | 21,4 – 25 s | Cerveau, JorDEV, bouton WhatsApp, « Et arrête de chercher. » |
 
-Les extraits vidéo sont en WebM (le Chromium de rendu ne lit pas le H.264) ; `renderFrame(t)` attend que chaque vidéo soit positionnée.
+Les extraits vidéo sont des séquences d'images à 30 i/s (`jordev/assets/frames/`), dessinées image par image dans un canvas. La photo et les noms du faire-part sont floutés.
 
 ## Commandes
 
