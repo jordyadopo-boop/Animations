@@ -151,3 +151,10 @@ ep37/web/main.js
 ep37/cov/
 ep37/node_modules
 ep37/stills/
+ep38/seg/
+ep38/tts_cache/
+ep38/build/
+ep38/web/main.js
+ep38/cov/
+ep38/node_modules
+ep38/stills/
