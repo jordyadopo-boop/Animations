@@ -31,5 +31,5 @@ export const SITES = [
 export const WORKS = { title: 7.05, tap: 8.25 };
 export const DEVIS = { band: 8.8, tile: 8.95, text: 9.1, zoom: 10.0 };
 export const CHAT = { typing: 10.35, text: 10.8, wa: 11.4, msg: 'On fait ton site ensemble ?' };
-export const END = { logo: 12.05, name: 12.6 };
+export const END = { logo: 12.05, text: 12.45, name: 12.8 };   // cerveau 3D (le logo), puis le nom
 export const CONTACT = { logo: '<je.fais.ton.site/>', name: 'Jordy Adopo', phone: '+225 07 09 95 10 92' };

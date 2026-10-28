@@ -47,9 +47,9 @@ Prix, produits, communes et numéro viennent de `src/js/config.js` du site Le Gl
 | 2 – 4,6 s | Barre de recherche : un point la touche, elle s'élargit, on tape `je.fais.ton.site`, halo à la validation |
 | 4,5 – 7 s | Carte de profil (avatar de la page, pastilles Vitrine / Devis / Apps / Google), défilement vers « Mes réalisations », la main touche AMD Design |
 | 7 – 8,8 s | « Des sites qui travaillent pour toi. » : les 4 sites en éventail 3D |
-| 8,8 – 10,3 s | Bande rouge, carte `<je.fais/>` et « demande ton DEVIS » |
+| 8,8 – 10,3 s | Bande rouge, carte du logo (le cerveau 3D) et « demande ton DEVIS » |
 | 10,3 – 12 s | Bulle de message « On fait ton site ensemble ? » + WhatsApp |
-| 12 – 14 s | Logo `<je.fais.ton.site/>` lumineux, nom et numéro |
+| 12 – 14 s | Le logo : le cerveau 3D en verre du site (réseau de neurones qui s'allume), puis `<je.fais.ton.site/>`, nom et numéro |
 
 ## Commandes
 
@@ -65,3 +65,5 @@ node motion/jefais/audio.js && node motion/render.js jefais     # auto-promo Je 
 ```
 
 Polices : Space Grotesk, JetBrains Mono et Barlow (Inter pour « Je fais ton site », police du système), licence SIL OFL (`*/assets/OFL-*.txt`).
+
+Modèle 3D du cerveau (`jefais/assets/brain.glb`, repris du site `business-sites`) : [BodyParts3D](https://lifesciencedb.jp/bp3d/) © The Database Center for Life Science, licence CC BY-SA 2.1 Japon.

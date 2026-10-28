@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Je fais ton site · motion</title>
+<script type="importmap">{ "imports": { "three": "../../node_modules/three/build/three.module.js", "three/addons/": "../../node_modules/three/examples/jsm/" } }</script>
 <!--
   Auto-promo « Je fais ton site » (9:16, 14 s), style interface iPhone : accroche, recherche, profil, devis, message.
   Une seule fonction renderFrame(t) place tout à l'instant t.
@@ -70,8 +71,9 @@
   /* E. devis */
   #devis { background: radial-gradient(80% 60% at 50% 50%, #ffffff 0%, #e4e6ec 100%); }
   #band { left: 190px; top: -40px; width: 700px; height: 2000px; background: linear-gradient(90deg, #ff3b4e 0 50%, #e8263b 50% 100%); box-shadow: 0 0 120px rgba(255,59,78,.35); }
-  #tile { left: 290px; top: 700px; width: 500px; height: 200px; border-radius: 48px; background: #fff; box-shadow: 0 30px 70px rgba(0,0,0,.25), inset 0 0 0 10px #ffe1e5;
-    display: flex; align-items: center; justify-content: center; font: 700 64px 'JB'; letter-spacing: -2px; color: #111; }
+  #tile { left: 380px; top: 590px; width: 320px; height: 320px; border-radius: 80px; background: #000; overflow: hidden;
+    box-shadow: 0 30px 70px rgba(0,0,0,.35), 0 0 0 10px rgba(255,255,255,.9); }
+  #tileCv { width: 320px; height: 320px; display: block; }
   #dTxt { left: 0; top: 960px; width: 1080px; text-align: center; color: #fff; }
   #dTxt .a { font: 600 84px/1 'Inter'; letter-spacing: -2px; }
   #dTxt .b { font: 900 190px/0.95 'Inter'; letter-spacing: -6px; }
@@ -93,8 +95,9 @@
 
   /* G. fin */
   #end { background: #000; }
-  #logo { left: 0; top: 860px; width: 1080px; text-align: center; font: 700 82px 'JB'; letter-spacing: -3px; color: #fff; white-space: nowrap; }
-  #endSub { left: 0; top: 1000px; width: 1080px; text-align: center; font: 500 40px 'Inter'; color: #9a9aa0; }
+  #brainCv { left: 90px; top: 300px; width: 900px; height: 900px; mix-blend-mode: screen; -webkit-mask-image: radial-gradient(closest-side, #000 72%, transparent 100%); mask-image: radial-gradient(closest-side, #000 72%, transparent 100%); }
+  #logo { left: 0; top: 1180px; width: 1080px; text-align: center; font: 700 82px 'JB'; letter-spacing: -3px; color: #fff; white-space: nowrap; }
+  #endSub { left: 0; top: 1310px; width: 1080px; text-align: center; font: 500 40px 'Inter'; color: #9a9aa0; }
   #fade { background: #000; }
 </style>
 </head>
@@ -136,7 +139,7 @@
   <div id="devis" class="layer">
     <div id="band" class="abs"></div>
     <div id="dTxt" class="abs"><div class="a" id="dA"></div><div class="b" id="dB"></div></div>
-    <div id="tile" class="abs">&lt;je.fais<span class="red">/</span>&gt;</div>
+    <div id="tile" class="abs"><canvas id="tileCv" width="320" height="320"></canvas></div>
   </div>
 
   <!-- F. message -->
@@ -148,7 +151,7 @@
   </div>
 
   <!-- G. fin -->
-  <div id="end" class="layer"><div id="logo" class="abs"></div><div id="endSub" class="abs"></div></div>
+  <div id="end" class="layer"><canvas id="brainCv" class="abs" width="900" height="900"></canvas><div id="logo" class="abs"></div><div id="endSub" class="abs"></div></div>
 
   <!-- main (commune aux scènes) -->
   <svg id="hand" class="abs" viewBox="0 0 64 80"><path d="M22 10a6 6 0 0 1 12 0v22a6 6 0 0 1 11 1v2a6 6 0 0 1 11 2v16c0 13-9 21-21 21h-5c-8 0-12-4-16-9L4 48a6 6 0 0 1 9-8l9 9Z" fill="#fff" stroke="#111" stroke-width="3" stroke-linejoin="round"/><path d="M34 32v12M45 35v10" stroke="#111" stroke-width="2.6" stroke-linecap="round"/></svg>
@@ -157,6 +160,12 @@
 </div>
 
 <script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import * as S from './score.js';
 const { T, HOOK, SEARCH, PROFILE, CHIPS, SITES, WORKS, DEVIS, CHAT, END, CONTACT } = S;
 
@@ -291,6 +300,59 @@ function sceneWorks(t) {
   });
 }
 
+// =============== le logo : cerveau 3D en verre (modèle et matière du site business-sites) ===============
+const glCv = document.createElement('canvas');
+const renderer = new THREE.WebGLRenderer({ canvas: glCv, antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setClearColor(0x000000, 1);
+const scene3 = new THREE.Scene(), cam = new THREE.PerspectiveCamera(35, 1, 0.01, 10);
+cam.position.set(0, 0.03, 0.43); cam.lookAt(0, 0, 0);
+const composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene3, cam));
+const bloom = new UnrealBloomPass(new THREE.Vector2(450, 450), 0.9, 0.5, 0.2); composer.addPass(bloom);
+const HALF = new THREE.Vector3(0.0694, 0.083, 0.09);
+const glass = new THREE.ShaderMaterial({  // verre blanc : bords lumineux (Fresnel) + activité qui parcourt le cortex
+  uniforms: { uTime: { value: 0 }, uOn: { value: 0.4 } },
+  vertexShader: `varying vec3 vN, vV, vP; void main(){ vec4 w = modelMatrix * vec4(position, 1.); vP = w.xyz; vN = normalize(mat3(modelMatrix) * normal); vV = normalize(cameraPosition - w.xyz); gl_Position = projectionMatrix * viewMatrix * w; }`,
+  fragmentShader: `uniform float uTime, uOn; varying vec3 vN, vV, vP; void main(){ float f = pow(1. - abs(dot(normalize(vN), vV)), 2.4); float wave = .85 + .15 * sin(vP.y * 90. - uTime * 1.5 + vP.z * 40.); float a = (.012 + f) * uOn * wave; gl_FragColor = vec4(vec3(a * .5), 1.); }`,
+  transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
+});
+const brainG = new THREE.Group(); scene3.add(brainG);
+const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync('assets/brain.glb');
+let brainMesh; gltf.scene.traverse((o) => { if (o.isMesh && !brainMesh) brainMesh = o; });
+brainMesh.geometry.computeVertexNormals(); brainMesh.material = glass; brainMesh.renderOrder = 1;
+const pre = new THREE.Mesh(brainMesh.geometry, new THREE.MeshBasicMaterial({ colorWrite: false, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 2 }));
+pre.renderOrder = 0; brainMesh.add(pre); brainG.add(gltf.scene); brainG.updateMatrixWorld(true);
+// réseau de neurones à la surface : des ondes partent de 3 foyers et allument les points sur leur passage
+let rs = 7; const rnd = () => ((rs = (rs * 16807) % 2147483647) / 2147483647);
+const dotTex = (() => { const c = Object.assign(document.createElement('canvas'), { width: 64, height: 64 }), g = c.getContext('2d'), r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, '#fff'); r.addColorStop(0.3, 'rgba(255,255,255,.8)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+const posA = brainMesh.geometry.attributes.position, NP = 240, pts = [];
+for (let i = 0; i < NP; i++) pts.push(new THREE.Vector3().fromBufferAttribute(posA, Math.floor(rnd() * posA.count)).applyMatrix4(brainMesh.matrixWorld).multiplyScalar(1.02));
+const links = [], seen = new Set();
+pts.forEach((a, i) => pts.map((b, j) => [a.distanceTo(b), j]).sort((x, y) => x[0] - y[0]).slice(1, 4).forEach(([, j]) => { const k = `${Math.min(i, j)},${Math.max(i, j)}`; if (!seen.has(k)) { seen.add(k); links.push(i, j); } }));
+const seeds = [0, 1, 2].map(() => pts[Math.floor(rnd() * NP)]), dist = pts.map((p) => seeds.map((s) => p.distanceTo(s)));
+const pg = new THREE.BufferGeometry().setFromPoints(pts), pc = new Float32Array(NP * 3); pg.setAttribute('color', new THREE.BufferAttribute(pc, 3));
+const lg = new THREE.BufferGeometry(), lp = new Float32Array(links.length * 3), lc = new Float32Array(links.length * 3);
+links.forEach((k, i) => pts[k].toArray(lp, i * 3)); lg.setAttribute('position', new THREE.BufferAttribute(lp, 3)); lg.setAttribute('color', new THREE.BufferAttribute(lc, 3));
+const ADDM = { vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: false };
+const netP = new THREE.Points(pg, new THREE.PointsMaterial({ size: 0.004, map: dotTex, ...ADDM })), netL = new THREE.LineSegments(lg, new THREE.LineBasicMaterial(ADDM));
+netP.renderOrder = netL.renderOrder = 3; brainG.add(netP, netL);
+const glow = new Float32Array(NP);
+let glSize = 0;
+// dessine le cerveau à l'instant t dans un canvas 2D (carte du devis ou plan final)
+function drawBrain(t, target, size, on, spin) {
+  if (glSize !== size) { renderer.setSize(size, size, false); composer.setSize(size, size); glSize = size; }
+  glass.uniforms.uTime.value = t; glass.uniforms.uOn.value = on;
+  brainG.rotation.set(0.12, spin, 0);
+  for (let i = 0; i < NP; i++) {
+    let b = 0; for (let k = 0; k < 3; k++) { const r = (((t * 0.8 + k / 3) % 1) + 1) % 1 * 0.2; b += Math.exp(-Math.pow(dist[i][k] - r, 2) / 0.00012); }
+    glow[i] = (0.18 + Math.min(1, b)) * on * 1.6;
+    pc[i * 3] = glow[i] * 0.85; pc[i * 3 + 1] = glow[i] * 0.95; pc[i * 3 + 2] = glow[i];
+  }
+  for (let i = 0; i < links.length; i++) { const v = glow[links[i]] * 0.45; lc[i * 3] = v * 0.85; lc[i * 3 + 1] = v * 0.95; lc[i * 3 + 2] = v; }
+  pg.attributes.color.needsUpdate = lg.attributes.color.needsUpdate = true;
+  composer.render();
+  const g = target.getContext('2d'); g.clearRect(0, 0, target.width, target.height); g.drawImage(glCv, 0, 0, target.width, target.height);
+}
+
 // =============== E. devis ===============
 'demande ton'.split('').forEach((c) => el('span', 'lt', c === ' ' ? '&nbsp;' : c, $('dA')));
 'DEVIS'.split('').forEach((c) => el('span', 'lt', c, $('dB')));
@@ -303,6 +365,7 @@ function sceneDevis(t) {
   [...$('dA').children, ...$('dB').children].forEach((s, i) => { const k = spring(t - DEVIS.text - i * 0.025, 18, 9); css(s, { transform: `translateY(${(1 - k) * 90}px) scale(${clamp(k, 0, 1.15)})`, opacity: t > DEVIS.text + i * 0.025 ? 1 - zk : 0 }); });
   const out = eIn(prog(t, 10.15, 10.35));
   css($('tile'), { filter: `blur(${out * 18}px)` });
+  if (t >= DEVIS.tile) drawBrain(t, $('tileCv'), 320, 0.55, 0.6 + (t - DEVIS.tile) * 1.4);
 }
 
 // =============== F. message ===============
@@ -328,7 +391,11 @@ $('endSub').textContent = `${CONTACT.name} · ${CONTACT.phone}`;
 function sceneEnd(t) {
   if (!show($('end'), t >= T.end[0])) return;
   const k = eOutExpo(prog(t, END.logo, END.logo + 0.6)), pulse = 0.5 + 0.5 * Math.sin((t - END.logo) * 4);
-  css($('logo'), { opacity: k, transform: `scale(${lerp(1.25, 1, k)})`, filter: `blur(${(1 - k) * 24}px)`, textShadow: `0 0 ${20 + pulse * 25}px rgba(255,255,255,${0.35 + pulse * 0.25}), 0 0 80px rgba(255,59,78,${0.25 + pulse * 0.2})` });
+  // le cerveau s'allume, tourne, puis le nom s'écrit dessous
+  drawBrain(t, $('brainCv'), 900, lerp(0, 0.75, k) * (0.9 + 0.1 * pulse), -0.9 + (t - END.logo) * 0.55);
+  css($('brainCv'), { opacity: k, transform: `scale(${lerp(0.8, 1, k)})`, filter: `blur(${(1 - k) * 20}px)` });
+  const lk = eOutExpo(prog(t, END.text, END.text + 0.5));
+  css($('logo'), { opacity: lk, transform: `scale(${lerp(1.2, 1, lk)})`, filter: `blur(${(1 - lk) * 24}px)`, textShadow: `0 0 ${20 + pulse * 25}px rgba(255,255,255,${0.3 + pulse * 0.2}), 0 0 80px rgba(255,59,78,${0.25 + pulse * 0.2})` });
   css($('endSub'), blurIn(eOut(prog(t, END.name, END.name + 0.4)), 20));
 }
 
