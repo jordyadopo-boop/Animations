@@ -158,3 +158,10 @@ ep38/web/main.js
 ep38/cov/
 ep38/node_modules
 ep38/stills/
+ep39/seg/
+ep39/tts_cache/
+ep39/build/
+ep39/web/main.js
+ep39/cov/
+ep39/node_modules
+ep39/stills/
