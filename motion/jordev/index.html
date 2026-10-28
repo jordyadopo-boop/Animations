@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>JorDEV · motion</title>
+<!--
+  Film promo JorDEV (9:16, 25 s), sur la structure de la pub « Valtic » : accroche → marque → démo → preuves → pour qui → promesse → appel.
+  Chaque service cité est illustré par une vraie réalisation de Jordy ; le logo est le cerveau du fond de son site
+  (brain/ : brain.js du site en mode vidéo, dans un iframe). renderFrame(t) est asynchrone (positionnement des vidéos).
+  Aperçu : node render/serve.js puis http://localhost:5173/motion/jordev/index.html   (?t=4 fige une image)
+  Rendu  : node motion/render.js jordev
+-->
+<style>
+  :root { --red: #ff3b4e; --vio: #7b5cff; --mute: #a9a5b8; --bg: #07060d; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #000; overflow: hidden; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); font-family: 'Inter', system-ui, sans-serif; color: #fff; }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; }
+  .red { color: var(--red); }
+  #bg { background: radial-gradient(70% 45% at 50% 40%, #1a1030 0%, #0b0915 55%, #050409 100%); }
+  #glowA, #glowB { width: 1100px; height: 1100px; border-radius: 50%; filter: blur(80px); }
+  #glowA { background: radial-gradient(closest-side, rgba(123,92,255,.45), rgba(123,92,255,0)); }
+  #glowB { background: radial-gradient(closest-side, rgba(255,59,78,.35), rgba(255,59,78,0)); }
+  #dust { left: 0; top: 0; }
+
+  /* accroche */
+  #q { left: 0; top: 250px; width: 1080px; text-align: center; font: 700 78px/1.08 'Inter'; letter-spacing: -2.5px; }
+  .qw { display: inline-block; }
+  #pix .px { position: absolute; width: 34px; height: 34px; border-radius: 6px; }
+  #svc { left: 0; top: 470px; width: 1080px; height: 120px; }
+  .sv { position: absolute; left: 0; top: 0; width: 1080px; text-align: center; font: 800 96px/1.1 'Inter'; letter-spacing: -3px; white-space: nowrap; }
+  .card { position: absolute; overflow: hidden; border-radius: 34px; box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 2px rgba(255,255,255,.08); background: #111; transform-origin: 50% 50%; }
+  .win .bar { height: 56px; background: #1b1a22; display: flex; align-items: center; gap: 12px; padding: 0 22px; }
+  .win .bar i { width: 15px; height: 15px; border-radius: 50%; background: #3a3846; display: block; }
+  .win .bar i:first-child { background: var(--red); }
+  .win .bar b { margin-left: 14px; font: 500 22px 'Inter'; color: #a9a5b8; background: #26242f; padding: 7px 18px; border-radius: 10px; }
+  .win .view { position: relative; overflow: hidden; }
+  .win .view img { width: 100%; display: block; }
+  .logoCard { background: #fff; display: flex; align-items: center; justify-content: center; }
+  .logoCard img { width: 82%; display: block; }
+  .shine { position: absolute; top: -20%; width: 30%; height: 140%; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.75), rgba(255,255,255,0)); transform: skewX(-18deg); }
+  .poster img, .phone img, .phone video, .dash video, .dash img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .phone { border-radius: 54px; box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 12px #16141c, 0 0 0 14px #2c2a36; }
+  #tl { left: 170px; top: 1500px; width: 740px; height: 92px; border-radius: 20px; background: rgba(255,255,255,.06); border: 2px solid rgba(255,255,255,.1); }
+  #tl .clip { position: absolute; top: 14px; height: 30px; border-radius: 8px; }
+  #tl .aud { position: absolute; top: 52px; height: 24px; left: 16px; right: 16px; border-radius: 6px; background: repeating-linear-gradient(90deg, rgba(123,92,255,.6) 0 4px, transparent 4px 9px); }
+  #tl .ph { position: absolute; top: 6px; width: 4px; height: 80px; background: #fff; border-radius: 2px; box-shadow: 0 0 12px #fff; }
+  #rec { font: 700 26px 'Inter'; letter-spacing: 2px; }
+  #flash { background: #fff; }
+  .thumb { position: absolute; width: 120px; height: 150px; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.5), 0 0 0 2px rgba(255,255,255,.12); background: #111; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* logo */
+  #brainF { left: 0; top: 0; width: 1080px; height: 1080px; border: 0; mix-blend-mode: screen; transform-origin: 540px 540px; }
+  #brand { left: 0; width: 1080px; text-align: center; font: 800 170px/1 'Inter'; letter-spacing: -7px; white-space: nowrap; }
+  .bl { display: inline-block; }
+
+  /* recherche */
+  #pill { left: 120px; top: 1180px; width: 840px; height: 124px; border-radius: 62px; background: rgba(255,255,255,.08); border: 2px solid rgba(255,255,255,.16);
+    display: flex; align-items: center; gap: 24px; padding: 0 44px; font: 500 46px 'Inter'; color: #fff; white-space: nowrap; overflow: hidden; backdrop-filter: blur(10px); }
+  #pill svg { width: 48px; height: 48px; flex: none; }
+  #caret { display: inline-block; width: 4px; height: 52px; background: var(--red); vertical-align: -10px; margin-left: 3px; }
+
+  /* savoir-faire */
+  #skT { left: 0; top: 230px; width: 1080px; text-align: center; font: 800 72px/1.12 'Inter'; letter-spacing: -3px; }
+  .sw { display: inline-block; margin: 0 10px; }
+  .dash { left: 150px; top: 640px; width: 780px; height: 853px; border-radius: 40px; overflow: hidden; box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 2px rgba(255,255,255,.1); }
+  .pchip { font: 700 34px 'Inter'; padding: 18px 30px; border-radius: 40px; background: rgba(20,18,30,.85); border: 2px solid rgba(255,255,255,.18); white-space: nowrap; }
+
+  /* preuves */
+  #strip { left: 70px; top: 0; width: 150px; }
+  #strip .thumb { position: absolute; left: 0; width: 140px; height: 175px; }
+  #feat { left: 350px; top: 560px; width: 380px; height: 475px; }
+  #eq { left: 0; top: 1110px; width: 1080px; text-align: center; font: 800 96px/1 'Inter'; letter-spacing: -3px; white-space: nowrap; }
+
+  /* pour qui / promesse */
+  #who1 { left: 0; top: 820px; width: 1080px; text-align: center; font: 700 76px 'Inter'; letter-spacing: -2px; color: #d9d5ea; }
+  #who2 { left: 0; top: 920px; width: 1080px; height: 130px; }
+  .ww { position: absolute; left: 0; top: 0; width: 1080px; text-align: center; font: 800 112px/1.1 'Inter'; letter-spacing: -4px; white-space: nowrap; }
+  #blob { left: 340px; top: 860px; width: 400px; height: 220px; border-radius: 110px; background: radial-gradient(closest-side, #ff6b7a, #ff3b4e 50%, rgba(123,92,255,.6)); filter: blur(30px); }
+  #prom { left: 60px; top: 1080px; width: 960px; text-align: center; font: 800 92px/1.1 'Inter'; letter-spacing: -3px; }
+  .pw { display: inline-block; margin: 0 12px; }
+
+  /* appel */
+  #wa { left: 150px; top: 1360px; width: 780px; height: 140px; border-radius: 70px; background: #25d366; display: flex; align-items: center; justify-content: center; gap: 22px; font: 800 52px 'Inter'; letter-spacing: -1px; box-shadow: 0 30px 80px rgba(37,211,102,.35); }
+  #wa svg { width: 62px; height: 62px; }
+  #slogan { left: 0; top: 1560px; width: 1080px; text-align: center; font: 600 52px 'Inter'; color: #d9d5ea; white-space: nowrap; }
+  #fade { background: #000; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg" class="layer"></div>
+  <div id="glowA" class="abs"></div><div id="glowB" class="abs"></div>
+  <canvas id="dust" class="abs" width="1080" height="1920"></canvas>
+  <iframe id="brainF" class="abs" src="brain/index.html" title="cerveau"></iframe>
+
+  <!-- accroche -->
+  <div id="hook" class="layer">
+    <div id="pix"></div>
+    <div id="q" class="abs"><span class="qw">Tu</span> <span class="qw">cherches</span> <span class="qw">quelqu'un</span><br><span class="qw">pour</span> <span class="qw">réaliser…</span></div>
+    <div id="svc" class="abs"></div>
+    <div id="thumbs"></div>
+    <div id="tl" class="abs"><div class="clip" style="left:16px;width:300px;background:linear-gradient(90deg,#ff3b4e,#ff6b7a)"></div><div class="clip" style="left:322px;width:402px;background:linear-gradient(90deg,#7b5cff,#a48bff)"></div><div class="aud"></div><div class="ph"></div></div>
+  </div>
+  <div id="flash" class="layer"></div>
+
+  <!-- marque -->
+  <div id="brand" class="abs"><span class="bl">J</span><span class="bl">o</span><span class="bl">r</span><span class="bl red">D</span><span class="bl red">E</span><span class="bl red">V</span></div>
+
+  <!-- recherche -->
+  <div id="pill" class="abs"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><div><span id="typed"></span><span id="caret"></span></div></div>
+
+  <!-- savoir-faire -->
+  <div id="skills" class="layer">
+    <div id="skT" class="abs"><span class="sw">Fichiers.</span><span class="sw">Tableaux</span><span class="sw">de</span><span class="sw">bord.</span><br><span class="sw red">Suivi</span><span class="sw red">de</span><span class="sw red">ton</span><span class="sw red">business.</span></div>
+    <div id="dashBox" class="abs dash"><video id="vDash" src="assets/powerbi.webm" muted playsinline preload="auto"></video></div>
+    <div id="chips"></div>
+  </div>
+
+  <!-- preuves -->
+  <div id="proofs" class="layer"><div id="strip" class="abs"></div><div id="feat" class="abs"></div><div id="eq" class="abs"></div></div>
+
+  <!-- pour qui / promesse -->
+  <div id="who" class="layer"><div id="blob" class="abs"></div><div id="who1" class="abs">Que ce soit pour</div><div id="who2" class="abs"></div></div>
+  <div id="prom" class="abs"></div>
+
+  <!-- appel -->
+  <div id="wa" class="abs"><svg viewBox="0 0 32 32" fill="#fff"><path d="M16 3C8.8 3 3 8.7 3 15.8c0 2.3.6 4.5 1.8 6.5L3 29l6.9-1.8c1.9 1 4 1.6 6.1 1.6 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm5.9 15.5c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2s0-.5.1-.6l.5-.6c.2-.2.2-.4.3-.6s0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.4 3.4c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.7.8.3 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5s.3-1.4.2-1.5c-.1-.2-.3-.3-.7-.4z"/></svg><span id="waTxt"></span></div>
+  <div id="slogan" class="abs"></div>
+  <div id="fade" class="layer"></div>
+</div>
+
+<script type="module">
+import * as S from './score.js';
+const { T, QUESTION, SERVICES, EDIT, GATHER, LOGO, SEARCH, SKILLS, PROOFS, WHO, PROMISE, CTA, CONTACT } = S;
+
+// ---------- outils ----------
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, html, parent) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; if (parent) parent.appendChild(e); return e; };
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const eOut = (k) => 1 - Math.pow(1 - k, 3);
+const eOutExpo = (k) => (k >= 1 ? 1 : 1 - Math.pow(2, -10 * k));
+const eIn = (k) => k * k * k;
+const eInOut = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+const spring = (dt, w = 17, z = 8) => (dt <= 0 ? 0 : 1 - Math.exp(-z * dt) * Math.cos(w * dt));
+const show = (e, on) => { e.style.display = on ? '' : 'none'; return on; };
+const css = (e, o) => Object.assign(e.style, o);
+const inWin = (t, [a, b]) => t >= a && t < b;
+const blurIn = (k, dy = 40) => ({ opacity: clamp(k * 1.4), filter: `blur(${(1 - k) * 22}px)`, transform: `translateY(${(1 - k) * dy}px)` });
+let rs = 11; const rnd = () => ((rs = (rs * 16807) % 2147483647) / 2147483647);
+
+// positionne une vidéo sur un instant précis et attend que l'image soit prête
+function seek(v, time) {
+  time = clamp(time, 0, Math.max(0, v.duration - 0.04));
+  if (Math.abs(v.currentTime - time) < 0.004) return null;
+  return new Promise((res) => {
+    let done = false; const fin = () => { if (!done) { done = true; res(); } };
+    if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(fin);
+    v.addEventListener('seeked', () => setTimeout(fin, 30), { once: true });
+    setTimeout(fin, 800);
+    v.currentTime = time;
+  });
+}
+
+await document.fonts.load("800 80px 'Inter'"); await document.fonts.load("700 80px 'Inter'");
+
+// ---------- fond : poussière lumineuse (déterministe) ----------
+const DUST = Array.from({ length: 70 }, () => ({ x: rnd() * 1080, y: rnd() * 1920, r: 1.5 + rnd() * 4, s: 8 + rnd() * 30, p: rnd() * 6.28, a: 0.25 + rnd() * 0.6 }));
+function drawDust(t, amt) {
+  const g = $('dust').getContext('2d'); g.clearRect(0, 0, 1080, 1920); if (amt <= 0) return;
+  DUST.forEach((d) => {
+    const y = ((d.y - t * d.s) % 1920 + 1920) % 1920, x = d.x + Math.sin(t * 0.5 + d.p) * 20;
+    const tw = 0.6 + 0.4 * Math.sin(t * 2 + d.p);
+    g.fillStyle = `rgba(255,255,255,${d.a * tw * amt})`; g.beginPath(); g.arc(x, y, d.r, 0, 6.283); g.fill();
+  });
+}
+
+// ---------- 1. accroche ----------
+const PIX_COL = ['#ff3b4e', '#7b5cff', '#ff6b7a', '#a48bff', '#ffffff'];
+const qWords = [...$('q').querySelectorAll('.qw')];
+const sr = $('stage').getBoundingClientRect();
+const pix = qWords.flatMap((w, wi) => { const r = w.getBoundingClientRect(); return Array.from({ length: 5 }, (_, k) => {
+  const p = el('div', 'px', null, $('pix')); p.style.background = PIX_COL[(wi + k) % PIX_COL.length];
+  return { p, wi, tx: r.left - sr.left + (k / 4) * (r.width - 34), ty: r.top - sr.top + r.height / 2 - 17, sx: 540 + (rnd() - 0.5) * 900, sy: 900 + (rnd() - 0.5) * 900 };
+}); });
+const svcEls = SERVICES.map((s) => el('div', 'sv', `${s.pre} <span class="red">${s.word}</span> ?`, $('svc')));
+
+// une carte de réalisation par type (réutilisée par l'accroche et les preuves)
+function makeShow(kind, parent) {
+  const c = el('div', 'card', null, parent);
+  if (kind === 'site') { c.classList.add('win'); c.innerHTML = '<div class="bar"><i></i><i></i><i></i><b>jordyadopo-boop.github.io/business-sites</b></div><div class="view"><img src="assets/site.jpg" alt=""></div>'; }
+  if (kind === 'logo') { c.classList.add('logoCard'); c.innerHTML = '<img src="assets/logo-glaceur.png" alt=""><div class="shine"></div>'; }
+  if (kind === 'poster') { c.classList.add('poster'); c.innerHTML = '<img src="assets/affiche-tarifs.jpg" alt="">'; }
+  if (kind === 'edit') { c.classList.add('phone'); c.innerHTML = '<video src="assets/clip-a.webm" muted playsinline preload="auto"></video><video src="assets/clip-b.webm" muted playsinline preload="auto" style="position:absolute;inset:0"></video><div class="abs" style="left:34px;top:34px" id="rec"></div>'; }
+  if (kind === 'dash') { c.innerHTML = '<img src="assets/powerbi.jpg" alt="">'; }
+  if (kind === 'invite') { c.classList.add('phone'); c.innerHTML = '<img src="assets/invitation.jpg" alt="">'; }
+  return c;
+}
+const BOX = { site: [90, 640, 900, 660], logo: [110, 760, 860, 420], poster: [230, 640, 620, 775], edit: [295, 640, 490, 820], dash: [170, 640, 740, 810], invite: [300, 640, 480, 853] };
+const hookCards = SERVICES.map((s) => { const c = makeShow(s.kind, $('hook')); const [x, y, w, h] = BOX[s.kind]; css(c, { left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px` }); return c; });
+const orCard = el('div', 'card poster', '<img src="assets/octobre-rose.jpg" alt="">', $('hook')); css(orCard, { left: '300px', top: '640px', width: '620px', height: '775px' });
+$('hook').insertBefore(orCard, hookCards[2]);
+const editV = [...hookCards[3].querySelectorAll('video')];
+const THUMB_SRC = { site: 'assets/site.jpg', logo: 'assets/logo-glaceur.png', poster: 'assets/affiche-tarifs.jpg', edit: null, dash: 'assets/powerbi.jpg', invite: 'assets/invitation.jpg' };
+const thumbs = SERVICES.map((s, i) => { const th = el('div', 'thumb', s.kind === 'edit' ? '' : `<img src="${THUMB_SRC[s.kind]}" alt="">`, $('thumbs')); if (s.kind === 'logo') th.style.background = '#fff'; if (s.kind === 'logo') th.querySelector('img').style.objectFit = 'contain'; return th; });
+// vignette « montage » : une image fixe du clip (dessinée une fois prête)
+const editThumb = el('canvas', null, null, thumbs[3]); editThumb.width = 120; editThumb.height = 150; editThumb.style.cssText = 'width:100%;height:100%;display:block';
+
+async function sceneHook(t) {
+  if (!show($('hook'), inWin(t, T.hook))) { show($('flash'), false); return; }
+  // pixels qui s'assemblent en question
+  pix.forEach(({ p, wi, tx, ty, sx, sy }) => {
+    const k = eOutExpo(prog(t, QUESTION + wi * 0.06, QUESTION + wi * 0.06 + 0.45)), m = prog(t, 0.4 + wi * 0.06, 0.62 + wi * 0.06);
+    css(p, { transform: `translate(${lerp(sx, tx, k)}px, ${lerp(sy, ty, k)}px) scale(${1 - m})`, opacity: k > 0 ? 1 - m : 0 });
+  });
+  qWords.forEach((w, i) => css(w, blurIn(eOut(prog(t, 0.42 + i * 0.06, 0.7 + i * 0.06)), 10)));
+  const gat = eInOut(prog(t, GATHER, GATHER + 0.5));
+  css($('q'), { opacity: 1 - gat, filter: `blur(${gat * 16}px)` });
+  // le service cité change, en rouge
+  svcEls.forEach((e, i) => {
+    const s = SERVICES[i], kin = eOut(prog(t, s.t, s.t + 0.22)), kout = eIn(prog(t, s.t + s.d - 0.12, s.t + s.d + 0.04));
+    css(e, { opacity: kin * (1 - kout), filter: `blur(${(1 - kin) * 18 + kout * 18}px)`, transform: `translateY(${(1 - kin) * 50 - kout * 50}px) scale(${lerp(0.9, 1, kin)})` });
+  });
+  // les réalisations : grandes quand on les cite, puis elles rejoignent la rangée du bas
+  const promises = [];
+  hookCards.forEach((c, i) => {
+    const s = SERVICES[i], [x, y, w, h] = BOX[s.kind];
+    const sp = spring(t - s.t + 0.05, 14, 8), out = eInOut(prog(t, s.t + s.d - 0.1, s.t + s.d + 0.25));
+    const on = t >= s.t - 0.05 && out < 1;
+    show(c, on);
+    if (on) css(c, { transform: `translateY(${(1 - sp) * 260}px) scale(${lerp(0.7, 1, clamp(sp, 0, 1.1)) * (1 - out * 0.85)}) rotate(${(1 - clamp(sp)) * (i % 2 ? 6 : -6)}deg)`, opacity: clamp(sp * 2) * (1 - out), filter: `blur(${(1 - clamp(sp)) * 12 + out * 10}px)` });
+    // effets propres à chaque réalisation
+    if (s.kind === 'site' && on) css(c.querySelector('.view img'), { transform: `translateY(${-eInOut(prog(t, s.t + 0.25, s.t + s.d)) * 900}px)` });
+    if (s.kind === 'logo' && on) { css(c.querySelector('img'), { clipPath: `inset(0 ${(1 - eOut(prog(t, s.t + 0.05, s.t + 0.4))) * 100}% 0 0)` }); css(c.querySelector('.shine'), { left: `${lerp(-40, 130, prog(t, s.t + 0.35, s.t + 0.75))}%` }); }
+    if (s.kind === 'edit' && on) {
+      const lt = t - s.t, cut = EDIT.cut - s.t, [va, vb] = editV, inB = lt >= cut;
+      va.style.opacity = inB ? 0 : 1; vb.style.opacity = inB ? 1 : 0;
+      promises.push(seek(inB ? vb : va, inB ? lt - cut : lt));
+      let punch = 0; EDIT.beats.forEach((b) => { if (t >= b) punch = Math.max(punch, Math.exp(-(t - b) * 9)); });
+      const rgb = Math.exp(-Math.abs(t - EDIT.cut) * 14) * 14 + punch * 4;
+      const whip = Math.exp(-Math.pow((t - EDIT.cut) / 0.06, 2));
+      css(c, { transform: `${c.style.transform} scale(${1 + punch * 0.05})`, filter: `drop-shadow(${rgb}px 0 0 rgba(255,59,78,.85)) drop-shadow(${-rgb}px 0 0 rgba(55,200,255,.75)) blur(${whip * 14}px)` });
+      c.querySelector('#rec').innerHTML = `<span style="color:#ff3b4e">●</span> REC 00:0${Math.floor(lt)}:${String(Math.floor((lt % 1) * 30)).padStart(2, '0')}`;
+      $('flash').style.opacity = whip * 0.8;
+    }
+  });
+  show($('flash'), true); if (t < EDIT.cut - 0.2 || t > EDIT.cut + 0.2) $('flash').style.opacity = 0;
+  // l'affiche Octobre Rose glisse derrière l'affiche de tarifs
+  const ps = SERVICES[2], ok = eOut(prog(t, ps.t + 0.2, ps.t + 0.5)), oo = eInOut(prog(t, ps.t + ps.d - 0.1, ps.t + ps.d + 0.25));
+  show(orCard, t > ps.t + 0.15 && oo < 1);
+  css(orCard, { transform: `translateX(${ok * 150}px) rotate(${ok * 7}deg) scale(${0.92 * (1 - oo * 0.85)})`, opacity: ok * (1 - oo) });
+  // timeline de montage sous le téléphone
+  const es = SERVICES[3], tk = eOut(prog(t, es.t, es.t + 0.3)), to = eIn(prog(t, es.t + es.d - 0.2, es.t + es.d + 0.1));
+  show($('tl'), tk > 0 && to < 1);
+  css($('tl'), { opacity: tk * (1 - to), transform: `translateY(${(1 - tk) * 40}px)` });
+  css($('tl').querySelector('.ph'), { left: `${16 + prog(t, es.t, es.t + es.d) * 704}px` });
+  // rangée des réalisations déjà vues, puis tout le monde part dans le cerveau
+  thumbs.forEach((th, i) => {
+    const s = SERVICES[i], k = eOut(prog(t, s.t + s.d, s.t + s.d + 0.3));
+    const x = 60 + i * 162, y = 1640, a = (i / 5 - 0.5) * 2;
+    const gx = lerp(x, 480, gat) + Math.sin(gat * 3.1) * a * 120, gy = lerp(y, 860, gat) - Math.sin(gat * 3.1) * 260;
+    css(th, { opacity: k * (1 - prog(t, GATHER + 0.35, GATHER + 0.55)), transform: `translate(${gx}px, ${gy}px) rotate(${a * 8 * (1 - gat) + gat * a * 40}deg) scale(${lerp(0.6, 1, k) * (1 - gat * 0.6)})` });
+  });
+  await Promise.all(promises.filter(Boolean));
+}
+
+// ---------- cerveau (logo) ----------
+const brainWin = () => $('brainF').contentWindow;
+await new Promise((r) => { const f = $('brainF'); if (f.contentWindow && f.contentWindow.__brain && f.contentWindow.__brain.ready()) r(); else f.addEventListener('load', r, { once: true }); });
+while (!(brainWin().__brain && brainWin().__brain.ready())) await new Promise((r) => setTimeout(r, 100));
+const Br = brainWin().__brain;
+// place le cerveau : centre (cx, cy), taille, luminosité
+function brain(t, on, cx, cy, size, zoom, yaw) {
+  show($('brainF'), on > 0);
+  if (on <= 0) return;
+  Br.user.yaw = yaw; Br.user.pitch = 0.08 * Math.sin(t * 0.4); Br.user.zoom = zoom;
+  Br.render(t, 0);
+  css($('brainF'), { opacity: on, transform: `translate(${cx - 540}px, ${cy - 540}px) scale(${size / 1080})` });
+}
+const brandL = [...$('brand').children];
+function sceneLogo(t) {
+  const on = inWin(t, [T.logo[0], T.promise[0]]) || t >= T.cta[0];
+  show($('brand'), on && t < T.search[1] || t >= CTA.name - 0.05);
+  // cerveau : présent de la marque à la recherche, puis pendant la promesse et l'appel
+  let bOn = 0, cy = 860, size = 1080, zoom = 0.62;
+  if (inWin(t, [LOGO.brain, T.skills[0] + 0.1])) { bOn = eOut(prog(t, LOGO.brain, LOGO.brain + 0.5)) * (1 - eIn(prog(t, T.skills[0] - 0.15, T.skills[0] + 0.1))); cy = lerp(860, 620, eInOut(prog(t, T.search[0], T.search[0] + 0.4))); size = lerp(1080, 760, eInOut(prog(t, T.search[0], T.search[0] + 0.4))); zoom = lerp(1.4, 0.62, eOutExpo(prog(t, LOGO.brain, LOGO.brain + 0.9))); }
+  else if (inWin(t, T.promise) || t >= T.cta[0]) {
+    const cta = t >= T.cta[0];
+    bOn = cta ? eOut(prog(t, CTA.brain, CTA.brain + 0.5)) : eOut(prog(t, T.promise[0], T.promise[0] + 0.4)) * (1 - eIn(prog(t, T.promise[1] - 0.2, T.promise[1])));
+    cy = cta ? 700 : 640; size = cta ? 1000 : 880; zoom = cta ? lerp(1.2, 0.66, eOutExpo(prog(t, CTA.brain, CTA.brain + 1))) : 0.7;
+  }
+  brain(t, bOn, 540, cy, size, zoom, 0.35 * Math.sin(t * 0.5) + t * 0.15);
+  // JorDEV
+  if (t < T.search[1]) {
+    const up = eInOut(prog(t, T.search[0], T.search[0] + 0.4)), out = eIn(prog(t, T.search[1] - 0.25, T.search[1]));
+    css($('brand'), { top: `${lerp(1360, 900, up)}px`, transform: `scale(${lerp(1, 0.6, up)})`, opacity: 1 - out });
+    brandL.forEach((l, i) => css(l, blurIn(eOut(prog(t, LOGO.name + i * 0.05, LOGO.name + i * 0.05 + 0.35)), 30)));
+  } else {
+    css($('brand'), { top: '1150px', transform: 'scale(1)', opacity: 1 });
+    brandL.forEach((l, i) => css(l, blurIn(eOut(prog(t, CTA.name + i * 0.05, CTA.name + i * 0.05 + 0.35)), 30)));
+  }
+  // éclair de rassemblement
+  const fl = Math.exp(-Math.pow((t - LOGO.brain) / 0.08, 2)) * 0.5;
+  if (t > GATHER && t < LOGO.brain + 0.3) { show($('flash'), true); $('flash').style.opacity = fl; }
+}
+
+// ---------- recherche ----------
+function sceneSearch(t) {
+  if (!show($('pill'), inWin(t, T.search))) return;
+  const k = spring(t - SEARCH.pill, 14, 8), out = eIn(prog(t, SEARCH.enter + 0.05, T.search[1]));
+  const press = Math.exp(-Math.pow((t - SEARCH.enter) / 0.05, 2));
+  css($('pill'), { transform: `scale(${lerp(0.7, 1, clamp(k, 0, 1.1)) * (1 - press * 0.04) * (1 + out * 0.3)})`, opacity: clamp(k * 2) * (1 - out), filter: `blur(${(1 - clamp(k)) * 14 + out * 20}px)` });
+  const n = Math.floor(SEARCH.query.length * prog(t, SEARCH.typeFrom, SEARCH.typeTo));
+  $('typed').textContent = SEARCH.query.slice(0, n);
+  css($('caret'), { opacity: n < SEARCH.query.length || Math.floor(t * 4) % 2 === 0 ? 1 : 0 });
+}
+
+// ---------- savoir-faire ----------
+const CHIPS = [['Excel', 70, 1540, '#1e9e4a'], ['Power BI', 640, 1560, '#f2c811'], ['Suivi des ventes', 220, 1680, '#ff3b4e']];
+const chipEls = CHIPS.map(([txt, x, y, c]) => { const e = el('div', 'abs pchip', `<span style="color:${c}">●</span> ${txt}`, $('chips')); css(e, { left: `${x}px`, top: `${y}px` }); return e; });
+async function sceneSkills(t) {
+  if (!show($('skills'), inWin(t, T.skills))) return;
+  const out = eIn(prog(t, T.skills[1] - 0.25, T.skills[1]));
+  [...$('skT').querySelectorAll('.sw')].forEach((w, i) => css(w, blurIn(eOut(prog(t, SKILLS.title + i * 0.07, SKILLS.title + i * 0.07 + 0.35)), 30)));
+  css($('skT'), { opacity: 1 - out, filter: `blur(${out * 16}px)` });
+  const k = spring(t - SKILLS.panel, 12, 7.5);
+  css($('dashBox'), { transform: `translateY(${(1 - k) * 500 - out * 300}px) rotateX(${(1 - clamp(k)) * 20}deg) scale(${1 - out * 0.2})`, opacity: clamp(k * 2) * (1 - out) });
+  chipEls.forEach((c, i) => { const s = spring(t - SKILLS.panel - 0.3 - i * 0.12, 16, 8); css(c, { transform: `scale(${clamp(s, 0, 1.15)}) translateY(${Math.sin(t * 2 + i) * 6}px)`, opacity: (s > 0.02 ? 1 : 0) * (1 - out) }); });
+  await seek($('vDash'), 1.0 + (t - SKILLS.panel));  // à partir de la formule : les barres montent pendant la scène
+}
+
+// ---------- preuves en rafale ----------
+const featCards = PROOFS.items.map((it) => { const c = makeShow(it.kind, $('feat')); css(c, { left: 0, top: 0, width: '380px', height: '475px' }); return c; });
+featCards.forEach((c, i) => { if (PROOFS.items[i].kind === 'edit') { const vs = c.querySelectorAll('video'); vs[1].remove(); c.querySelector('#rec')?.remove(); } if (PROOFS.items[i].kind === 'site') c.querySelector('.bar b').textContent = 'je.fais.ton.site'; });
+const stripEls = Array.from({ length: 14 }, (_, i) => { const it = PROOFS.items[i % 6]; const th = el('div', 'thumb', it.kind === 'edit' ? '' : `<img src="${THUMB_SRC[it.kind]}" alt="">`, $('strip')); if (it.kind === 'logo') { th.style.background = '#fff'; th.querySelector('img').style.objectFit = 'contain'; } if (it.kind === 'edit') { const cv = el('canvas', null, null, th); cv.width = 140; cv.height = 175; cv.style.cssText = 'width:100%;height:100%'; th.dataset.edit = 1; } return th; });
+async function sceneProofs(t) {
+  if (!show($('proofs'), inWin(t, T.proofs))) return;
+  const op = eOut(prog(t, T.proofs[0], T.proofs[0] + 0.2)), out = eIn(prog(t, T.proofs[1] - 0.25, T.proofs[1]));
+  css($('proofs'), { opacity: op * (1 - out), filter: `blur(${out * 16}px)` });
+  stripEls.forEach((th, i) => { const y = ((i * 200 - (t - T.proofs[0]) * 420) % 2800 + 2800) % 2800 - 300; css(th, { top: `${y}px`, opacity: 0.55 }); });
+  let cur = Math.floor((t - PROOFS.from) / PROOFS.step); cur = clamp(cur, 0, PROOFS.items.length - 1);
+  featCards.forEach((c, i) => {
+    const a = PROOFS.from + i * PROOFS.step, k = spring(t - a, 16, 9), o = i < PROOFS.items.length - 1 ? eIn(prog(t, a + PROOFS.step - 0.08, a + PROOFS.step + 0.1)) : 0;
+    show(c, t >= a - 0.02 && o < 1);
+    css(c, { transform: `translateY(${(1 - k) * 420 - o * 420}px) scale(${lerp(0.8, 1, clamp(k, 0, 1.1))})`, filter: `blur(${(1 - clamp(k)) * 10 + o * 14}px)`, opacity: 1 - o });
+  });
+  const it = PROOFS.items[cur], a = PROOFS.from + cur * PROOFS.step, ek = eOut(prog(t, a + 0.04, a + 0.2));
+  $('eq').innerHTML = `= <span class="red">${it.label}</span>`;
+  css($('eq'), { opacity: t >= PROOFS.from ? ek : 0, transform: `translateY(${(1 - ek) * 40}px)`, filter: `blur(${(1 - ek) * 10}px)` });
+  const ev = featCards[3].querySelector('video'); if (ev && t >= PROOFS.from + 3 * PROOFS.step - 0.05 && t < PROOFS.from + 4 * PROOFS.step + 0.1) await seek(ev, 0.4 + (t - PROOFS.from - 3 * PROOFS.step));
+}
+
+// ---------- pour qui ----------
+const whoEls = WHO.words.map(([a, b]) => el('div', 'ww', `${a} <span class="red">${b}</span>`, $('who2')));
+function sceneWho(t) {
+  if (!show($('who'), inWin(t, T.who))) return;
+  css($('who1'), blurIn(eOut(prog(t, WHO.lead, WHO.lead + 0.35)), 20));
+  const out = eIn(prog(t, T.who[1] - 0.35, T.who[1] - 0.1));
+  whoEls.forEach((e, i) => {
+    const a = WHO.words[i][2], b = i < 2 ? WHO.words[i + 1][2] : 99, kin = eOut(prog(t, a, a + 0.22)), kout = eIn(prog(t, b - 0.1, b + 0.06));
+    css(e, { opacity: kin * (1 - kout) * (1 - out), filter: `blur(${(1 - kin) * 18 + kout * 18}px)`, transform: `translateY(${(1 - kin) * 50 - kout * 50}px)` });
+  });
+  css($('who1'), { opacity: (1 - out) * eOut(prog(t, WHO.lead, WHO.lead + 0.35)) });
+  // le texte se ramasse en une bulle lumineuse (comme la référence)
+  const bk = prog(t, T.who[1] - 0.45, T.who[1]);
+  css($('blob'), { opacity: Math.sin(bk * Math.PI) * 0.9, transform: `scale(${lerp(1.4, 0.4, bk)})` });
+}
+
+// ---------- promesse ----------
+const promEls = PROMISE.text.map((w, i) => el('span', 'pw', i === 0 ? `Jor<span class="red">DEV</span>` : w === "l'image" || w === "qu'il" || w === 'mérite.' ? `<span class="red">${w}</span>` : w, $('prom')));
+function scenePromise(t) {
+  if (!show($('prom'), inWin(t, T.promise))) return;
+  const out = eIn(prog(t, T.promise[1] - 0.25, T.promise[1]));
+  promEls.forEach((w, i) => css(w, blurIn(eOut(prog(t, PROMISE.from + i * 0.16, PROMISE.from + i * 0.16 + 0.4)), 30)));
+  css($('prom'), { opacity: 1 - out, filter: `blur(${out * 16}px)` });
+}
+
+// ---------- appel ----------
+$('waTxt').textContent = CONTACT.phone;
+function sceneCta(t) {
+  const on = t >= T.cta[0]; show($('wa'), on); show($('slogan'), on);
+  if (!on) return;
+  const bk = spring(t - CTA.button, 15, 8), press = t > CTA.button + 1.2 ? Math.exp(-(t - CTA.button - 1.2) * 9) * Math.sin(Math.min(Math.PI, (t - CTA.button - 1.2) * 22)) : 0;
+  css($('wa'), { opacity: t >= CTA.button ? 1 : 0, transform: `scale(${clamp(bk, 0, 1.15) * (1 - press * 0.06)})` });
+  const n = Math.floor(CONTACT.slogan.length * prog(t, CTA.slogan, CTA.slogan + 0.7));
+  $('slogan').innerHTML = `« ${CONTACT.slogan.slice(0, n).replace('chercher.', '<span class="red">chercher.</span>').replace(/chercher$|cherche$|cherch$|cherc$|cher$|che$|ch$|c$/, (m) => `<span class="red">${m}</span>`)}${n >= CONTACT.slogan.length ? ' »' : ''}`;
+  css($('slogan'), { opacity: t >= CTA.slogan ? 1 : 0 });
+}
+
+// ---------- fond ----------
+function sceneBg(t) {
+  drawDust(t, 1);
+  css($('glowA'), { left: `${-10 + Math.sin(t * 0.3) * 80}px`, top: `${300 + Math.cos(t * 0.25) * 120}px` });
+  css($('glowB'), { left: `${0 + Math.cos(t * 0.27) * 80}px`, top: `${1000 + Math.sin(t * 0.33) * 140}px` });
+}
+
+// ---------- une image ----------
+async function renderFrame(t) {
+  sceneBg(t);
+  const p = [sceneHook(t), sceneSkills(t), sceneProofs(t)];
+  sceneLogo(t); sceneSearch(t); sceneWho(t); scenePromise(t); sceneCta(t);
+  $('fade').style.opacity = eIn(prog(t, CTA.fade, S.duration));
+  await Promise.all(p);
+  // vignettes « montage » : une image du clip, copiée une fois qu'elle est disponible
+  if (!editThumb.dataset.ok && editV[0].readyState >= 2) { editThumb.getContext('2d').drawImage(editV[0], 0, 0, 120, 150); stripEls.filter((s) => s.dataset.edit).forEach((s) => s.querySelector('canvas').getContext('2d').drawImage(editV[0], 0, 0, 140, 175)); editThumb.dataset.ok = 1; }
+}
+
+await Promise.all([...document.images].map((i) => (i.complete ? 0 : new Promise((r) => (i.onload = i.onerror = r)))));
+await Promise.all([...document.querySelectorAll('video')].map((v) => (v.readyState >= 2 ? 0 : new Promise((r) => { v.addEventListener('loadeddata', r, { once: true }); setTimeout(r, 5000); }))));
+await seek(editV[0], 0.6);
+window.renderFrame = renderFrame;
+window.FILM = { fps: S.fps, duration: S.duration, width: S.width, height: S.height };
+window.READY = true;
+const q = new URLSearchParams(location.search);
+if (q.has('t')) renderFrame(Number(q.get('t')));
+else if (!q.has('render')) { const t0 = performance.now(); const loop = async () => { await renderFrame(((performance.now() - t0) / 1000) % S.duration); requestAnimationFrame(loop); }; loop(); }
+</script>
+</body>
+</html>

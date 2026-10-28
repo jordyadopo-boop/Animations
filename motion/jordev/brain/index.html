@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Cerveau du site (mode vidéo)</title>
+<!-- Le cerveau du fond du site « Je fais ton site » (brain.js et brain.glb copiés sans modification depuis business-sites),
+     en mode vidéo : la page parente appelle window.__brain.render(t, étape) pour chaque image. -->
+<style>html,body{margin:0;background:#000;overflow:hidden}#stage{position:fixed;inset:0}#stage canvas{display:block}#lbl,#arrow,.hud,#cam{display:none}</style>
+<script>window.__VIDEO = true;</script>
+<script type="importmap">{ "imports": { "three": "../../../node_modules/three/build/three.module.js", "three/addons/": "../../../node_modules/three/examples/jsm/" } }</script>
+</head>
+<body>
+<div id="stage"></div>
+<div id="lbl"><small></small><b></b><em></em><span></span></div>
+<svg id="arrow"><path id="lblLine"/><circle r="3"/></svg>
+<div class="hud"><span id="hudT"></span><i id="hudB"></i></div>
+<script type="module" src="brain.js"></script>
+</body>
+</html>

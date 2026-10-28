@@ -10,6 +10,7 @@ Chaque film est **une seule page HTML** : la fonction `renderFrame(t)` place tou
 | Portfolio Jordy Adopo, « Je fais ton site internet » | `portfolio/` | 16 s | `rendus/portfolio.mp4` |
 | Le Glaceur, « La fraîcheur sous toutes ses formes » | `glaceur/` | 21 s | `rendus/glaceur.mp4` |
 | Auto-promo « Je fais ton site », style interface iPhone | `jefais/` | 14 s | `rendus/jefais.mp4` |
+| JorDEV, « Tu cherches quelqu'un pour réaliser… » (structure de la pub Valtic) | `jordev/` | 25 s | `rendus/jordev.mp4` |
 
 ### Portfolio : déroulé (120 BPM, une coupe par temps fort)
 
@@ -51,6 +52,21 @@ Prix, produits, communes et numéro viennent de `src/js/config.js` du site Le Gl
 | 10,3 – 12 s | Bulle de message « On fait ton site ensemble ? » + WhatsApp |
 | 12 – 14 s | Le logo : le cerveau 3D en verre du site (réseau de neurones qui s'allume), puis `<je.fais.ton.site/>`, nom et numéro |
 
+### JorDEV : déroulé (120 BPM)
+
+| Temps | Scène |
+| --- | --- |
+| 0 – 9 s | « Tu cherches quelqu'un pour réaliser… » : chaque service cité est montré par une vraie réalisation (site Je fais ton site, logo Le Glaceur, affiches tarifs et Octobre Rose, extrait de 3 s des vidéos LIY10 avec effets de montage, rapport Power BI, faire-part Invitation Dot), puis tout part dans le cerveau |
+| 9 – 10,4 s | Le logo : le cerveau du fond du site (`jordev/brain/` = `brain.js` et `brain.glb` du site, inchangés, en mode vidéo) + JorDEV |
+| 10,4 – 12 s | La demande se tape : « Il me faut un site + un logo… » |
+| 12 – 14 s | Fichiers, tableaux de bord, suivi de business (vidéo Power BI de LIY10) |
+| 14 – 16,6 s | Preuves en rafale : « = Site internet », « = Logo », « = Affiche pub »… |
+| 16,6 – 18,8 s | Que ce soit pour ton entreprise / ta boutique / ton événement |
+| 18,8 – 21,4 s | « JorDEV donne à ton business l'image qu'il mérite. » |
+| 21,4 – 25 s | Cerveau, JorDEV, bouton WhatsApp, « Et arrête de chercher. » |
+
+Les extraits vidéo sont en WebM (le Chromium de rendu ne lit pas le H.264) ; `renderFrame(t)` attend que chaque vidéo soit positionnée.
+
 ## Commandes
 
 ```bash
@@ -62,8 +78,9 @@ node motion/render.js portfolio               # film -> out/portfolio.mp4 (flou 
 node motion/render.js portfolio --stills 3,8  # images fixes -> out/stills/
 node motion/glaceur/audio.js && node motion/render.js glaceur   # film Le Glaceur (WebGL logiciel, plus lent)
 node motion/jefais/audio.js && node motion/render.js jefais     # auto-promo Je fais ton site
+node motion/jordev/audio.js && node motion/render.js jordev     # film JorDEV
 ```
 
 Polices : Space Grotesk, JetBrains Mono et Barlow (Inter pour « Je fais ton site », police du système), licence SIL OFL (`*/assets/OFL-*.txt`).
 
-Modèle 3D du cerveau (`jefais/assets/brain.glb`, repris du site `business-sites`) : [BodyParts3D](https://lifesciencedb.jp/bp3d/) © The Database Center for Life Science, licence CC BY-SA 2.1 Japon.
+Modèle 3D du cerveau (`jefais/assets/brain.glb` et `jordev/brain/brain.glb`, repris du site `business-sites`) : [BodyParts3D](https://lifesciencedb.jp/bp3d/) © The Database Center for Life Science, licence CC BY-SA 2.1 Japon.
