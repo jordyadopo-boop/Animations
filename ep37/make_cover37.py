@@ -17,6 +17,7 @@ def seal(name, size, alpha=255, pad=50):
     sm = wb.convert('L').resize((size, size), Image.LANCZOS)
     m0 = sm.point(lambda v: 0 if v > 165 else min(255, int((165 - v) * 1.6 * alpha / 255)))
     mask = Image.new('L', (size + 2 * pad, size + 2 * pad), 0); mask.paste(m0, (pad, pad))
+    mask = mask.filter(ImageFilter.GaussianBlur(2.2))  # sceaux volontairement un peu flous
     gold = Image.new('RGBA', mask.size, (255, 200, 100, 0)); gold.putalpha(mask)
     glow = Image.new('RGBA', mask.size, (255, 130, 30, 0)); glow.putalpha(mask.filter(ImageFilter.GaussianBlur(10)).point(lambda v: min(255, v * 2)))
     return glow, gold, pad

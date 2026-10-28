@@ -82,6 +82,18 @@ function study(scene, pos, o = {}) {
   return g;
 }
 
+// ---------- vrais sceaux de la Goetia (edition de 1904, domaine public), affiches dores et legerement flous
+const SEALS = {};
+for (const n of ['01-Bael', '02-Agares', '03-Vassago', '36-Stolas', '68-Belial', '72-Andromalius']) {
+  const img = new Image(); img.src = `/assets/sceaux/${n}.png`; await img.decode();
+  const c = document.createElement('canvas'); c.width = c.height = 450; const g = c.getContext('2d');
+  g.drawImage(img, 0, 0, 450, 450); g.globalCompositeOperation = 'source-in'; g.fillStyle = '#ffc860'; g.fillRect(0, 0, 450, 450);
+  SEALS[n.slice(3)] = c;
+}
+const drawSeal = (g, key, cx, cy, size, blur = 2.2, ink = null) => {
+  let src = SEALS[key]; if (ink) { const c = document.createElement('canvas'); c.width = c.height = 450; const x = c.getContext('2d'); x.drawImage(src, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = ink; x.fillRect(0, 0, 450, 450); src = c; }
+  g.save(); g.filter = `blur(${blur}px)`; if (!ink) { g.shadowColor = '#ff9a30'; g.shadowBlur = 18; } g.drawImage(src, cx - size / 2, cy - size / 2, size, size); g.restore();
+};
 // ---------- objets de l'episode
 function vessel(s = 1) {
   const g = new THREE.Group();
@@ -107,9 +119,8 @@ function sealPage() {
   const c = document.createElement('canvas'); c.width = 512; c.height = 720; const g = c.getContext('2d');
   g.fillStyle = '#e8dcbc'; g.fillRect(0, 0, 512, 720); g.strokeStyle = '#4a2a1a'; g.fillStyle = '#4a2a1a'; g.textAlign = 'center';
   g.font = 'bold 40px Inter'; g.fillText('ARS GOETIA', 256, 80);
-  g.lineWidth = 4; for (const r of [150, 132, 70]) { g.beginPath(); g.arc(256, 330, r, 0, Math.PI * 2); g.stroke(); }
-  for (let i = 0; i < 72; i++) { const a = i / 72 * Math.PI * 2; g.beginPath(); g.arc(256 + Math.cos(a) * 141, 330 + Math.sin(a) * 141, 3, 0, Math.PI * 2); g.fill(); }
-  g.beginPath(); for (let i = 0; i <= 7; i++) { const a = i * 3 / 7 * Math.PI * 2 - Math.PI / 2; const x = 256 + Math.cos(a) * 70, y = 330 + Math.sin(a) * 70; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke();
+  drawSeal(g, 'Bael', 256, 330, 300, 1.6, '#4a2a1a');
+  g.fillStyle = '#4a2a1a'; g.font = 'bold 30px Inter'; g.fillText('1. BAËL', 256, 520);
   g.font = 'italic 28px Inter'; g.fillText('Clavicula Salomonis', 256, 560);
   for (let k = 0; k < 3; k++) { g.fillStyle = 'rgba(74,42,26,0.25)'; g.fillRect(80, 600 + k * 30, 352 - k * 50, 10); }
   return canvasTex(c);
@@ -121,16 +132,19 @@ function listPage() {
   L_.forEach((l, i) => { g.font = (l === '…' ? '28px' : 'bold 30px') + ' Inter'; g.fillText(l, 60, 80 + i * 48); });
   return canvasTex(c);
 }
-function demonCard(name, rank, legions, power) {
+function demonCard(name, rank, legions, power, seal = null) {
   const c = document.createElement('canvas'); c.width = 600; c.height = 840; const g = c.getContext('2d');
   g.fillStyle = 'rgba(20,8,12,0.9)'; g.strokeStyle = '#d4a24a'; g.lineWidth = 10; g.beginPath(); g.roundRect(8, 8, 584, 824, 30); g.fill(); g.stroke();
   g.lineWidth = 3; g.beginPath(); g.roundRect(32, 32, 536, 776, 20); g.stroke();
   g.textAlign = 'center'; g.fillStyle = '#ffd890'; let fsz = 82; g.font = `bold ${fsz}px Inter`; while (g.measureText(name).width > 500) { fsz -= 4; g.font = `bold ${fsz}px Inter`; } g.fillText(name, 300, 150);
   g.fillStyle = '#e8c8a0'; g.font = '600 46px Inter'; g.fillText(rank, 300, 220);
-  g.strokeStyle = '#d4a24a'; g.lineWidth = 5; g.beginPath(); g.arc(300, 400, 110, 0, Math.PI * 2); g.stroke(); g.beginPath(); g.arc(300, 400, 80, 0, Math.PI * 2); g.stroke();
-  for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; g.beginPath(); g.moveTo(300 + Math.cos(a) * 80, 400 + Math.sin(a) * 80); g.lineTo(300 + Math.cos(a) * 110, 400 + Math.sin(a) * 110); g.stroke(); }
-  g.fillStyle = '#ffd890'; g.font = 'bold 60px Inter'; g.fillText(legions, 300, 420);
-  g.fillStyle = '#e8c8a0'; g.font = '600 26px Inter'; g.fillText('LÉGIONS', 300, 460);
+  if (seal) { drawSeal(g, seal, 300, 385, 250, 2.2); g.fillStyle = '#ffd890'; g.font = 'bold 44px Inter'; g.fillText(legions + ' légions', 300, 555); }
+  else {
+    g.strokeStyle = '#d4a24a'; g.lineWidth = 5; g.beginPath(); g.arc(300, 400, 110, 0, Math.PI * 2); g.stroke(); g.beginPath(); g.arc(300, 400, 80, 0, Math.PI * 2); g.stroke();
+    for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; g.beginPath(); g.moveTo(300 + Math.cos(a) * 80, 400 + Math.sin(a) * 80); g.lineTo(300 + Math.cos(a) * 110, 400 + Math.sin(a) * 110); g.stroke(); }
+    g.fillStyle = '#ffd890'; g.font = 'bold 60px Inter'; g.fillText(legions, 300, 420);
+    g.fillStyle = '#e8c8a0'; g.font = '600 26px Inter'; g.fillText('LÉGIONS', 300, 460);
+  }
   g.fillStyle = '#ffffff'; g.font = '600 38px Inter'; power.split('\n').forEach((l, i) => g.fillText(l, 300, 610 + i * 52));
   const t = canvasTex(c);
   const m = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.84), new THREE.MeshBasicMaterial({ map: t, transparent: true, toneMapped: false, depthWrite: false })); return m;
@@ -174,7 +188,7 @@ SETS.grimoire = () => {
   K('Lemegeton · la Petite Clé de Salomon', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, SC.grimoire.start + 0.8, SC.grimoire.start + 5.0, 0.3, 0.2), -0.6);
   K('goêteia (grec ancien) = sorcellerie', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, SC.grimoire.start + 5.6, C.fiches, 0.3, 0.2), -0.6);
   const tpl = demonCard('NOM', 'rang', '?', 'apparence · pouvoirs\n+ un sceau'); scene.add(tpl);
-  K('sceau dessiné pour la vidéo (décoratif)', { w: 1.2, h: 0.18, border: '#888888', color: '#cccccc' }, t => win(t, C.fiches + 4.0, C.date, 0.3, 0.2), -0.75, 0.5);
+  K('sceau de Baël · édition de 1904', { w: 1.2, h: 0.18, border: '#888888', color: '#cccccc' }, t => win(t, C.fiches + 4.0, C.date, 0.3, 0.2), -0.75, 0.5);
   K('manuscrits anglais du XVIIe siècle\n(conservés à la British Library)', { w: 1.6, h: 0.42, border: '#e0b070', small: true }, t => win(t, C.date + 0.4, SC.salomon.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
@@ -264,7 +278,7 @@ SETS.cour = () => {
   const ranks = ['ROIS', 'DUCS', 'PRINCES', 'MARQUIS', 'PRÉSIDENTS', 'COMTES', 'CHEVALIER'];
   const pyr = new THREE.Group(); pyr.position.set(0, 1.0, -0.6); scene.add(pyr);
   const tiers = ranks.map((r, i) => { const g = new THREE.Group(); g.position.y = 1.5 - i * 0.24; pyr.add(g); g.add(holo(new THREE.BoxGeometry(0.5 + i * 0.22, 0.18, 0.3), [0xffd070, 0xff9a6a, 0xc08aff][i % 3], 0.12)); const l = label(r, { w: 1.0, h: 0.13, color: '#ffffff', font: 'bold 90px Inter' }); l.position.z = 0.17; g.add(l); return g; });
-  const cards = [['BAËL', 'roi · à l\'est', '66', 'rendrait\ninvisible'], ['AGARÈS', 'duc', '31', 'enseignerait\ntoutes les langues'], ['VASSAGO', 'prince', '26', 'révélerait le passé\net l\'avenir'], ['PAIMON', 'roi', '200', 'enseignerait\narts et sciences'], ['ASMODÉE', 'roi · n° 32', '72', 'trois têtes :\ntaureau, homme, bélier'], ['BÉLIAL', 'roi · n° 68', '80', 'sur un char\nde feu'], ['STOLAS', 'prince · n° 36', '26', 'oiseau de nuit\nétoiles et plantes'], ['ANDROMALIUS', 'comte · le 72e', '36', 'ferait rendre\nles objets volés']].map(a => { const m = demonCard(...a); scene.add(m); return m; });
+  const cards = [['BAËL', 'roi · à l\'est', '66', 'rendrait\ninvisible', 'Bael'], ['AGARÈS', 'duc', '31', 'enseignerait\ntoutes les langues', 'Agares'], ['VASSAGO', 'prince', '26', 'révélerait le passé\net l\'avenir', 'Vassago'], ['PAIMON', 'roi', '200', 'enseignerait\narts et sciences'], ['ASMODÉE', 'roi · n° 32', '72', 'trois têtes :\ntaureau, homme, bélier'], ['BÉLIAL', 'roi · n° 68', '80', 'sur un char\nde feu', 'Belial'], ['STOLAS', 'prince · n° 36', '26', 'oiseau de nuit\nétoiles et plantes', 'Stolas'], ['ANDROMALIUS', 'comte · le 72e', '36', 'ferait rendre\nles objets volés', 'Andromalius']].map(a => { const m = demonCard(...a); scene.add(m); return m; });
   const D = (C.asmodee - C.autres) / 3;
   const times = [C.bael, C.autres, C.autres + D, C.autres + 2 * D, C.asmodee, C.belial, C.belial + 5.3, C.andro];
   const K = cardsMgr(scene, cam);
