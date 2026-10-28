@@ -72,4 +72,4 @@
 - Durée (oct. 2026, à partir de l'ép. 37) : Mr A trouve que les vidéos survolent le sujet. Il autorise jusqu'à 3 minutes :
   détailler davantage (plusieurs exemples concrets, chiffres, origine des faits, culture populaire), viser 2 min 30 à 3 min.
 - Quand Mr A n'envoie pas de vidéo modèle : construire le sujet à notre manière, sans s'inspirer d'une vidéo existante.
-- Occultisme / démons (ép. 37) : raconter l'histoire du texte « selon les textes », sans mode d'emploi ; sceaux dessinés décoratifs (inventés).
+- Occultisme / démons (ép. 37) : raconter l'histoire du texte « selon les textes », sans mode d'emploi ; sceaux : les vrais sceaux (édition de 1904, domaine public) sont acceptés par Mr A, il les a demandés sur la couverture.

@@ -1,4 +1,4 @@
-# Couverture de l'episode 37 : le vase de bronze et les 72 lueurs qui s'echappent (image du rendu 3D)
+# Couverture de l'episode 37 : le vase ouvert et les vrais sceaux de la Goetia (edition de 1904, domaine public) qui s'en echappent
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import os
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -12,6 +12,17 @@ s = 1960 / src.height; src = src.resize((int(src.width * s), 1960), Image.LANCZO
 cx = int(src.width * 0.5); x0 = max(0, min(src.width - 1080, cx - 540))
 im = src.crop((x0, 20, x0 + 1080, 1940))
 # bande sombre au milieu pour le titre
+def seal(name, size, alpha=255, pad=50):
+    src_ = Image.open(os.path.join(HERE, 'assets/sceaux', name)).convert('RGBA'); wb = Image.new('RGBA', src_.size, (255, 255, 255, 255)); wb.alpha_composite(src_)
+    sm = wb.convert('L').resize((size, size), Image.LANCZOS)
+    m0 = sm.point(lambda v: 0 if v > 165 else min(255, int((165 - v) * 1.6 * alpha / 255)))
+    mask = Image.new('L', (size + 2 * pad, size + 2 * pad), 0); mask.paste(m0, (pad, pad))
+    gold = Image.new('RGBA', mask.size, (255, 200, 100, 0)); gold.putalpha(mask)
+    glow = Image.new('RGBA', mask.size, (255, 130, 30, 0)); glow.putalpha(mask.filter(ImageFilter.GaussianBlur(10)).point(lambda v: min(255, v * 2)))
+    return glow, gold, pad
+for name, size, x, y, a_ in [('01-Bael.png', 380, 540, 250, 255), ('03-Vassago.png', 230, 190, 640, 220), ('68-Belial.png', 230, 890, 610, 220), ('36-Stolas.png', 190, 870, 170, 190)]:
+    glow, gold, pad = seal(name, size, a_)
+    for layer in (glow, gold): im.paste(layer, (x - size // 2 - pad, y - size // 2 - pad), layer)
 grad = Image.new('L', im.size, 0); gd = ImageDraw.Draw(grad)
 for y in range(1920):
     k = max(0.0, min(1.0, (y - 1180) / 260)); gd.line([(0, y), (1080, y)], fill=int(215 * min(1, k * 1.6)))
