@@ -17,7 +17,8 @@ const outDir = path.join(ROOT, 'out'); fs.mkdirSync(path.join(outDir, 'stills'),
 const run = (cmd, a) => new Promise((res, rej) => spawn(cmd, a, { stdio: 'inherit' }).on('close', (c) => (c ? rej(new Error(`${cmd} : code ${c}`)) : res())));
 
 const srv = await serve();
-const browser = await chromium.launch();
+// WebGL logiciel (SwiftShader) : les films qui contiennent une scène three.js se rendent aussi sans GPU
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
 page.on('pageerror', (e) => { console.error('[page]', e.message); process.exit(1); });
 page.on('console', (m) => { if (m.type() === 'error') console.error('[page]', m.text()); });

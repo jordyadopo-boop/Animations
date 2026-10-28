@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Le Glaceur · motion</title>
+<!--
+  Film promo Le Glaceur (9:16, 21 s). Une seule fonction renderFrame(t) place tout à l'instant t.
+  Le glaçon du début est un vrai objet 3D (three.js, verre physique à transmission) qui réfracte le fond.
+  Aperçu : node render/serve.js puis http://localhost:5173/motion/glaceur/index.html   (?t=10 fige une image)
+  Rendu  : node motion/render.js glaceur
+-->
+<script type="importmap">{ "imports": { "three": "../../node_modules/three/build/three.module.js", "three/addons/": "../../node_modules/three/examples/jsm/" } }</script>
+<style>
+  @font-face { font-family: 'BC'; font-weight: 800; src: url(assets/BarlowCondensed-ExtraBold.ttf); }
+  @font-face { font-family: 'B'; font-weight: 400; src: url(assets/Barlow-Regular.ttf); }
+  @font-face { font-family: 'B'; font-weight: 600; src: url(assets/Barlow-SemiBold.ttf); }
+  @font-face { font-family: 'B'; font-weight: 700; src: url(assets/Barlow-Bold.ttf); }
+  :root {
+    --navy: #0a1f44; --navy2: #0f2c5e; --deep: #040e24; --blue: #1563d6; --blue5: #2a7deb; --blue4: #4d9bff;
+    --ice50: #f3faff; --ice100: #e3f3ff; --ice200: #bfe4ff; --ice300: #8ecfff; --leaf: #39a85b; --wa: #25d366;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #000; overflow: hidden; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--ice50); font-family: 'B', sans-serif; color: var(--navy); }
+  .abs { position: absolute; }
+  .layer { position: absolute; inset: 0; }
+  .bc { font-family: 'BC', sans-serif; font-weight: 800; text-transform: uppercase; }
+  .blue { color: var(--blue); }
+  .mask { display: block; overflow: hidden; }
+  .mask > span { display: inline-block; }
+  .kicker { font: 600 32px 'B'; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); }
+
+  /* 1. 3D */
+  #gl { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+  .word { left: 0; width: 1080px; text-align: center; font: 800 110px/1 'BC'; text-transform: uppercase; letter-spacing: 1px; color: var(--navy); }
+  #headline { left: 0; top: 190px; width: 1080px; text-align: center; font: 800 158px/0.9 'BC'; text-transform: uppercase; }
+  #frost { background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f3faff 40%, #d9efff 100%); }
+  #frost svg { position: absolute; inset: 0; }
+
+  /* 2. produits */
+  #products { background: radial-gradient(90% 55% at 50% 58%, #1f6fd6 0%, #0f3f8f 40%, #0a1f44 78%, #040e24 100%); }
+  #prodHead { left: 0; top: 170px; width: 1080px; text-align: center; color: #fff; }
+  #prodHead .kicker { color: var(--ice300); }
+  #prodHead .t { font: 800 150px/0.9 'BC'; text-transform: uppercase; margin-top: 18px; }
+  #ringWrap { left: 0; top: 0; width: 1080px; height: 1920px; perspective: 2200px; perspective-origin: 540px 1000px; }
+  #ring { position: absolute; left: 240px; top: 600px; width: 600px; height: 860px; transform-style: preserve-3d; }
+  .pcard { position: absolute; left: 0; top: 0; width: 600px; height: 860px; border-radius: 40px; background: #fff; overflow: hidden; backface-visibility: hidden;
+    box-shadow: 0 50px 120px rgba(0,0,0,.45); }
+  .pcard img { width: 600px; height: 560px; object-fit: cover; display: block; }
+  .pcard .nm { position: absolute; left: 40px; top: 594px; font: 800 74px/1 'BC'; text-transform: uppercase; color: var(--navy); }
+  .pcard .tg { position: absolute; left: 40px; top: 676px; font: 500 30px 'B'; color: #5d6f8f; }
+  .pcard .pr { position: absolute; left: 40px; top: 742px; display: flex; align-items: baseline; gap: 14px; }
+  .pcard .pr b { font: 800 70px/1 'BC'; color: var(--blue); }
+  .pcard .pr i { font: 600 28px 'B'; font-style: normal; color: #5d6f8f; }
+  .pcard .dim { position: absolute; inset: 0; background: #040e24; }
+  #prodDots { left: 0; top: 1540px; width: 1080px; display: flex; justify-content: center; gap: 18px; }
+  #prodDots i { width: 16px; height: 16px; border-radius: 8px; background: rgba(255,255,255,.3); display: block; }
+
+  /* 3. devis */
+  #quote { background: radial-gradient(110% 60% at 50% 30%, #ffffff 0%, #eef7ff 55%, #d7ecff 100%); }
+  #qHead { left: 0; top: 150px; width: 1080px; text-align: center; }
+  #qHead .t { font: 800 132px/0.9 'BC'; text-transform: uppercase; margin-top: 14px; }
+  #phone { left: 210px; top: 455px; width: 660px; height: 1250px; border-radius: 86px; background: #0b1730; padding: 16px; box-shadow: 0 60px 140px rgba(10,31,68,.35), inset 0 0 0 3px #22345a; }
+  #screen { position: relative; width: 628px; height: 1218px; border-radius: 72px; overflow: hidden; background: #f6f9fd; }
+  .sbar { position: absolute; left: 0; top: 0; width: 100%; height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 8px 54px 0; font: 600 26px 'B'; color: #fff; z-index: 2; }
+  #qTop { position: absolute; left: 0; top: 0; width: 100%; height: 196px; background: linear-gradient(160deg, #1f6fd6, #0f4fb3); color: #fff; padding: 84px 36px 0; }
+  #qTop .h { font: 800 58px/1 'BC'; text-transform: uppercase; }
+  #qTop .s { font: 500 24px 'B'; opacity: .8; margin-top: 6px; }
+  .row { position: absolute; left: 24px; width: 580px; height: 138px; background: #fff; border-radius: 26px; box-shadow: 0 8px 24px rgba(10,31,68,.07); }
+  .row img { position: absolute; left: 16px; top: 17px; width: 104px; height: 104px; border-radius: 20px; object-fit: cover; }
+  .row .n { position: absolute; left: 138px; top: 26px; font: 700 30px 'B'; color: var(--navy); white-space: nowrap; }
+  .row .u { position: absolute; left: 138px; top: 72px; font: 500 23px 'B'; color: #6a7b98; white-space: nowrap; }
+  .row .st { position: absolute; right: 16px; top: 39px; display: flex; align-items: center; gap: 10px; }
+  .row .st span { width: 60px; height: 60px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font: 700 36px/1 'B'; }
+  .row .mi { background: #e8f1fc; color: var(--blue); }
+  .row .pl { background: var(--blue); color: #fff; }
+  .row .q { width: 52px; text-align: center; font: 800 46px/1 'BC'; color: var(--navy); }
+  #gauge { position: absolute; left: 24px; top: 694px; width: 580px; }
+  #gLbl { font: 600 24px 'B'; color: #50627f; height: 42px; position: relative; }
+  #gLbl span { position: absolute; left: 0; top: 0; white-space: nowrap; }
+  #gLbl #gCount { position: absolute; left: auto; right: 0; top: 0; font: 700 24px 'B'; color: var(--blue); }
+  #gTrack { height: 20px; border-radius: 10px; background: #dde9f7; overflow: hidden; }
+  #gFill { height: 20px; border-radius: 10px; background: linear-gradient(90deg, #4d9bff, #1563d6); width: 0; }
+  #gOk { color: #1d8a4a; }
+  #total { position: absolute; left: 24px; top: 800px; width: 580px; display: flex; justify-content: space-between; align-items: baseline; }
+  #total .l { font: 600 28px 'B'; color: #50627f; }
+  #total .v { font: 800 84px/1 'BC'; color: var(--navy); white-space: nowrap; }
+  .qbtn { position: absolute; left: 24px; width: 580px; height: 100px; border-radius: 50px; display: flex; align-items: center; justify-content: center; gap: 14px; font: 700 32px 'B'; }
+  #bPdf { top: 924px; border: 3px solid var(--navy); color: var(--navy); background: #fff; }
+  #bWa { top: 1044px; background: var(--wa); color: #fff; box-shadow: 0 14px 30px rgba(37,211,102,.35); }
+  .qbtn svg { width: 40px; height: 40px; }
+  #wa { position: absolute; inset: 0; background: #efeae2; }
+  #waTop { position: absolute; left: 0; top: 0; width: 100%; height: 184px; background: #008069; color: #fff; display: flex; align-items: flex-end; gap: 20px; padding: 0 30px 26px; }
+  #waTop .av { width: 84px; height: 84px; border-radius: 42px; background: #fff; padding: 10px; }
+  #waTop .av img { width: 64px; height: 64px; display: block; }
+  #waTop b { font: 700 34px 'B'; display: block; }
+  #waTop i { font: 400 24px 'B'; font-style: normal; opacity: .85; }
+  .bub { position: absolute; max-width: 500px; padding: 18px 22px 14px; border-radius: 22px; font: 400 26px/1.38 'B'; color: #111b21; box-shadow: 0 2px 2px rgba(0,0,0,.08); }
+  #bOut { right: 24px; top: 520px; background: #d9fdd3; border-top-right-radius: 6px; transform-origin: 100% 100%; }
+  #bIn { left: 24px; top: 940px; background: #fff; border-top-left-radius: 6px; transform-origin: 0% 100%; }
+  .bub .meta { display: flex; justify-content: flex-end; align-items: center; gap: 6px; font: 400 20px 'B'; color: #667781; margin-top: 4px; }
+  .bub .meta svg { width: 30px; height: 18px; }
+  #waBar { position: absolute; left: 16px; right: 16px; bottom: 30px; height: 88px; border-radius: 44px; background: #fff; font: 400 28px 'B'; color: #8696a0; padding: 26px 34px; }
+  #finger { left: 0; top: 0; width: 84px; height: 84px; border-radius: 42px; background: rgba(255,255,255,.55); border: 5px solid var(--blue); box-shadow: 0 10px 30px rgba(10,31,68,.3); }
+  .rip { width: 84px; height: 84px; border-radius: 42px; border: 4px solid var(--blue); left: 0; top: 0; }
+  #pdf { left: 0; top: 0; width: 400px; height: 540px; background: #fff; border-radius: 14px; box-shadow: 0 40px 90px rgba(10,31,68,.35); overflow: hidden; }
+  #pdf .hd { height: 104px; background: var(--blue); color: #fff; padding: 22px 26px; }
+  #pdf .hd b { font: 800 44px/1 'BC'; display: block; }
+  #pdf .hd i { font: 500 20px 'B'; font-style: normal; opacity: .85; }
+  #pdf .ln { margin: 22px 26px 0; height: 14px; border-radius: 7px; background: #e5edf7; }
+  #pdf .tot { position: absolute; left: 26px; right: 26px; bottom: 30px; display: flex; justify-content: space-between; align-items: baseline; border-top: 3px solid var(--navy); padding-top: 14px; }
+  #pdf .tot span { font: 600 22px 'B'; color: #50627f; }
+  #pdf .tot b { font: 800 46px 'BC'; color: var(--navy); }
+  #pdf .tag { position: absolute; right: 18px; top: 122px; font: 700 18px 'B'; color: #fff; background: #1d8a4a; padding: 6px 12px; border-radius: 6px; }
+  .xtal { left: 0; top: 0; width: 30px; height: 30px; border-radius: 6px; background: linear-gradient(135deg, #ffffff, #bfe4ff); border: 3px solid #8ecfff; box-shadow: 0 6px 14px rgba(21,99,214,.25); transform-origin: 50% 50%; }
+
+  /* 4. carte */
+  #map { background: radial-gradient(100% 70% at 50% 55%, #0f2c5e 0%, #0a1f44 55%, #040e24 100%); }
+  #mapHead { left: 0; top: 170px; width: 1080px; text-align: center; color: #fff; }
+  #mapHead .kicker { color: var(--ice300); }
+  #mapHead .t { font: 800 140px/0.9 'BC'; text-transform: uppercase; margin-top: 14px; }
+  #mapHead .t .blue { color: var(--blue4); }
+  #mapSvg { left: 0; top: 0; }
+  .clbl { font: 600 25px 'B'; fill: #cfe6ff; }
+  #mapChip { left: 0; top: 1600px; width: 1080px; display: flex; justify-content: center; gap: 18px; }
+  .chip { font: 700 30px 'B'; color: #fff; padding: 18px 30px; border-radius: 44px; background: rgba(255,255,255,.1); border: 2px solid rgba(255,255,255,.18); white-space: nowrap; }
+  .chip.on { background: var(--blue); border-color: var(--blue); }
+
+  /* 5. froid */
+  #cold { background: #040e24; }
+  #coldImg { left: -60px; top: 0; width: 1200px; height: 1920px; object-fit: cover; filter: brightness(.5) saturate(.7) blur(4px); }
+  #coldNum { left: 0; top: 700px; width: 1080px; text-align: center; font: 800 300px/1 'BC'; color: #fff; letter-spacing: -4px; white-space: nowrap; }
+  #coldCap { left: 0; top: 1060px; width: 1080px; text-align: center; color: #fff; }
+  #coldCap .a { font: 800 96px/1 'BC'; text-transform: uppercase; }
+  #coldCap .b { font: 500 40px 'B'; color: var(--ice200); margin-top: 18px; }
+  #coldKick { left: 0; top: 560px; width: 1080px; text-align: center; color: var(--ice300); }
+
+  /* 6. fin */
+  #end { background: radial-gradient(110% 60% at 50% 40%, #ffffff 0%, #eef7ff 55%, #cfe7ff 100%); }
+  #logo { left: 130px; top: 470px; width: 820px; }
+  #endTag { left: 0; top: 820px; width: 1080px; text-align: center; font: 800 100px/0.95 'BC'; text-transform: uppercase; }
+  #endVals { left: 0; top: 1100px; width: 1080px; text-align: center; font: 600 32px 'B'; letter-spacing: 4px; text-transform: uppercase; color: #50627f; }
+  #endBtn { left: 140px; top: 1230px; width: 800px; height: 140px; border-radius: 70px; background: var(--wa); color: #fff; display: flex; align-items: center; justify-content: center; gap: 22px; font: 700 50px 'B'; box-shadow: 0 30px 70px rgba(37,211,102,.4); }
+  #endBtn svg { width: 60px; height: 60px; }
+  #endRip { left: 540px; top: 1300px; border-radius: 50%; border: 5px solid var(--wa); }
+  #endPhone { left: 0; top: 1420px; width: 1080px; text-align: center; font: 800 64px 'BC'; color: var(--navy); letter-spacing: 1px; }
+  #endSite { left: 0; top: 1500px; width: 1080px; text-align: center; font: 600 36px 'B'; color: var(--blue); }
+  #fade { background: #fff; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- 1. glaçon 3D -->
+  <div id="ice" class="layer">
+    <canvas id="gl" width="1080" height="1920"></canvas>
+    <div id="words"></div>
+    <div id="headline" class="abs"><span class="mask"><span>La fraîcheur</span></span><span class="mask"><span class="blue">sous toutes</span></span><span class="mask"><span>ses formes</span></span></div>
+  </div>
+  <div id="frost" class="layer"><svg id="frostSvg" width="1080" height="1920"></svg></div>
+
+  <!-- 2. produits -->
+  <div id="products" class="layer">
+    <div id="prodHead" class="abs"><div class="kicker mask"><span>Le Glaceur · Abidjan</span></div><div class="t"><span class="mask"><span>6 glaces.</span></span></div></div>
+    <div id="ringWrap" class="abs"><div id="ring"></div></div>
+    <div id="prodDots" class="abs"></div>
+  </div>
+
+  <!-- 3. devis -->
+  <div id="quote" class="layer">
+    <div id="qHead" class="abs"><div class="kicker mask"><span>leglaceur.ci/devis</span></div><div class="t"><span class="mask"><span>Votre devis</span></span><span class="mask"><span class="blue">en 10 secondes.</span></span></div></div>
+    <div id="phone" class="abs"><div id="screen">
+      <div class="sbar"><span>21:14</span><span>●●● 5G</span></div>
+      <div id="qTop"><div class="h">Mon devis</div><div class="s">Le Glaceur · glace alimentaire</div></div>
+      <div id="rows"></div>
+      <div id="gauge"><div id="gLbl"><span id="gTxt">Livraison offerte dès 20 articles</span><span id="gOk">✓ Livraison offerte</span><span id="gCount"></span></div><div id="gTrack"><div id="gFill"></div></div></div>
+      <div id="total"><span class="l">Total</span><span class="v" id="totV"></span></div>
+      <div id="bPdf" class="qbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>Télécharger le PDF</div>
+      <div id="bWa" class="qbtn"><svg viewBox="0 0 32 32" fill="#fff"><use href="#waIcon"/></svg>Envoyer sur WhatsApp</div>
+      <div id="wa">
+        <div id="waTop"><div class="av"><img src="assets/logo-mark.svg" alt=""></div><div><b>Le Glaceur</b><i>en ligne</i></div></div>
+        <div id="bOut" class="bub"></div>
+        <div id="bIn" class="bub">Bien reçu ! Notre équipe vous rappelle tout de suite pour la livraison.<div class="meta">21:15</div></div>
+        <div id="waBar">Message</div>
+      </div>
+    </div></div>
+    <div id="pdf" class="abs"><div class="hd"><b>Devis</b><i></i></div><div class="tag">LIVRAISON OFFERTE</div><div class="ln" style="width:70%;margin-top:40px"></div><div class="ln" style="width:84%"></div><div class="ln" style="width:62%"></div><div class="ln" style="width:76%"></div><div class="ln" style="width:48%"></div><div class="tot"><span>Total</span><b></b></div></div>
+    <div id="fx"></div>
+    <div id="finger" class="abs"></div>
+  </div>
+
+  <!-- 4. carte -->
+  <div id="map" class="layer">
+    <svg id="mapSvg" class="abs" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+    <div id="mapHead" class="abs"><div class="kicker mask"><span>24h/24 · 7j/7</span></div><div class="t"><span class="mask"><span>Livrée partout</span></span><span class="mask"><span class="blue">à Abidjan.</span></span></div></div>
+    <div id="mapChip" class="abs"><span class="chip on">Livraison offerte dès 20 articles</span></div>
+  </div>
+
+  <!-- 5. froid -->
+  <div id="cold" class="layer">
+    <img id="coldImg" class="abs" src="assets/carboglace.webp" alt="">
+    <div id="coldKick" class="abs kicker">Carboglace</div>
+    <div id="coldNum" class="abs"></div>
+    <div id="coldCap" class="abs"><div class="a mask"><span>Le froid extrême.</span></div><div class="b mask"><span>Effet fumée garanti pour vos événements.</span></div></div>
+  </div>
+
+  <!-- 6. fin -->
+  <div id="end" class="layer">
+    <img id="logo" class="abs" src="assets/logo-full.svg" alt="Le Glaceur">
+    <div id="endTag" class="abs"><span class="mask"><span>La fraîcheur</span></span><span class="mask"><span class="blue">sous toutes ses formes</span></span></div>
+    <div id="endVals" class="abs">Pureté · Hygiène · Qualité</div>
+    <div id="endRip" class="abs"></div>
+    <div id="endBtn" class="abs"><svg viewBox="0 0 32 32" fill="#fff"><use href="#waIcon"/></svg>Commander sur WhatsApp</div>
+    <div id="endPhone" class="abs"></div>
+    <div id="endSite" class="abs"></div>
+  </div>
+  <div id="fade" class="layer"></div>
+  <svg width="0" height="0" style="position:absolute"><defs><path id="waIcon" d="M16 3C8.8 3 3 8.7 3 15.8c0 2.3.6 4.5 1.8 6.5L3 29l6.9-1.8c1.9 1 4 1.6 6.1 1.6 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm0 23.4c-1.9 0-3.8-.5-5.4-1.5l-.4-.2-4.1 1.1 1.1-4-.3-.4c-1.1-1.7-1.7-3.6-1.7-5.6C5.2 9.9 10 5.2 16 5.2s10.8 4.7 10.8 10.6S21.9 26.4 16 26.4zm5.9-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2s0-.5.1-.6l.5-.6c.2-.2.2-.4.3-.6s0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.1-1.2 2.7 1.2 3.1 1.4 3.4c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.7.8.3 1.5.2 2.1.1.6-.1 1.9-.8 2.2-1.5s.3-1.4.2-1.5c-.1-.2-.3-.3-.7-.4z"/></defs></svg>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import * as S from './score.js';
+const { T, IMPACTS, WORDS, RAIN, HEADLINE, DIVE, FROST, PRODUCT_IN, PRODUCTS, QUOTE_LINES, FREE_FROM, QUOTE, DEPOT, COMMUNES, ROUTES_IN, ROUTE_STAGGER, COLD, END, BRAND } = S;
+
+// ---------- outils ----------
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, html, parent) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; if (parent) parent.appendChild(e); return e; };
+const svgEl = (tag, attrs, parent) => { const e = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const eOut = (k) => 1 - Math.pow(1 - k, 3);
+const eOutExpo = (k) => (k >= 1 ? 1 : 1 - Math.pow(2, -10 * k));
+const eIn = (k) => k * k * k;
+const eInOut = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+const spring = (dt, w = 17, z = 8) => (dt <= 0 ? 0 : 1 - Math.exp(-z * dt) * Math.cos(w * dt));
+const show = (e, on) => { e.style.display = on ? '' : 'none'; return on; };
+const css = (e, o) => Object.assign(e.style, o);
+const inWin = (t, [a, b]) => t >= a && t < b;
+const fcfa = (n) => `${Math.round(n).toLocaleString('fr-FR').replace(/ | /g, ' ')}`;
+const maskIn = (root, t, t0, step = 0.08, dur = 0.45, out = 0) => root.querySelectorAll('.mask > span').forEach((s, i) => {
+  const k = eOut(prog(t, t0 + i * step, t0 + i * step + dur)); s.style.transform = `translateY(${(1 - k) * 110 - out * 110}%)`;
+});
+
+await document.fonts.load("800 100px 'BC'");
+await document.fonts.ready;
+
+// =====================================================================
+// 1. Le glaçon 3D
+// =====================================================================
+const renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(1080, 1920, false);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, 1080 / 1920, 0.1, 100);
+scene.add(camera);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(3, 6, 5); scene.add(sun);
+
+// fond (accroché à la caméra) : dessiné dans un canvas, opaque pour être réfracté par la glace
+const bgC = document.createElement('canvas'); bgC.width = 1080; bgC.height = 1920;
+const bgG = bgC.getContext('2d'), bgTex = new THREE.CanvasTexture(bgC); bgTex.colorSpace = THREE.SRGBColorSpace;
+const BG_D = 30, bgH = 2 * BG_D * Math.tan(THREE.MathUtils.degToRad(15)) * 1.02;
+const bg = new THREE.Mesh(new THREE.PlaneGeometry(bgH * 1080 / 1920, bgH), new THREE.MeshBasicMaterial({ map: bgTex, toneMapped: false }));
+bg.position.z = -BG_D; camera.add(bg);
+function drawBg(t) {
+  const g = bgG;
+  const grd = g.createLinearGradient(0, 0, 0, 1920); grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.55, '#e9f5ff'); grd.addColorStop(1, '#bfe0fb');
+  g.fillStyle = grd; g.fillRect(0, 0, 1080, 1920);
+  const halo = g.createRadialGradient(540, 1180, 40, 540, 1180, 760); halo.addColorStop(0, 'rgba(77,155,255,.45)'); halo.addColorStop(1, 'rgba(77,155,255,0)');
+  g.fillStyle = halo; g.fillRect(0, 0, 1080, 1920);
+  // le mot géant, que la glace tord en le réfractant
+  const wk = eOut(prog(t, 0.05, 0.6)), wo = eInOut(prog(t, HEADLINE[0] - 0.2, HEADLINE[0] + 0.3));
+  g.save(); g.globalAlpha = wk * (1 - wo * 0.75);
+  g.font = "800 290px 'BC'"; g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+  g.fillStyle = '#0a1f44'; g.fillText('GLACEUR', 540, 1270 + (1 - wk) * 80);
+  g.font = "800 120px 'BC'"; g.fillStyle = '#1563d6'; g.fillText('LE', 540, 960 + (1 - wk) * 80);
+  g.restore();
+  // traits de trame glacée
+  g.strokeStyle = 'rgba(21,99,214,.08)'; g.lineWidth = 2;
+  for (let y = 300; y < 1920; y += 120) { g.beginPath(); g.moveTo(0, y); g.lineTo(1080, y); g.stroke(); }
+  bgTex.needsUpdate = true;
+}
+
+// carte de normales « givre » (relief procédural)
+function frostNormal() {
+  const n = 256, h = new Float32Array(n * n); let s = 9;
+  const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  for (let k = 0; k < 900; k++) { const cx = r() * n, cy = r() * n, rad = 2 + r() * 14, a = (r() - 0.5) * 0.6;
+    for (let y = -rad; y <= rad; y++) for (let x = -rad; x <= rad; x++) { const d = Math.hypot(x, y) / rad; if (d < 1) { const xx = (Math.floor(cx + x) + n) % n, yy = (Math.floor(cy + y) + n) % n; h[yy * n + xx] += a * (1 - d * d); } } }
+  const c = document.createElement('canvas'); c.width = c.height = n; const g = c.getContext('2d'), img = g.createImageData(n, n);
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    const dx = h[y * n + (x + 1) % n] - h[y * n + (x - 1 + n) % n], dy = h[((y + 1) % n) * n + x] - h[((y - 1 + n) % n) * n + x];
+    const nx = -dx * 2, ny = -dy * 2, nz = 1, l = Math.hypot(nx, ny, nz), i = (y * n + x) * 4;
+    img.data[i] = (nx / l * 0.5 + 0.5) * 255; img.data[i + 1] = (ny / l * 0.5 + 0.5) * 255; img.data[i + 2] = (nz / l * 0.5 + 0.5) * 255; img.data[i + 3] = 255;
+  }
+  g.putImageData(img, 0, 0); const tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; return tex;
+}
+const iceMat = new THREE.MeshPhysicalMaterial({
+  color: 0xffffff, metalness: 0, roughness: 0.07, transmission: 1, thickness: 1.6, ior: 1.31, dispersion: 0.35,
+  attenuationColor: new THREE.Color('#a9dbff'), attenuationDistance: 4.5, clearcoat: 1, clearcoatRoughness: 0.06,
+  specularIntensity: 1, envMapIntensity: 1.5, normalMap: frostNormal(), normalScale: new THREE.Vector2(0.22, 0.22),
+});
+const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.12, depthWrite: false });
+const boxGeo = new RoundedBoxGeometry(1, 1, 1, 5, 0.13), coreGeo = new RoundedBoxGeometry(0.42, 0.42, 0.42, 3, 0.15);
+// ombre douce au sol
+const shC = document.createElement('canvas'); shC.width = shC.height = 128; { const g = shC.getContext('2d'), r = g.createRadialGradient(64, 64, 0, 64, 64, 64); r.addColorStop(0, 'rgba(8,40,96,.55)'); r.addColorStop(0.5, 'rgba(8,40,96,.22)'); r.addColorStop(1, 'rgba(8,40,96,0)'); g.fillStyle = r; g.fillRect(0, 0, 128, 128); }
+const shTex = new THREE.CanvasTexture(shC);
+const FLOOR = -1.6;
+function makeCube(size) {
+  const squash = new THREE.Group(), spin = new THREE.Group(), mesh = new THREE.Mesh(boxGeo, iceMat), core = new THREE.Mesh(coreGeo, coreMat);
+  mesh.scale.setScalar(size); core.scale.setScalar(size); spin.add(mesh, core); squash.add(spin); scene.add(squash);
+  const sh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: shTex, transparent: true, depthWrite: false }));
+  sh.rotation.x = -Math.PI / 2; scene.add(sh);
+  return { squash, spin, sh, size };
+}
+const main = makeCube(1.6);
+const SMALL = [[-1.6, 0.7, 0.72], [1.55, -0.5, 0.84], [-0.85, -1.8, 0.66], [1.05, 1.5, 0.6], [-2.1, -1.0, 0.62]];
+const smalls = SMALL.map(([x, z, s]) => Object.assign(makeCube(s), { x, z }));
+
+// trajectoire d'un glaçon : chute puis rebonds ; renvoie hauteur du bas, vitesse, écrasement, rotation
+function hop(t, impacts, heights, h0, spins) {
+  let y, v = 0, sq = 0, rz;
+  if (t < impacts[0]) { const u = prog(t, impacts[0] - 0.5, impacts[0]); y = lerp(h0, 0, u * u); v = u * 2; rz = lerp(0.9, 0, eOut(u)); }
+  else if (t < impacts[impacts.length - 1]) {
+    let i = 0; while (t >= impacts[i + 1]) i++;
+    const u = prog(t, impacts[i], impacts[i + 1]); y = heights[i] * 4 * u * (1 - u); v = (heights[i] / heights[0]) * Math.abs(2 * u - 1) * 1.6;
+    rz = -(Math.min(i, spins) + (i < spins ? eInOut(u) : 0)) * Math.PI / 2;
+  } else { y = 0; rz = -spins * Math.PI / 2; }
+  impacts.forEach((ti, i) => { sq += Math.pow(0.62, i) * Math.exp(-Math.pow((t - ti) / 0.05, 2)); });
+  return { y, v, sq, rz };
+}
+function placeCube(c, x, z, st, yaw, vis) {
+  c.squash.visible = c.sh.visible = vis; if (!vis) return;
+  const sy = 1 - st.sq * 0.32 + st.v * 0.08, sxz = 1 + st.sq * 0.24 - st.v * 0.04;
+  c.squash.scale.set(sxz, sy, sxz);
+  c.squash.position.set(x, FLOOR + st.y + c.size * sy / 2, z);
+  c.spin.rotation.set(0, yaw, st.rz);
+  const k = 1 / (1 + st.y * 0.5);
+  c.sh.position.set(x, FLOOR + 0.002, z); c.sh.scale.setScalar(c.size * 2.1 / k * 0.8); c.sh.material.opacity = k;
+}
+function render3D(t) {
+  drawBg(t);
+  placeCube(main, 0, 0, hop(t, IMPACTS, [2.0, 0.85, 0.3], 9, 2), 0.55 + t * 0.22, true);
+  smalls.forEach((c, i) => { const ti = RAIN[i]; placeCube(c, c.x, c.z, hop(t, [ti, ti + 0.34, ti + 0.52], [0.55, 0.16], 9, 1), 0.3 + i * 0.7 + t * 0.15, t > ti - 0.5); });
+  // caméra : plan fixe, orbite, puis plongée dans le glaçon
+  const orb = eInOut(prog(t, 2.0, 3.8)), dive = eInOut(prog(t, ...DIVE));
+  const ang = orb * 0.6 + dive * 0.25, rad = lerp(14, 2.1, dive), hy = lerp(0.9 + orb * 1.8, -0.75, dive);
+  camera.position.set(Math.sin(ang) * rad, hy, Math.cos(ang) * rad);
+  camera.lookAt(0, lerp(-0.5, -0.8, dive), 0);
+  renderer.render(scene, camera);
+}
+
+// mots (un par rebond) et voile de givre
+const words = WORDS.map((w) => el('div', 'abs word', `${w.slice(0, -1)}<span class="blue">.</span>`, $('words')));
+for (let i = 0; i < 26; i++) { // cristaux du voile de givre
+  const a = (i / 26) * Math.PI * 2 + (i % 3) * 0.2, L = 380 + (i * 97) % 520;
+  const g = svgEl('g', { transform: `translate(540 960) rotate(${a * 180 / Math.PI})`, stroke: '#bfe4ff', 'stroke-width': 5, 'stroke-linecap': 'round', fill: 'none' }, $('frostSvg'));
+  svgEl('path', { d: `M0 0 L${L} 0 M${L * 0.4} 0 l40 -40 M${L * 0.4} 0 l40 40 M${L * 0.7} 0 l30 -30 M${L * 0.7} 0 l30 30` }, g);
+}
+const frostPaths = [...$('frostSvg').querySelectorAll('path')];
+frostPaths.forEach((p) => { const l = p.getTotalLength(); p.style.strokeDasharray = l; p.dataset.l = l; });
+
+function sceneIce(t) {
+  if (!show($('ice'), t < T.ice[1])) return;
+  render3D(t);
+  words.forEach((w, i) => {
+    const a = IMPACTS[i], b = i < 2 ? IMPACTS[i + 1] : RAIN[0] + 0.1;
+    const kin = eOut(prog(t, a - 0.02, a + 0.2)), kout = eIn(prog(t, b - 0.08, b + 0.06));
+    css(w, { top: '1500px', opacity: kin * (1 - kout), transform: `translateY(${(1 - kin) * 60 - kout * 60}px)` });
+  });
+  const hk = (i) => eOut(prog(t, HEADLINE[i], HEADLINE[i] + 0.4)), ho = eIn(prog(t, DIVE[0], DIVE[0] + 0.35));
+  $('headline').querySelectorAll('.mask > span').forEach((s, i) => css(s, { transform: `translateY(${(1 - hk(i)) * 110}%)` }));
+  css($('headline'), { opacity: 1 - ho, transform: `scale(${1 + ho * 0.3})` });
+}
+function sceneFrost(t) {
+  if (!show($('frost'), t >= FROST && t < T.products[0] + 0.45)) return;
+  const k = eOut(prog(t, FROST, FROST + 0.3));
+  css($('frost'), { opacity: k });
+  frostPaths.forEach((p, i) => { p.style.strokeDashoffset = p.dataset.l * (1 - eOut(prog(t, FROST + (i % 5) * 0.02, FROST + 0.32))); });
+}
+
+// =====================================================================
+// 2. Produits : carrousel 3D
+// =====================================================================
+const RING_R = 640;
+const pcards = PRODUCTS.map((p, i) => {
+  const c = el('div', 'pcard', `<img src="assets/${p.img}.webp" alt=""><div class="nm">${p.name}</div><div class="tg">${p.tag}</div><div class="pr"><b></b><i>/ ${p.unit}</i></div><div class="dim"></div>`, $('ring'));
+  return { c, price: c.querySelector('.pr b'), dim: c.querySelector('.dim'), p };
+});
+PRODUCTS.forEach(() => el('i', null, null, $('prodDots')));
+function sceneProducts(t) {
+  if (!show($('products'), inWin(t, T.products))) return;
+  // ouverture : cercle bleu qui perce le givre
+  const op = eInOut(prog(t, T.products[0], T.products[0] + 0.45));
+  css($('products'), { clipPath: op < 1 ? `circle(${op * 1300}px at 540px 960px)` : 'none' });
+  maskIn($('prodHead'), t, 4.6, 0.08, 0.45, eIn(prog(t, 8.1, 8.4)));
+  // position du carrousel : tour d'élan puis un cran par temps
+  let idx = -2.5 * (1 - eOutExpo(prog(t, 4.45, PRODUCT_IN[0])));
+  PRODUCT_IN.forEach((a, i) => { if (i) idx += clamp(spring(t - a + 0.06, 15, 9), 0, 1.15); });
+  const exit = eIn(prog(t, 8.05, 8.5));
+  css($('ring'), { transform: `translateY(${-exit * 1500}px) translateZ(${-RING_R}px) rotateY(${-idx * 60}deg)` });
+  pcards.forEach(({ c, price, dim, p }, i) => {
+    const rel = ((i - idx) % 6 + 9) % 6 - 3, front = Math.cos(rel * Math.PI / 3);
+    css(c, { transform: `rotateY(${i * 60}deg) translateZ(${RING_R}px)` });
+    dim.style.opacity = clamp((1 - front) * 0.55);
+    const a = PRODUCT_IN[i] - 0.05;
+    price.textContent = `${fcfa(p.price * eOutExpo(prog(t, a, a + 0.45)))} F`;
+    price.parentNode.style.opacity = clamp((front - 0.6) * 2.5);
+  });
+  [...$('prodDots').children].forEach((d, i) => css(d, { background: Math.round(idx) === i ? '#fff' : 'rgba(255,255,255,.3)', width: Math.round(idx) === i ? '44px' : '16px' }));
+  css($('prodDots'), { opacity: 1 - exit });
+}
+
+// =====================================================================
+// 3. Devis sur téléphone
+// =====================================================================
+const qrows = QUOTE_LINES.map((l, i) => {
+  const r = el('div', 'row', `<img src="assets/${l.img}.webp" alt=""><div class="n">${l.name}</div><div class="u">${l.unit} · ${fcfa(l.price)} F</div><div class="st"><span class="mi">−</span><span class="q">0</span><span class="pl">+</span></div>`, $('rows'));
+  r.style.top = `${226 + i * 154}px`;
+  return { r, q: r.querySelector('.q'), pl: r.querySelector('.pl'), l };
+});
+const totalAt = (t) => { let n = 0, s = 0; QUOTE_LINES.forEach((l) => l.taps.forEach((x) => { if (t >= x) { n++; s += l.price; } })); return { n, s }; };
+const final = totalAt(99);
+$('bOut').innerHTML = `Bonjour Le Glaceur, voici mon devis <b>${QUOTE.number}</b> :<br>${QUOTE_LINES.map((l) => `${l.taps.length} × ${l.name} (${l.unit.toLowerCase()})`).join('<br>')}<br><b>Total : ${fcfa(final.s)} FCFA</b><br>Livraison offerte<div class="meta">21:14 <svg viewBox="0 0 30 18"><path id="tick" d="M2 10l5 5L17 3M12 15l1.5 1.5L28 3" fill="none" stroke="#8696a0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+$('pdf').querySelector('.hd i').textContent = QUOTE.number;
+$('pdf').querySelector('.tot b').textContent = `${fcfa(final.s)} FCFA`;
+// positions des cibles du doigt (mesurées une fois, téléphone au repos)
+const stageRect = $('stage').getBoundingClientRect();
+const center = (e) => { const r = e.getBoundingClientRect(); return { x: r.left - stageRect.left + r.width / 2, y: r.top - stageRect.top + r.height / 2 }; };
+const TGT = { plus: qrows.map(({ pl }) => center(pl)), pdf: center($('bPdf')), wa: center($('bWa')), gauge: center($('gTrack')) };
+// tous les appuis, dans l'ordre
+const TAPS = [...QUOTE_LINES.flatMap((l, i) => l.taps.map((x) => ({ t: x, p: TGT.plus[i] }))), { t: QUOTE.pdfTap, p: TGT.pdf }, { t: QUOTE.waTap, p: TGT.wa }].sort((a, b) => a.t - b.t);
+const ripples = TAPS.map(() => el('div', 'abs rip', null, $('fx')));
+const xtals = Array.from({ length: 14 }, () => el('div', 'abs xtal', null, $('fx')));
+const unlockT = QUOTE_LINES.flatMap((l) => l.taps).sort((a, b) => a - b)[FREE_FROM - 1];
+
+function sceneQuote(t) {
+  if (!show($('quote'), inWin(t, T.quote))) return;
+  const op = eInOut(prog(t, T.quote[0], T.quote[0] + 0.4));
+  css($('quote'), { clipPath: op < 1 ? `inset(${(1 - op) * 1920}px 0 0 0)` : 'none' });
+  const out = eIn(prog(t, QUOTE.out, QUOTE.out + 0.35));
+  maskIn($('qHead'), t, 8.55, 0.08, 0.45, out);
+  const ps = spring(t - QUOTE.phoneIn, 12, 7.5);
+  css($('phone'), { transform: `translateY(${(1 - ps) * 1300 + out * 1500}px) rotate(${(1 - ps) * 8}deg)` });
+  // quantités, jauge, total
+  const { n, s } = totalAt(t);
+  qrows.forEach(({ q, pl, l }) => {
+    const k = l.taps.filter((x) => t >= x).length; q.textContent = k;
+    const last = l.taps.filter((x) => t >= x).pop(); const bump = last != null ? Math.exp(-(t - last) * 18) : 0;
+    css(q, { transform: `scale(${1 + bump * 0.35})` }); css(pl, { transform: `scale(${1 - bump * 0.12})` });
+  });
+  $('totV').textContent = `${fcfa(s)} FCFA`;
+  const unlocked = t >= unlockT, uk = spring(t - unlockT, 18, 9);
+  css($('gFill'), { width: `${Math.min(1, n / FREE_FROM) * 100}%`, background: unlocked ? 'linear-gradient(90deg,#39a85b,#1d8a4a)' : '' });
+  $('gCount').textContent = unlocked ? `${n} articles` : `${n}/${FREE_FROM}`;
+  css($('gTxt'), { opacity: unlocked ? 0 : 1 }); css($('gOk'), { opacity: unlocked ? 1 : 0, transform: `scale(${unlocked ? uk : 0})`, transformOrigin: '0 50%' });
+  // éclats de glace au déblocage
+  xtals.forEach((x, i) => {
+    const k = prog(t, unlockT, unlockT + 0.8), a = -Math.PI * (0.08 + 0.84 * i / (xtals.length - 1)), d = eOut(k) * (220 + (i % 3) * 90);
+    css(x, { opacity: k > 0 && k < 1 ? 1 - k * k : 0, transform: `translate(${TGT.gauge.x - 15 + Math.cos(a) * d * 1.3}px, ${TGT.gauge.y - 15 + Math.sin(a) * d + 260 * k * k}px) rotate(${45 + k * 260 * (i % 2 ? 1 : -1)}deg) scale(${1.2 - k * 0.6})` });
+  });
+  // le doigt : va d'un appui à l'autre, s'enfonce à chaque appui
+  let fp = null, press = 0;
+  if (t >= TAPS[0].t - 0.35 && t < QUOTE.waTap + 0.5) {
+    let i = TAPS.findIndex((x) => x.t > t); if (i < 0) i = TAPS.length;
+    const prev = TAPS[i - 1], next = TAPS[i];
+    if (!prev) { const k = eOut(prog(t, next.t - 0.35, next.t)); fp = { x: lerp(next.p.x + 260, next.p.x, k), y: lerp(next.p.y + 500, next.p.y, k) }; }
+    else if (!next) { const k = eIn(prog(t, prev.t + 0.12, prev.t + 0.5)); fp = { x: lerp(prev.p.x, prev.p.x + 300, k), y: lerp(prev.p.y, prev.p.y + 700, k) }; }
+    else { const gap = next.t - prev.t, k = eInOut(prog(t, prev.t + Math.min(0.08, gap * 0.3), next.t - Math.min(0.06, gap * 0.2))); fp = { x: lerp(prev.p.x, next.p.x, k), y: lerp(prev.p.y, next.p.y, k) }; }
+    TAPS.forEach((x) => { press = Math.max(press, Math.exp(-Math.pow((t - x.t) / 0.03, 2))); });
+  }
+  show($('finger'), !!fp);
+  if (fp) css($('finger'), { transform: `translate(${fp.x - 42}px, ${fp.y - 42}px) scale(${1 - press * 0.2})` });
+  ripples.forEach((r, i) => { const k = prog(t, TAPS[i].t, TAPS[i].t + 0.4); css(r, { opacity: k > 0 && k < 1 ? (1 - k) * 0.8 : 0, transform: `translate(${TAPS[i].p.x - 42}px, ${TAPS[i].p.y - 42}px) scale(${1 + eOut(k) * 1.6})` }); });
+  // le PDF sort du téléphone
+  const pk = spring(t - QUOTE.pdfTap - 0.05, 13, 8), po = eIn(prog(t, QUOTE.waTap - 0.3, QUOTE.waTap));
+  css($('pdf'), { opacity: t > QUOTE.pdfTap + 0.05 && po < 1 ? 1 : 0, transform: `translate(${lerp(340, 36, pk) - po * 700}px, ${lerp(1100, 640, pk)}px) rotate(${lerp(0, -9, pk)}deg) scale(${lerp(0.3, 1, clamp(pk, 0, 1.2))})` });
+  // écran WhatsApp
+  const wk = eInOut(prog(t, QUOTE.waTap + 0.05, QUOTE.waTap + 0.35));
+  css($('wa'), { transform: `translateX(${(1 - wk) * 100}%)` });
+  const bo = spring(t - QUOTE.sent, 16, 9), bi = spring(t - QUOTE.reply, 16, 9);
+  css($('bOut'), { opacity: t >= QUOTE.sent ? 1 : 0, transform: `scale(${bo})` });
+  css($('bIn'), { opacity: t >= QUOTE.reply ? 1 : 0, transform: `scale(${bi})` });
+  const tick = $('tick'); if (tick) tick.setAttribute('stroke', t >= QUOTE.read ? '#53bdeb' : '#8696a0');
+}
+
+// =====================================================================
+// 4. Carte des livraisons
+// =====================================================================
+const M = $('mapSvg');
+svgEl('path', { d: 'M-20 1500 C 200 1470, 420 1520, 640 1490 S 960 1470, 1100 1500 L1100 1940 L-20 1940 Z', fill: '#0c2a5a' }, M); // océan
+svgEl('path', { d: 'M-20 1500 C 200 1470, 420 1520, 640 1490 S 960 1470, 1100 1500', stroke: '#4d9bff', 'stroke-width': 4, fill: 'none', opacity: 0.6 }, M);
+const lagoon = svgEl('path', { d: 'M-20 1130 C 150 1095, 300 1160, 470 1128 S 640 1175, 760 1150 S 960 1115, 1100 1165', stroke: '#1f6fd6', 'stroke-width': 38, fill: 'none', 'stroke-linecap': 'round', opacity: 0.55 }, M);
+const lagoonLen = lagoon.getTotalLength(); lagoon.style.strokeDasharray = lagoonLen;
+const routes = COMMUNES.map(([name, x, y], i) => {
+  const mx = (DEPOT.x + x) / 2, my = (DEPOT.y + y) / 2, dx = x - DEPOT.x, dy = y - DEPOT.y, L = Math.hypot(dx, dy) || 1;
+  const cx = mx - dy / L * L * 0.22, cy = my + dx / L * L * 0.22 - 30;
+  const path = svgEl('path', { d: `M${DEPOT.x} ${DEPOT.y} Q${cx} ${cy} ${x} ${y}`, stroke: '#8ecfff', 'stroke-width': 4, fill: 'none', 'stroke-linecap': 'round', 'stroke-dasharray': '1 0', opacity: 0.85 }, M);
+  const len = path.getTotalLength(); path.style.strokeDasharray = len;
+  const head = svgEl('circle', { r: 9, fill: '#fff' }, M);
+  const dot = svgEl('circle', { cx: x, cy: y, r: 11, fill: '#4d9bff', stroke: '#fff', 'stroke-width': 4 }, M);
+  const lbl = svgEl('text', { x: x + (x > 900 ? -18 : 18), y: y - 18, class: 'clbl', 'text-anchor': x > 900 ? 'end' : 'start' }, M); lbl.textContent = name;
+  return { path, len, head, dot, lbl, t0: ROUTES_IN + i * ROUTE_STAGGER };
+});
+const pulses = [0, 1, 2].map(() => svgEl('circle', { cx: DEPOT.x, cy: DEPOT.y, r: 20, fill: 'none', stroke: '#4d9bff', 'stroke-width': 4 }, M));
+svgEl('circle', { cx: DEPOT.x, cy: DEPOT.y, r: 26, fill: '#1563d6', stroke: '#fff', 'stroke-width': 6 }, M);
+svgEl('circle', { cx: DEPOT.x, cy: DEPOT.y, r: 9, fill: '#fff' }, M);
+const depotLbl = svgEl('text', { x: DEPOT.x, y: DEPOT.y - 50, 'text-anchor': 'middle', style: "font: 800 40px 'BC'; fill: #fff; letter-spacing: 1px" }, M); depotLbl.textContent = 'LE GLACEUR · ABATTA';
+
+function sceneMap(t) {
+  if (!show($('map'), inWin(t, T.map))) return;
+  const op = eInOut(prog(t, T.map[0], T.map[0] + 0.4));
+  css($('map'), { clipPath: op < 1 ? `inset(${(1 - op) * 1920}px 0 0 0)` : 'none' });
+  const out = eIn(prog(t, 16.85, 17.15));
+  maskIn($('mapHead'), t, 14.0, 0.08, 0.45, out);
+  lagoon.style.strokeDashoffset = lagoonLen * (1 - eInOut(prog(t, 13.9, 14.6)));
+  pulses.forEach((p, i) => { const k = ((t - 14.2 + i * 0.33) % 1 + 1) % 1; p.setAttribute('r', 26 + k * 70); p.setAttribute('opacity', t > 14.2 ? (1 - k) * 0.8 : 0); });
+  routes.forEach(({ path, len, head, dot, lbl, t0 }) => {
+    const k = eInOut(prog(t, t0, t0 + 0.42));
+    path.style.strokeDashoffset = len * (1 - k);
+    const pt = path.getPointAtLength(len * k); head.setAttribute('cx', pt.x); head.setAttribute('cy', pt.y); head.setAttribute('opacity', k > 0 && k < 1 ? 1 : 0);
+    const d = spring(t - t0 - 0.42, 18, 9);
+    dot.setAttribute('r', 11 * d); lbl.setAttribute('opacity', clamp(d)); dot.setAttribute('fill', k >= 1 ? '#4d9bff' : '#1563d6');
+  });
+  css(M, { transform: `scale(${lerp(1.06, 1, eOut(prog(t, 13.8, 15))) + out * 0.4})`, transformOrigin: `${DEPOT.x}px ${DEPOT.y}px`, opacity: 1 - out });
+  const ck = spring(t - 15.9, 15, 8);
+  css($('mapChip'), { opacity: t > 15.9 ? 1 - out : 0, transform: `scale(${ck})` });
+}
+
+// =====================================================================
+// 5. -78,5 °C
+// =====================================================================
+function sceneCold(t) {
+  if (!show($('cold'), inWin(t, T.cold))) return;
+  const op = eInOut(prog(t, T.cold[0], T.cold[0] + 0.3));
+  css($('cold'), { opacity: op });
+  const v = -78.5 * eOutExpo(prog(t, ...COLD.count));
+  $('coldNum').textContent = `${v < -0.05 ? '−' : ''}${Math.abs(v).toFixed(1).replace('.', ',')} °C`;
+  const fr = prog(t, COLD.count[0], COLD.count[1] + 0.4);
+  css($('coldNum'), { textShadow: `0 0 ${20 + fr * 60}px rgba(142,207,255,${0.3 + fr * 0.6})`, color: `rgb(${lerp(255, 225, fr)},${lerp(255, 242, fr)},255)`, transform: `scale(${lerp(0.9, 1, eOut(prog(t, 16.9, 17.6)))})` });
+  css($('coldImg'), { transform: `scale(${lerp(1.15, 1.02, prog(t, 16.9, 18.75))})` });
+  css($('coldKick'), { opacity: eOut(prog(t, 17.05, 17.35)) });
+  maskIn($('coldCap'), t, 17.55, 0.12, 0.45);
+  const ex = eIn(prog(t, 18.45, 18.75)); css($('coldNum'), { filter: `blur(${ex * 20}px)` });
+}
+
+// =====================================================================
+// 6. Signature
+// =====================================================================
+$('endPhone').textContent = BRAND.phone; $('endSite').textContent = BRAND.site;
+function sceneEnd(t) {
+  if (!show($('end'), t >= T.end[0])) return;
+  const op = eInOut(prog(t, T.end[0], T.end[0] + 0.35));
+  css($('end'), { clipPath: op < 1 ? `circle(${op * 1300}px at 540px 960px)` : 'none' });
+  const lk = spring(t - END.logo, 13, 7.5);
+  css($('logo'), { opacity: t >= END.logo ? 1 : 0, transform: `translateY(${(1 - lk) * 120}px) scale(${lerp(0.7, 1, lk)})`, filter: `blur(${clamp(1 - lk) * 14}px)` });
+  maskIn($('endTag'), t, END.tag, 0.1, 0.45);
+  css($('endVals'), { opacity: eOut(prog(t, END.tag + 0.3, END.tag + 0.6)) });
+  const bs = spring(t - END.button, 16, 8), press = t > END.tap ? Math.exp(-(t - END.tap) * 9) * Math.sin(Math.min(Math.PI, (t - END.tap) * 22)) : 0;
+  css($('endBtn'), { opacity: t >= END.button ? 1 : 0, transform: `scale(${bs * (1 - press * 0.08)})` });
+  const rk = prog(t, END.tap, END.tap + 0.7);
+  const rd = 140 + eOut(rk) * 900;
+  css($('endRip'), { opacity: rk > 0 ? (1 - rk) * 0.9 : 0, width: `${rd}px`, height: `${rd}px`, transform: 'translate(-50%,-50%)' });
+  const pk = eOut(prog(t, END.phone, END.phone + 0.4));
+  css($('endPhone'), { opacity: pk, transform: `translateY(${(1 - pk) * 24}px)` });
+  css($('endSite'), { opacity: eOut(prog(t, END.phone + 0.15, END.phone + 0.55)) });
+}
+
+// ---------- une image ----------
+function renderFrame(t) {
+  sceneIce(t); sceneFrost(t); sceneProducts(t); sceneQuote(t); sceneMap(t); sceneCold(t); sceneEnd(t);
+  $('fade').style.opacity = eIn(prog(t, END.fade, S.duration));
+}
+
+// ---------- démarrage ----------
+await Promise.all([...document.images].map((i) => (i.complete ? 0 : new Promise((r) => (i.onload = i.onerror = r)))));
+renderer.compile(scene, camera);
+window.renderFrame = renderFrame;
+window.FILM = { fps: S.fps, duration: S.duration, width: S.width, height: S.height };
+window.READY = true;
+const q = new URLSearchParams(location.search);
+if (q.has('t')) renderFrame(Number(q.get('t')));
+else if (!q.has('render')) { const t0 = performance.now(); const loop = () => { renderFrame(((performance.now() - t0) / 1000) % S.duration); requestAnimationFrame(loop); }; loop(); }
+</script>
+</body>
+</html>

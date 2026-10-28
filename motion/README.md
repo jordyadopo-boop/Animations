@@ -8,6 +8,7 @@ Chaque film est **une seule page HTML** : la fonction `renderFrame(t)` place tou
 | Film | Dossier | Durée | Rendu |
 | --- | --- | --- | --- |
 | Portfolio Jordy Adopo, « Je fais ton site internet » | `portfolio/` | 16 s | `rendus/portfolio.mp4` |
+| Le Glaceur, « La fraîcheur sous toutes ses formes » | `glaceur/` | 21 s | `rendus/glaceur.mp4` |
 
 ### Portfolio : déroulé (120 BPM, une coupe par temps fort)
 
@@ -24,6 +25,19 @@ Chaque film est **une seule page HTML** : la fonction `renderFrame(t)` place tou
 Textes, captures et couleurs viennent du site `business-sites` (charte : noir, rouge `#ff3b4e`, Space Grotesk, JetBrains Mono).
 Tout le minutage est dans `portfolio/score.js`, partagé par l'image et le son.
 
+### Le Glaceur : déroulé (120 BPM)
+
+| Temps | Scène |
+| --- | --- |
+| 0 – 4,7 s | **Vrai glaçon 3D** (three.js, verre physique qui réfracte le mot GLACEUR) : chute, rebonds écrasés-étirés, *Pureté. Hygiène. Qualité.*, pluie de glaçons, caméra qui tourne puis plonge dans la glace, voile de givre |
+| 4,5 – 8,6 s | Carrousel 3D des 6 glaces avec photos et prix réels qui défilent |
+| 8,5 – 14 s | Le devis sur téléphone : les quantités montent, la jauge débloque la livraison offerte à 20 articles, le PDF sort, l'envoi sur WhatsApp, lu, réponse |
+| 13,8 – 17 s | Carte schématique d'Abidjan : les livraisons partent d'Abatta vers les 14 communes |
+| 17 – 18,7 s | Carboglace : le compteur descend à −78,5 °C |
+| 18,5 – 21 s | Logo, « La fraîcheur sous toutes ses formes », bouton WhatsApp, numéro |
+
+Prix, produits, communes et numéro viennent de `src/js/config.js` du site Le Glaceur (photos et polices Barlow du site).
+
 ## Commandes
 
 ```bash
@@ -33,6 +47,7 @@ node render/serve.js                          # aperçu : http://localhost:5173/
 node motion/portfolio/audio.js                # bande-son synthétisée -> out/portfolio.wav
 node motion/render.js portfolio               # film -> out/portfolio.mp4 (flou de mouvement : 4 sous-images par image)
 node motion/render.js portfolio --stills 3,8  # images fixes -> out/stills/
+node motion/glaceur/audio.js && node motion/render.js glaceur   # film Le Glaceur (WebGL logiciel, plus lent)
 ```
 
-Polices : Space Grotesk et JetBrains Mono, licence SIL OFL (`portfolio/assets/OFL-*.txt`).
+Polices : Space Grotesk, JetBrains Mono et Barlow, licence SIL OFL (`*/assets/OFL-*.txt`).
