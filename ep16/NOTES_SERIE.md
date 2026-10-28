@@ -69,3 +69,7 @@
   montré sans image choquante (écran ECG, schéma de massage). Éviter deux disques clairs côte à côte sur un organe (effet « yeux »).
 - Attente d'un rendu : ne jamais faire `until ! pgrep -f "motif"` (la commande se détecte elle-même) ; attendre la notification de fin.
 - Lignes fines (GridHelper) peu visibles en perspective : pour un sol « infini », utiliser de fines bandes (box) additives.
+- Durée (oct. 2026, à partir de l'ép. 37) : Mr A trouve que les vidéos survolent le sujet. Il autorise jusqu'à 3 minutes :
+  détailler davantage (plusieurs exemples concrets, chiffres, origine des faits, culture populaire), viser 2 min 30 à 3 min.
+- Quand Mr A n'envoie pas de vidéo modèle : construire le sujet à notre manière, sans s'inspirer d'une vidéo existante.
+- Occultisme / démons (ép. 37) : raconter l'histoire du texte « selon les textes », sans mode d'emploi ; sceaux dessinés décoratifs (inventés).

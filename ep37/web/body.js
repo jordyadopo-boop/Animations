@@ -125,7 +125,7 @@ function demonCard(name, rank, legions, power) {
   const c = document.createElement('canvas'); c.width = 600; c.height = 840; const g = c.getContext('2d');
   g.fillStyle = 'rgba(20,8,12,0.9)'; g.strokeStyle = '#d4a24a'; g.lineWidth = 10; g.beginPath(); g.roundRect(8, 8, 584, 824, 30); g.fill(); g.stroke();
   g.lineWidth = 3; g.beginPath(); g.roundRect(32, 32, 536, 776, 20); g.stroke();
-  g.textAlign = 'center'; g.fillStyle = '#ffd890'; g.font = 'bold 82px Inter'; g.fillText(name, 300, 150);
+  g.textAlign = 'center'; g.fillStyle = '#ffd890'; let fsz = 82; g.font = `bold ${fsz}px Inter`; while (g.measureText(name).width > 500) { fsz -= 4; g.font = `bold ${fsz}px Inter`; } g.fillText(name, 300, 150);
   g.fillStyle = '#e8c8a0'; g.font = '600 46px Inter'; g.fillText(rank, 300, 220);
   g.strokeStyle = '#d4a24a'; g.lineWidth = 5; g.beginPath(); g.arc(300, 400, 110, 0, Math.PI * 2); g.stroke(); g.beginPath(); g.arc(300, 400, 80, 0, Math.PI * 2); g.stroke();
   for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; g.beginPath(); g.moveTo(300 + Math.cos(a) * 80, 400 + Math.sin(a) * 80); g.lineTo(300 + Math.cos(a) * 110, 400 + Math.sin(a) * 110); g.stroke(); }
@@ -172,14 +172,17 @@ SETS.grimoire = () => {
   const parts = ['1. Ars Goetia', '2. Theurgia-Goetia', '3. Ars Paulina', '4. Ars Almadel', '5. Ars Notoria'].map((s, i) => { const l = label(s, { w: 0.6, h: 0.09, color: i ? '#c8b090' : '#ffd070', font: 'bold 80px Inter' }); l.position.set(0, 0.42 - i * 0.1, 0); rig.holoG.add(l); return l; });
   const K = cardsMgr(scene, cam);
   K('Lemegeton · la Petite Clé de Salomon', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, SC.grimoire.start + 0.8, SC.grimoire.start + 5.0, 0.3, 0.2), -0.6);
-  K('sceau dessiné pour la vidéo (décoratif)', { w: 1.2, h: 0.18, border: '#888888', color: '#cccccc' }, t => win(t, SC.grimoire.start + 8.0, C.date, 0.3, 0.2), -0.75, 0.5);
+  K('goêteia (grec ancien) = sorcellerie', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, SC.grimoire.start + 5.6, C.fiches, 0.3, 0.2), -0.6);
+  const tpl = demonCard('NOM', 'rang', '?', 'apparence · pouvoirs\n+ un sceau'); scene.add(tpl);
+  K('sceau dessiné pour la vidéo (décoratif)', { w: 1.2, h: 0.18, border: '#888888', color: '#cccccc' }, t => win(t, C.fiches + 4.0, C.date, 0.3, 0.2), -0.75, 0.5);
   K('manuscrits anglais du XVIIe siècle\n(conservés à la British Library)', { w: 1.6, h: 0.42, border: '#e0b070', small: true }, t => win(t, C.date + 0.4, SC.salomon.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
+      const tk = win(t, C.fiches + 0.2, C.fiches + 4.0, 0.4, 0.4); tpl.visible = tk > 0.01; tpl.material.opacity = tk; { const dir = new THREE.Vector3(); cam.getWorldDirection(dir); tpl.position.copy(cam.position).addScaledVector(dir, 1.55); tpl.quaternion.copy(cam.quaternion); }
       dt(t); const T0 = SC.grimoire.start; candles.forEach(([f, l], i) => { f.scale.y = 1 + 0.2 * Math.sin(t * 13 + i); l.intensity = 1.5 + 0.3 * Math.sin(t * 11 + i); });
       const pk = win(t, T0 + 1.0, T0 + 5.5, 0.4, 0.3); beamOn(rig, pk, t); parts.forEach((l, i) => { fade(l, pk * sstep(T0 + 1.2 + i * 0.5, T0 + 1.5 + i * 0.5, t)); l.lookAt(cam.position); });
       rig.c.update(t, env('claude', t), {});
-      camKeys(cam, t, [{ t: T0, p: [0.5, 1.4, 2.8], l: [0.3, 1.0, 0.3], f: 46 }, { t: T0 + 5.5, p: [0.5, 1.4, 2.7], l: [0.3, 1.0, 0.3], f: 46 }, { t: T0 + 6.5, p: [-0.16, 1.5, 0.9], l: [-0.14, 0.86, 0.0], f: 42 }, { t: T0 + 9.5, p: [-0.16, 1.5, 0.85], l: [-0.14, 0.86, 0.0], f: 42 }, { t: T0 + 10.6, p: [0.16, 1.5, 0.9], l: [0.15, 0.86, 0.0], f: 42 }, { t: C.date - 0.2, p: [0.16, 1.5, 0.9], l: [0.15, 0.86, 0.0], f: 42 }, { t: C.date + 0.8, p: [0.0, 1.7, 2.2], l: [0, 0.95, 0], f: 46 }, { t: SC.salomon.start, p: [0.0, 1.7, 2.1], l: [0, 0.95, 0], f: 46 }]);
+      camKeys(cam, t, [{ t: T0, p: [0.5, 1.4, 2.8], l: [0.3, 1.0, 0.3], f: 46 }, { t: T0 + 5.5, p: [0.5, 1.4, 2.7], l: [0.3, 1.0, 0.3], f: 46 }, { t: C.fiches, p: [0.0, 1.5, 1.6], l: [0, 1.1, 0.0], f: 44 }, { t: C.fiches + 4.0, p: [-0.16, 1.5, 0.9], l: [-0.14, 0.86, 0.0], f: 42 }, { t: C.fiches + 7.0, p: [-0.16, 1.5, 0.85], l: [-0.14, 0.86, 0.0], f: 42 }, { t: C.fiches + 8.2, p: [0.16, 1.5, 0.9], l: [0.15, 0.86, 0.0], f: 42 }, { t: C.date - 0.2, p: [0.16, 1.5, 0.9], l: [0.15, 0.86, 0.0], f: 42 }, { t: C.date + 0.8, p: [0.0, 1.7, 2.2], l: [0, 0.95, 0], f: 46 }, { t: SC.salomon.start, p: [0.0, 1.7, 2.1], l: [0, 0.95, 0], f: 46 }]);
       K.update(t);
     }
   };
@@ -261,18 +264,19 @@ SETS.cour = () => {
   const ranks = ['ROIS', 'DUCS', 'PRINCES', 'MARQUIS', 'PRÉSIDENTS', 'COMTES', 'CHEVALIER'];
   const pyr = new THREE.Group(); pyr.position.set(0, 1.0, -0.6); scene.add(pyr);
   const tiers = ranks.map((r, i) => { const g = new THREE.Group(); g.position.y = 1.5 - i * 0.24; pyr.add(g); g.add(holo(new THREE.BoxGeometry(0.5 + i * 0.22, 0.18, 0.3), [0xffd070, 0xff9a6a, 0xc08aff][i % 3], 0.12)); const l = label(r, { w: 1.0, h: 0.13, color: '#ffffff', font: 'bold 90px Inter' }); l.position.z = 0.17; g.add(l); return g; });
-  const cards = [['BAËL', 'roi · à l\'est', '66', 'rendrait\ninvisible'], ['AGARÈS', 'duc', '31', 'enseignerait\ntoutes les langues'], ['VASSAGO', 'prince', '26', 'révélerait le passé\net l\'avenir'], ['PAIMON', 'roi', '200', 'enseignerait\narts et sciences'], ['ANDROMALIUS', 'comte · le 72e', '36', 'ferait rendre\nles objets volés']].map(a => { const m = demonCard(...a); scene.add(m); return m; });
-  const D = (SC.wier.start - C.autres - 0.6) / 4;
-  const times = [C.bael, C.autres, C.autres + D, C.autres + 2 * D, C.autres + 3 * D];
+  const cards = [['BAËL', 'roi · à l\'est', '66', 'rendrait\ninvisible'], ['AGARÈS', 'duc', '31', 'enseignerait\ntoutes les langues'], ['VASSAGO', 'prince', '26', 'révélerait le passé\net l\'avenir'], ['PAIMON', 'roi', '200', 'enseignerait\narts et sciences'], ['ASMODÉE', 'roi · n° 32', '72', 'trois têtes :\ntaureau, homme, bélier'], ['BÉLIAL', 'roi · n° 68', '80', 'sur un char\nde feu'], ['STOLAS', 'prince · n° 36', '26', 'oiseau de nuit\nétoiles et plantes'], ['ANDROMALIUS', 'comte · le 72e', '36', 'ferait rendre\nles objets volés']].map(a => { const m = demonCard(...a); scene.add(m); return m; });
+  const D = (C.asmodee - C.autres) / 3;
+  const times = [C.bael, C.autres, C.autres + D, C.autres + 2 * D, C.asmodee, C.belial, C.belial + 5.3, C.andro];
   const K = cardsMgr(scene, cam);
-  K('selon le texte de la Goetia', { w: 1.0, h: 0.22, border: '#ffd070', color: '#ffe0a0' }, t => win(t, C.bael, SC.wier.start, 0.3, 0.2), -0.75, 0.45);
+  K('Livre de Tobie : l\'archange Raphaël\nchasse le démon Asmodée', { w: 1.6, h: 0.42, border: '#9adfff', small: true }, t => win(t, C.asmodee + 4.5, C.belial, 0.3, 0.2), -0.6);
+  K('selon le texte de la Goetia', { w: 1.0, h: 0.22, border: '#ffd070', color: '#ffe0a0' }, t => win(t, C.bael, C.asmodee + 4.3, 0.3, 0.2) + win(t, C.belial, SC.wier.start, 0.3, 0.2), -0.75, 0.45);
   return {
     ...B, update(t) {
       const T0 = SC.cour.start;
       tiers.forEach((g, i) => { const k = sstep(T0 + 0.8 + i * 0.7, T0 + 1.2 + i * 0.7, t) * (1 - sstep(C.bael - 0.5, C.bael, t)); fade(g, k); g.rotation.y = 0.15 * Math.sin(t * 0.6 + i); });
       beamOn(rig, sstep(T0 + 0.5, T0 + 1.0, t), t); rig.c.update(t, env('claude', t), {});
       camKeys(cam, t, [{ t: T0, p: [0.0, 1.9, 3.1], l: [0, 1.85, -0.6], f: 48 }, { t: C.bael - 0.5, p: [0.0, 1.9, 3.0], l: [0, 1.85, -0.6], f: 48 }, { t: C.bael, p: [0.2, 1.4, 3.6], l: [0, 1.1, 0], f: 48 }, { t: SC.wier.start, p: [0.2, 1.4, 3.4], l: [0, 1.1, 0], f: 48 }]);
-      cards.forEach((m, i) => { const a = times[i], b = i < 4 ? times[i + 1] : SC.wier.start; const k = win(t, a, b, 0.35, 0.3); m.visible = k > 0.01; m.material.opacity = k; const dir = new THREE.Vector3(); cam.getWorldDirection(dir); m.position.copy(cam.position).addScaledVector(dir, 1.55).add(new THREE.Vector3(0, 0.08 + 0.02 * Math.sin(t * 2), 0)); m.quaternion.copy(cam.quaternion); m.rotateY(0.3 * (1 - sstep(a, a + 0.6, t))); });
+      cards.forEach((m, i) => { const a = times[i], b = i < times.length - 1 ? times[i + 1] : SC.wier.start; const k = win(t, a, b, 0.35, 0.3); m.visible = k > 0.01; m.material.opacity = k; const dir = new THREE.Vector3(); cam.getWorldDirection(dir); m.position.copy(cam.position).addScaledVector(dir, 1.55).add(new THREE.Vector3(0, 0.08 + 0.02 * Math.sin(t * 2), 0)); m.quaternion.copy(cam.quaternion); m.rotateY(0.3 * (1 - sstep(a, a + 0.6, t))); });
       K.update(t);
     }
   };
@@ -291,7 +295,8 @@ SETS.wier = () => {
   const n72 = label('→ 72', { w: 0.6, h: 0.2, color: '#ff8a6a', font: 'bold 200px Inter' }); n72.position.set(0.2, 0.0, 0); rig.holoG.add(n72);
   const K = cardsMgr(scene, cam);
   K('JEAN WIER (Johann Weyer)\nmédecin · 1515 – 1588', { w: 1.6, h: 0.42, border: '#ffd070', small: true }, t => win(t, SC.wier.start + 2.6, SC.wier.start + 7.5, 0.3, 0.2), -0.6);
-  K('« Pseudomonarchia daemonum »\nannexe de son livre, édition de 1577', { w: 1.6, h: 0.42, border: '#e0b070', small: true }, t => win(t, SC.wier.start + 7.7, C.ironie, 0.3, 0.2), -0.6);
+  K('« Pseudomonarchia daemonum »\nannexe de son livre, édition de 1577', { w: 1.6, h: 0.42, border: '#e0b070', small: true }, t => win(t, SC.wier.start + 7.7, C.sorcieres, 0.3, 0.2), -0.6);
+  K('1563 · « De praestigiis daemonum » :\nbeaucoup d\'accusées sont malades, pas coupables', { w: 1.6, h: 0.42, border: '#9adfff', small: true }, t => win(t, C.sorcieres + 0.4, C.ironie, 0.3, 0.2), -0.6);
   K('4 esprits ajoutés, 1 retiré', { w: 1.6, h: 0.24, border: '#ff8a6a' }, t => win(t, C.ironie + 0.4, SC.pop.start, 0.3, 0.2), -0.6);
   imagined(K, 'scène imaginée', SC.wier.start + 2.4, C.ironie);
   return {
@@ -311,14 +316,15 @@ SETS.pop = () => {
   const B = studioBase({ bg: 0x080810, hemi: [0xd0d8ff, 0x14141c, 0.9] }); const { scene, cam } = B;
   const rig = claudeRig(scene, [0.0, 0, 0.9], 0, [0.45, 0, 0.1], 0x9adfff, 0.5, 0.3);
   faceLight(scene, [0, 0.6, 2.4], 1.2);
-  const scr = [['JEU VIDÉO', 0xff8a6a, -1.0], ['SÉRIE', 0x9adfff, 0.0], ['MANGA', 0xc08aff, 1.0]].map(([s, c, x], i) => { const g = new THREE.Group(); g.position.set(x, 1.9, -0.6); g.rotation.y = -x * 0.35; scene.add(g); g.add(holo(new THREE.BoxGeometry(0.85, 0.55, 0.04), c, 0.15)); const l = label(s, { w: 0.8, h: 0.14, color: '#' + new THREE.Color(c).getHexString(), font: 'bold 100px Inter' }); l.position.set(0, 0.38, 0.03); g.add(l); return g; });
-  const names = ['PAIMON', 'ASMODÉE', 'BÉLIAL'].map((s, i) => { const l = label(s, { w: 0.8, h: 0.16, color: '#ffffff', font: 'bold 110px Inter' }); scr[i].add(l); l.position.set(0, 0, 0.04); return l; });
+  const scr = [['SÉRIE ANIMÉE', 0x9adfff, -0.72], ['JEUX PERSONA', 0xff8a6a, 0.0], ['GENSHIN IMPACT', 0xc08aff, 0.72]].map(([s, c, x], i) => { const g = new THREE.Group(); g.position.set(x, 1.9, -0.6); g.rotation.y = -x * 0.35; scene.add(g); g.add(holo(new THREE.BoxGeometry(0.66, 0.45, 0.04), c, 0.15)); const l = label(s, { w: 0.66, h: 0.12, color: '#' + new THREE.Color(c).getHexString(), font: 'bold 100px Inter' }); l.position.set(0, 0.38, 0.03); g.add(l); return g; });
+  const names = ['STOLAS · PAIMON', 'BÉLIAL · ASMODÉE', 'PAIMON'].map((s, i) => { const l = label(s, { w: 0.64, h: 0.13, color: '#ffffff', font: 'bold 80px Inter' }); scr[i].add(l); l.position.set(0, 0, 0.04); return l; });
   const K = cardsMgr(scene, cam);
-  K('1904 · traduction de S. L. MacGregor Mathers\npubliée par Aleister Crowley', { w: 1.6, h: 0.42, border: '#9adfff', small: true }, t => win(t, SC.pop.start + 0.6, SC.pop.start + 4.0, 0.3, 0.2), -0.6);
+  K('1904 · traduction de S. L. MacGregor Mathers\npubliée par Aleister Crowley', { w: 1.6, h: 0.42, border: '#9adfff', small: true }, t => win(t, SC.pop.start + 0.6, SC.pop.start + 4.3, 0.3, 0.2), -0.6);
+  K('Helluva Boss · Persona · Genshin Impact', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, SC.pop.start + 4.6, SC.fin.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
       const T0 = SC.pop.start; beamOn(rig, sstep(T0 + 3.5, T0 + 4.0, t), t);
-      scr.forEach((g, i) => { fade(g, sstep(T0 + 3.8 + i * 0.6, T0 + 4.3 + i * 0.6, t)); g.position.y = 1.9 + 0.04 * Math.sin(t * 1.5 + i); });
+      scr.forEach((g, i) => { fade(g, sstep(T0 + 4.5 + i * 2.6, T0 + 5.0 + i * 2.6, t)); g.position.y = 1.9 + 0.04 * Math.sin(t * 1.5 + i); });
       rig.c.update(t, env('claude', t), {});
       camKeys(cam, t, [{ t: T0, p: [0.0, 1.5, 4.4], l: [0, 1.4, 0], f: 50 }, { t: SC.fin.start, p: [0.0, 1.5, 4.2], l: [0, 1.4, 0], f: 50 }]);
       K.update(t);

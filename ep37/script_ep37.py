@@ -16,8 +16,13 @@ SCRIPT = [
 
     ("scene", "grimoire"),
     ("say", "claude", [
-        ("Ce grimoire s'appelle la Petite Clé de Salomon. Il a cinq parties, et la première, l'Ars Goetia, est la plus célèbre : un catalogue de 72 esprits, chacun avec son rang, ses légions, ses pouvoirs… et son sceau.",
-         "This grimoire is called the Lesser Key of Solomon. It has five parts, and the first, the Ars Goetia, is the most famous: a catalogue of 72 spirits, each with its rank, its legions, its powers… and its seal."),
+        ("Ce grimoire s'appelle la Petite Clé de Salomon. Il a cinq parties, et la première, l'Ars Goetia, est la plus célèbre. Goetia vient d'un mot grec qui veut dire sorcellerie.",
+         "This grimoire is called the Lesser Key of Solomon. It has five parts, and the first, the Ars Goetia, is the most famous. Goetia comes from a Greek word meaning sorcery."),
+    ], "neutral"),
+    ("cue", "fiches"),
+    ("say", "claude", [
+        ("C'est un catalogue de 72 esprits. Chaque fiche suit le même modèle : un numéro, un nom, un rang, une apparence, des pouvoirs, un nombre de légions… et un sceau, un dessin censé représenter l'esprit.",
+         "It's a catalogue of 72 spirits. Each entry follows the same pattern: a number, a name, a rank, an appearance, powers, a number of legions… and a seal, a drawing meant to represent the spirit."),
     ], "neutral"),
     ("cue", "date"),
     ("say", "claude", [
@@ -57,8 +62,23 @@ SCRIPT = [
     ], "serious"),
     ("cue", "autres"),
     ("say", "claude", [
-        ("Agarès enseignerait toutes les langues. Vassago révélerait le passé et l'avenir. Paimon, à dos de dromadaire, enseignerait les arts et les sciences. Et le dernier, Andromalius, ferait rendre les objets volés.",
-         "Agares supposedly teaches every language. Vassago reveals the past and the future. Paimon, riding a dromedary, teaches the arts and sciences. And the last, Andromalius, makes thieves return stolen goods."),
+        ("Agarès enseignerait toutes les langues. Vassago révélerait le passé et l'avenir. Paimon, à dos de dromadaire, enseignerait les arts et les sciences.",
+         "Agares supposedly teaches every language. Vassago reveals the past and the future. Paimon, riding a dromedary, teaches the arts and sciences."),
+    ], "neutral"),
+    ("cue", "asmodee"),
+    ("say", "claude", [
+        ("Le numéro 32, Asmodée, aurait trois têtes : un taureau, un homme et un bélier. Et lui, on le connaît bien avant le grimoire : dans le livre de Tobie, dans la Bible, c'est le démon chassé par l'archange Raphaël.",
+         "Number 32, Asmodeus, has three heads: a bull, a man and a ram. And he was known long before the grimoire: in the Book of Tobit, in the Bible, he's the demon driven away by the archangel Raphael."),
+    ], "serious"),
+    ("cue", "belial"),
+    ("say", "claude", [
+        ("Bélial, selon le texte, aurait été créé juste après Lucifer, et apparaîtrait sur un char de feu. Stolas, lui, prendrait la forme d'un oiseau de nuit, et enseignerait les étoiles et les plantes.",
+         "Belial, according to the text, was created right after Lucifer, and appears in a chariot of fire. Stolas takes the form of a night bird, and teaches the stars and plants."),
+    ], "neutral"),
+    ("cue", "andro"),
+    ("say", "claude", [
+        ("Et le dernier, Andromalius, ferait rendre les objets volés… et punirait les voleurs.",
+         "And the last, Andromalius, makes thieves return stolen goods… and punishes them."),
     ], "neutral"),
     ("pause", 0.3),
 
@@ -66,8 +86,13 @@ SCRIPT = [
     ("date", "1577", "1577", 2.0),
     ("pause", 0.3),
     ("say", "claude", [
-        ("Mais cette liste n'est pas si ancienne. En 1577, le médecin Jean Wier en publie une presque identique, avec 69 démons. Son but : montrer à quel point ces croyances sont absurdes. Il s'opposait d'ailleurs aux chasses aux sorcières.",
-         "But this list isn't that old. In 1577, the physician Johann Weyer publishes an almost identical one, with 69 demons. His goal: to show how absurd these beliefs are. He also opposed the witch hunts."),
+        ("Mais cette liste n'est pas si ancienne. En 1577, le médecin Jean Wier en publie une presque identique, avec 69 démons. Son but : montrer à quel point ces croyances sont absurdes.",
+         "But this list isn't that old. In 1577, the physician Johann Weyer publishes an almost identical one, with 69 demons. His goal: to show how absurd these beliefs are."),
+    ], "neutral"),
+    ("cue", "sorcieres"),
+    ("say", "claude", [
+        ("En pleine chasse aux sorcières, il ose écrire que beaucoup de femmes accusées sont malades, pas coupables. On le considère aujourd'hui comme un pionnier de la psychiatrie.",
+         "In the middle of the witch hunts, he dares to write that many accused women are ill, not guilty. Today he's seen as a pioneer of psychiatry."),
     ], "neutral"),
     ("cue", "ironie"),
     ("say", "claude", [
@@ -78,8 +103,8 @@ SCRIPT = [
 
     ("scene", "pop"),
     ("say", "claude", [
-        ("En 1904, une traduction anglaise la rend célèbre. Aujourd'hui, Paimon, Asmodée ou Bélial apparaissent dans des jeux vidéo, des séries et des mangas.",
-         "In 1904, an English translation makes it famous. Today, Paimon, Asmodeus or Belial appear in video games, series and manga."),
+        ("En 1904, une traduction anglaise la rend célèbre. Et aujourd'hui, ces noms sont partout : la série animée Helluva Boss met en scène Stolas et Paimon, les jeux Persona font combattre Bélial ou Asmodée, et le petit compagnon du jeu Guènnchine Impacte s'appelle… Paimon.",
+         "In 1904, an English translation makes it famous. And today, these names are everywhere: the animated series Helluva Boss features Stolas and Paimon, the Persona games pit you against Belial or Asmodeus, and the little companion in Genshin Impact is called… Paimon."),
     ], "happy"),
     ("pause", 0.3),
 
