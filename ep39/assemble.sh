@@ -2,7 +2,7 @@
 set -e
 cd "$(dirname "$0")"
 mkdir -p livrables
-OUT=livrables/episode39_la_derniere_page_de_la_bible.mp4
+OUT=livrables/episode39_il_revient_bientot.mp4
 printf "file '%s.mp4'\n" s0 s1 s2 s3 > seg/list.txt
 ffmpeg -y -v error -f concat -safe 0 -i seg/list.txt -i build/audio.wav \
   -vf "scale=1080:1920:flags=lanczos,ass=build/subs.ass" \
