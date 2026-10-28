@@ -92,7 +92,7 @@
   #wa { position: absolute; inset: 0; background: #efeae2; }
   #waTop { position: absolute; left: 0; top: 0; width: 100%; height: 184px; background: #008069; color: #fff; display: flex; align-items: flex-end; gap: 20px; padding: 0 30px 26px; }
   #waTop .av { width: 84px; height: 84px; border-radius: 42px; background: #fff; padding: 10px; }
-  #waTop .av img { width: 64px; height: 64px; display: block; }
+  #waTop .av svg { width: 64px; height: 64px; display: block; }
   #waTop b { font: 700 34px 'B'; display: block; }
   #waTop i { font: 400 24px 'B'; font-style: normal; opacity: .85; }
   .bub { position: absolute; max-width: 500px; padding: 18px 22px 14px; border-radius: 22px; font: 400 26px/1.38 'B'; color: #111b21; box-shadow: 0 2px 2px rgba(0,0,0,.08); }
@@ -177,7 +177,7 @@
       <div id="bPdf" class="qbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>Télécharger le PDF</div>
       <div id="bWa" class="qbtn"><svg viewBox="0 0 32 32" fill="#fff"><use href="#waIcon"/></svg>Envoyer sur WhatsApp</div>
       <div id="wa">
-        <div id="waTop"><div class="av"><img src="assets/logo-mark.svg" alt=""></div><div><b>Le Glaceur</b><i>en ligne</i></div></div>
+        <div id="waTop"><div class="av" id="waAv"></div><div><b>Le Glaceur</b><i>en ligne</i></div></div>
         <div id="bOut" class="bub"></div>
         <div id="bIn" class="bub">Bien reçu ! Notre équipe vous rappelle tout de suite pour la livraison.<div class="meta">21:15</div></div>
         <div id="waBar">Message</div>
@@ -428,6 +428,9 @@ const totalAt = (t) => { let n = 0, s = 0; QUOTE_LINES.forEach((l) => l.taps.for
 const final = totalAt(99);
 $('bOut').innerHTML = `Bonjour Le Glaceur, voici mon devis <b>${QUOTE.number}</b> :<br>${QUOTE_LINES.map((l) => `${l.taps.length} × ${l.name} (${l.unit.toLowerCase()})`).join('<br>')}<br><b>Total : ${fcfa(final.s)} FCFA</b><br>Livraison offerte<div class="meta">21:14 <svg viewBox="0 0 30 18"><path id="tick" d="M2 10l5 5L17 3M12 15l1.5 1.5L28 3" fill="none" stroke="#8696a0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
 $('pdf').querySelector('.hd i').textContent = QUOTE.number;
+// logo converti en PNG : un SVG qui glisse dans l'écran arrondi laisse des tuiles noires au rendu
+{ const im = new Image(); im.src = 'assets/logo-mark.svg'; await im.decode(); const c = document.createElement('canvas'); c.width = c.height = 128; c.getContext('2d').drawImage(im, 0, 0, 128, 128);
+  const png = new Image(); png.src = c.toDataURL('image/png'); await png.decode(); png.style.cssText = 'width:64px;height:64px;display:block'; $('waAv').appendChild(png); }
 $('pdf').querySelector('.tot b').textContent = `${fcfa(final.s)} FCFA`;
 // positions des cibles du doigt (mesurées une fois, téléphone au repos)
 const stageRect = $('stage').getBoundingClientRect();
@@ -482,7 +485,7 @@ function sceneQuote(t) {
   css($('pdf'), { opacity: t > QUOTE.pdfTap + 0.05 && po < 1 ? 1 : 0, transform: `translate(${lerp(340, 36, pk) - po * 700}px, ${lerp(1100, 640, pk)}px) rotate(${lerp(0, -9, pk)}deg) scale(${lerp(0.3, 1, clamp(pk, 0, 1.2))})` });
   // écran WhatsApp
   const wk = eInOut(prog(t, QUOTE.waTap + 0.05, QUOTE.waTap + 0.35));
-  css($('wa'), { transform: `translateX(${(1 - wk) * 100}%)` });
+  css($('wa'), { left: `${(1 - wk) * 628}px`, right: `${-(1 - wk) * 628}px` }); // position, pas transform : évite des tuiles noires au rendu
   const bo = spring(t - QUOTE.sent, 16, 9), bi = spring(t - QUOTE.reply, 16, 9);
   css($('bOut'), { opacity: t >= QUOTE.sent ? 1 : 0, transform: `scale(${bo})` });
   css($('bIn'), { opacity: t >= QUOTE.reply ? 1 : 0, transform: `scale(${bi})` });
