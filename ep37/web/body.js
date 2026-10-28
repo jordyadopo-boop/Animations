@@ -178,7 +178,7 @@ SETS.grimoire = () => {
   K('manuscrits anglais du XVIIe siècle\n(conservés à la British Library)', { w: 1.6, h: 0.42, border: '#e0b070', small: true }, t => win(t, C.date + 0.4, SC.salomon.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
-      const tk = win(t, C.fiches + 0.2, C.fiches + 4.0, 0.4, 0.4); tpl.visible = tk > 0.01; tpl.material.opacity = tk; { const dir = new THREE.Vector3(); cam.getWorldDirection(dir); tpl.position.copy(cam.position).addScaledVector(dir, 1.55); tpl.quaternion.copy(cam.quaternion); }
+      const tk = win(t, C.fiches + 0.2, C.fiches + 4.0, 0.4, 0.4); tpl.visible = tk > 0.01; tpl.material.opacity = tk; { const dir = new THREE.Vector3(); cam.getWorldDirection(dir); tpl.position.copy(cam.position).addScaledVector(dir, 1.75).add(new THREE.Vector3(0, -0.1, 0)); tpl.quaternion.copy(cam.quaternion); }
       dt(t); const T0 = SC.grimoire.start; candles.forEach(([f, l], i) => { f.scale.y = 1 + 0.2 * Math.sin(t * 13 + i); l.intensity = 1.5 + 0.3 * Math.sin(t * 11 + i); });
       const pk = win(t, T0 + 1.0, T0 + 5.5, 0.4, 0.3); beamOn(rig, pk, t); parts.forEach((l, i) => { fade(l, pk * sstep(T0 + 1.2 + i * 0.5, T0 + 1.5 + i * 0.5, t)); l.lookAt(cam.position); });
       rig.c.update(t, env('claude', t), {});
@@ -276,7 +276,7 @@ SETS.cour = () => {
       tiers.forEach((g, i) => { const k = sstep(T0 + 0.8 + i * 0.7, T0 + 1.2 + i * 0.7, t) * (1 - sstep(C.bael - 0.5, C.bael, t)); fade(g, k); g.rotation.y = 0.15 * Math.sin(t * 0.6 + i); });
       beamOn(rig, sstep(T0 + 0.5, T0 + 1.0, t), t); rig.c.update(t, env('claude', t), {});
       camKeys(cam, t, [{ t: T0, p: [0.0, 1.9, 3.1], l: [0, 1.85, -0.6], f: 48 }, { t: C.bael - 0.5, p: [0.0, 1.9, 3.0], l: [0, 1.85, -0.6], f: 48 }, { t: C.bael, p: [0.2, 1.4, 3.6], l: [0, 1.1, 0], f: 48 }, { t: SC.wier.start, p: [0.2, 1.4, 3.4], l: [0, 1.1, 0], f: 48 }]);
-      cards.forEach((m, i) => { const a = times[i], b = i < times.length - 1 ? times[i + 1] : SC.wier.start; const k = win(t, a, b, 0.35, 0.3); m.visible = k > 0.01; m.material.opacity = k; const dir = new THREE.Vector3(); cam.getWorldDirection(dir); m.position.copy(cam.position).addScaledVector(dir, 1.55).add(new THREE.Vector3(0, 0.08 + 0.02 * Math.sin(t * 2), 0)); m.quaternion.copy(cam.quaternion); m.rotateY(0.3 * (1 - sstep(a, a + 0.6, t))); });
+      cards.forEach((m, i) => { const a = times[i], b = i < times.length - 1 ? times[i + 1] : SC.wier.start; const k = win(t, a, b, 0.35, 0.3); m.visible = k > 0.01; m.material.opacity = k; const dir = new THREE.Vector3(); cam.getWorldDirection(dir); m.position.copy(cam.position).addScaledVector(dir, 1.75).add(new THREE.Vector3(0, -0.1 + 0.02 * Math.sin(t * 2), 0)); m.quaternion.copy(cam.quaternion); m.rotateY(0.3 * (1 - sstep(a, a + 0.6, t))); });
       K.update(t);
     }
   };
