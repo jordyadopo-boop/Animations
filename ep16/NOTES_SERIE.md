@@ -98,6 +98,8 @@
 - Dépendances à réinstaller dans une nouvelle machine : `pip install edge-tts faster-whisper scipy` et `npm install` dans epN/ (three).
 - ⚠ RÈGLE (oct. 2026, demande de Mr A) : avant de COMMENCER chaque nouvel épisode, lui demander son accord en proposant
   le titre et la couverture (description, ou maquette si possible). Ne rien fabriquer avant sa réponse.
-- Livrés ensuite : 44 LA MORT ELLE-MÊME VA MOURIR (Ap 20,11-15) · 45 SATAN SORT DE SA PRISON (Ap 20,7-10).
+- Faits ensuite : 44 LA MORT ELLE-MÊME VA MOURIR (Ap 20,11-15, 155 s) · 45 SATAN SORT DE SA PRISON (Ap 20,7-10, 154 s).
+- Livraison : envoyer les épisodes DANS L'ORDRE de la série (couverture, vidéo, légende), jamais un épisode avant le précédent.
+- Ép. 42 : Mr A voulait voir la ville dans le cube → addTown() dans ep42/web/body.js (maisons, tours, fenêtres) ; à réutiliser pour la Jérusalem céleste.
   Ép. 46 (Ap 20,1-6) : script et audio écrits (148 s), titre proposé « UN ANGE ENCHAÎNE LE DRAGON » ; en attente de l'accord de Mr A.
 - Méthode de vérification : images fixes ffmpeg (répéter le premier temps) + `python3 sheet.py stills sheet.jpg`. Pour voir des images avant le rendu complet, voir le rendu des épisodes précédents (render.js accepte un intervalle d'images).
