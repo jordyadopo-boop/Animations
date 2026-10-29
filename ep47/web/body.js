@@ -379,6 +379,12 @@ function smallRider(seed) {
   const hs = bigHorse(0xeeeae4); const h = new Human({ skin: [0xd09a70, 0x8a5a3a, 0xa86c44, 0xe0b890][seed % 4], hair: [0x1a1210, 0x5a3a20, 0x2a1a10][seed % 3], hairStyle: ['short', 'long', 'curly'][seed % 3], top: 0xffffff, bottom: 0xffffff, robe: 0xffffff, robeL: 0.6, seed: 4710 + seed });
   hs.add(h.root); h.root.position.set(0, 1.12, -0.08); h.pose(L.sitPose(0.32, { lL: 1.2, lR: 1.2, kL: 1.2, kR: 1.2, lsL: 0.5, lsR: 0.5 })); hs.userData.rider = h; return hs;
 }
+// le cavalier SURGIT de la dechirure (petit au fond), puis galope vers nous
+function emerge(R, from, to, u, o = {}) {
+  const e = u * u * (3 - 2 * u), arc = o.arc ?? 0.8, dx = to[0] - from[0], dz = to[2] - from[2];
+  R.position.set(lerp(from[0], to[0], e), lerp(from[1], to[1], e) + arc * Math.sin(Math.PI * e), lerp(from[2], to[2], e));
+  R.rotation.order = 'YXZ'; R.rotation.y = lerp(Math.atan2(dx, dz) + 0.3, o.endY ?? 0.9, e); R.rotation.x = 0.2 * (1 - e);
+}
 function skyRift(scene, pos, H = 14, W = 4) {
   // le ciel qui se dechire : une fente lumineuse aux bords dentes
   const sh = new THREE.Shape(); const n = 14; sh.moveTo(0, H / 2);
@@ -386,8 +392,11 @@ function skyRift(scene, pos, H = 14, W = 4) {
   for (let i = n - 1; i >= 1; i--) { const y = H / 2 - H * i / n; sh.lineTo(-(W / 2) * (0.35 + 0.65 * Math.sin(Math.PI * i / n)) * (1 + 0.35 * (hash(i * 7) - 0.5)), y); }
   const r = new THREE.Mesh(new THREE.ShapeGeometry(sh), new THREE.MeshBasicMaterial({ color: 0xffe8c0, transparent: true, opacity: 0.9, depthWrite: false, fog: false })); r.position.set(...pos); scene.add(r);
   const halo = glowStar(H * 0.75, 0xfff0c8); halo.position.set(pos[0], pos[1], pos[2] - 0.2); scene.add(halo);
-  const edges = []; for (let i = 0; i < 10; i++) { const c = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2 + hash(i) * 1.4, 1), M(0x2a2440, { emissive: new THREE.Color(0x0e0a1a) })); c.scale.y = 0.5; c.position.set(pos[0] + (i % 2 ? 1 : -1) * (W * 0.55 + hash(i * 5) * 2), pos[1] + (hash(i * 9) - 0.5) * H * 0.9, pos[2] + 0.5); scene.add(c); edges.push(c); }
-  return { rift: r, halo, edges, open(k) { r.scale.x = Math.max(0.01, k); halo.material.opacity = k; } };
+  const edges = []; for (let i = 0; i < 10; i++) { const c = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2 + hash(i) * 1.4, 1), M(0x2a2440, { emissive: new THREE.Color(0x0e0a1a) })); c.scale.y = 0.5; c.position.set(pos[0] + (i % 2 ? 1 : -1) * (W * 0.55 + hash(i * 5) * 2), pos[1] + (hash(i * 9) - 0.5) * H * 0.9, pos[2] + 0.5); c.userData.x0 = c.position.x; scene.add(c); edges.push(c); }
+  // dechirement : la fente grandit d'abord en hauteur, puis en largeur ; les nuages s'ecartent
+  const open = k => { r.scale.y = Math.max(0.01, sstep(0, 0.55, k)); r.scale.x = Math.max(0.01, sstep(0.25, 1, k)); halo.material.opacity = k; edges.forEach(c => { c.position.x = pos[0] + (c.userData.x0 - pos[0]) * (0.35 + 0.65 * sstep(0.25, 1, k)); }); };
+  open(0);
+  return { rift: r, halo, edges, open };
 }
 
 // ---------- couverture : le grand cavalier descend du ciel dechire, suivi de son armee
@@ -421,7 +430,7 @@ function faceShot(cam, R, w, dist = 2.9, side = 1.1) {
 SETS.intro = () => {
   const B = heavenSky(); const { scene, cam } = B; scene.add(L.stars(600, 80, 1.2));
   const sky = skyRift(scene, [0, 7, -18], 18, 5);
-  const R = bigRider(); R.rotation.order = 'YXZ'; R.rotation.y = 0.6; R.rotation.x = 0.2; R.scale.setScalar(1.3); scene.add(R); faceLight(scene, [0.5, 4.5, 0], 3.0, 0xffe8d0);
+  const R = bigRider(); R.rotation.order = 'YXZ'; R.scale.setScalar(1.3); scene.add(R); faceLight(scene, [0.5, 4.5, 0], 3.0, 0xffe8d0);
   const rig = claudeRig(scene, [1.1, -0.2, 1.4], -0.5, [-0.45, 0, 0.1], 0xffd070, 0.45, 0.28); faceLight(scene, [0.9, 0.6, 2.8], 1.0);
   scene.add(at(new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.1, 0.15, 10), M(0x2a2430)), 1.0, -0.28, 1.4));
   const back = label('◀ une scène avant', { w: 0.8, h: 0.12, color: '#ffd070', font: 'bold 80px Inter' }); rig.holoG.add(back);
@@ -429,11 +438,11 @@ SETS.intro = () => {
   K('le ciel s\'ouvre… un cheval blanc', { w: 1.6, h: 0.24, border: '#ffffff' }, t => win(t, 2.0, C.serie, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
-      sky.open(sstep(0.3, 3.5, t)); const d = sstep(2, 8.5, t); R.position.set(-0.3, 9 - 6.5 * d, -6 + 3 * d); R.userData.gallop(t * 7, 0.7);
+      sky.open(sstep(0.3, 3.5, t)); const u = sstep(3.2, 9.0, t); emerge(R, [0, 6, -17], [0.6, 0.2, -3], u, { endY: 0.6 }); R.userData.gallop(t * (7 - 3 * u), 0.7);
       R.userData.rider.face(0, 'serious', t);
       const bk = win(t, C.serie + 0.3, C.title, 0.3, 0.3); beamOn(rig, bk, t); fade(back, bk); back.lookAt(cam.position); rig.c.update(t, env('claude', t), {});
-      const hide = win(t, C.serie + 0.3, SC.cavalier.start + 1, 0.3, 0.3); fade(R, 1 - hide); sky.rift.material.opacity = 0.9 * (1 - hide); sky.halo.material.opacity *= 1 - hide;
-      camKeys(cam, t, [{ t: 0, p: [0.4, 3.4, 5.5], l: [0, 4.5, -10], f: 58 }, { t: C.serie, p: [0.4, 3.2, 5.8], l: [0, 3.6, -6], f: 58 }, { t: C.serie + 0.8, p: [0.9, 0.5, 4.2], l: [0.6, 0.1, 0], f: 48 }, { t: SC.cavalier.start, p: [0.8, 0.5, 4.0], l: [0.6, 0.1, 0], f: 48 }]);
+      const hide = win(t, C.serie + 0.3, SC.cavalier.start + 1, 0.3, 0.3); fade(R, (1 - hide) * sstep(0, 0.12, u)); sky.rift.material.opacity = 0.9 * (1 - hide); sky.halo.material.opacity *= 1 - hide;
+      camKeys(cam, t, [{ t: 0, p: [0.4, 3.6, 8.0], l: [0, 5.2, -12], f: 58 }, { t: C.serie, p: [0.6, 3.4, 8.0], l: [0.2, 3.4, -8], f: 58 }, { t: C.serie + 0.8, p: [0.9, 0.5, 4.2], l: [0.6, 0.1, 0], f: 48 }, { t: SC.cavalier.start, p: [0.8, 0.5, 4.0], l: [0.6, 0.1, 0], f: 48 }]);
       K.update(t);
     }
   };
@@ -442,7 +451,7 @@ SETS.intro = () => {
 // ---------- le cavalier descend ; le triomphe romain et l'ane de Zacharie ; les diademes
 SETS.cavalier = () => {
   const B = heavenSky(); const { scene, cam } = B; scene.add(L.stars(600, 80, 1.2)); plain(scene);
-  const sky = skyRift(scene, [0, 8, -20], 20, 5); sky.open(1);
+  const sky = skyRift(scene, [0, 8, -20], 20, 5);
   const R = bigRider(); R.rotation.order = 'YXZ'; R.rotation.y = 0.9; R.scale.setScalar(1.3); scene.add(R); const fl = faceLight(scene, [0.5, 4, 1], 3.0, 0xffe8d0);
   const j = john(); j.place(1.9, 0, 2.0, -0.6); scene.add(j.root); faceLight(scene, [1.6, 1.7, 4.0], 1.3);
   const roman = holoAnimal('zebra', 0xffd070); roman.position.set(-1.6, 0, 0.5); roman.rotation.y = 0.6; scene.add(roman); roman.children.forEach(c => { if (c.geometry && c.geometry.parameters && c.geometry.parameters.height === 0.06) c.visible = false; });
@@ -454,10 +463,10 @@ SETS.cavalier = () => {
   K('« plusieurs diadèmes » · le dragon n\'en avait que 7', { w: 1.6, h: 0.24, border: '#ffcc55' }, t => win(t, C.diademes + 0.3, SC.noms.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
-      const T0 = SC.cavalier.start; const d = sstep(T0, T0 + 9, t); R.position.set(-0.2, 7 - 7 * d, -9 + 6 * d); R.rotation.x = 0.25 * (1 - d); R.userData.gallop(t * (7 - 5 * d), 0.7 - 0.5 * d); R.userData.rider.face(0, 'serious', t); fl.position.set(R.position.x + 0.6, R.position.y + 3.5, R.position.z + 2.5);
+      const T0 = SC.cavalier.start; sky.open(sstep(T0, T0 + 3, t)); const d = sstep(T0 + 2, T0 + 9, t); emerge(R, [0, 7, -20], [-0.2, 0, -3], d, { endY: 0.9 }); fade(R, sstep(0, 0.12, d)); R.userData.gallop(t * (7 - 5 * d), 0.7 - 0.5 * d); R.userData.rider.face(0, 'serious', t); fl.position.set(R.position.x + 0.6, R.position.y + 3.5, R.position.z + 2.5);
       fade(roman, win(t, C.triomphe, C.triomphe + 5, 0.4, 0.4)); fade(donkey, win(t, C.triomphe + 5, C.zacharie + 8, 0.4, 0.4));
       j.pose({ hp: -0.2 }); j.face(0, 'awe', t);
-      camKeys(cam, t, [{ t: T0, p: [0.4, 2.2, 6.5], l: [0, 4.5, -8], f: 56 }, { t: T0 + 9, p: [0.5, 2.0, 6.5], l: [0, 2.4, -3], f: 54 }, { t: C.triomphe, p: [-0.6, 1.6, 5.0], l: [-1.2, 1.0, 0.5], f: 52 }, { t: C.zacharie + 8, p: [-0.6, 1.6, 5.0], l: [-1.0, 1.0, 1.0], f: 52 }, { t: C.diademes - 2, p: [0.5, 2.4, 6.0], l: [0, 2.4, -3], f: 52 }, { t: SC.noms.start, p: [0.5, 2.4, 6.0], l: [0, 2.4, -3], f: 52 }]);
+      camKeys(cam, t, [{ t: T0, p: [0.4, 3.6, 8.5], l: [0, 4.8, -12], f: 58 }, { t: T0 + 9, p: [0.5, 2.0, 6.5], l: [0, 2.4, -3], f: 54 }, { t: C.triomphe, p: [-0.6, 1.6, 5.0], l: [-1.2, 1.0, 0.5], f: 52 }, { t: C.zacharie + 8, p: [-0.6, 1.6, 5.0], l: [-1.0, 1.0, 1.0], f: 52 }, { t: C.diademes - 2, p: [0.5, 2.4, 6.0], l: [0, 2.4, -3], f: 52 }, { t: SC.noms.start, p: [0.5, 2.4, 6.0], l: [0, 2.4, -3], f: 52 }]);
       faceShot(cam, R, sstep(C.diademes - 2.5, C.diademes - 1, t));
       K.update(t);
     }
@@ -488,7 +497,7 @@ SETS.noms = () => {
 // ---------- l'armee en lin blanc ; l'epee de la bouche
 SETS.armee = () => {
   const B = heavenSky(); const { scene, cam } = B; scene.add(L.stars(600, 80, 1.2)); plain(scene);
-  const sky = skyRift(scene, [0, 8, -22], 20, 5); sky.open(1);
+  const sky = skyRift(scene, [0, 8, -22], 20, 5);
   const army = []; for (let i = 0; i < 16; i++) { const r = smallRider(i); const row = Math.floor(i / 4), col = i % 4; r.userData.base = [(col - 1.5) * 2.2 + (row % 2) * 0.8, row]; scene.add(r); army.push(r); }
   const R = bigRider(); R.rotation.order = 'YXZ'; R.rotation.y = 0.9; R.scale.setScalar(1.3); scene.add(R); const fl = faceLight(scene, [0.5, 4, 1], 3.0, 0xffe8d0);
   const K = cardsMgr(scene, cam); refCard(K);
@@ -496,8 +505,8 @@ SETS.armee = () => {
   K('Isaïe 11, 4 : il frappe la terre par la parole de sa bouche', { w: 1.6, h: 0.24, border: '#fff4d0' }, t => win(t, C.epee + 2.5, SC.bete.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
-      const T0 = SC.armee.start; const d = sstep(T0, C.lin + 2, t);
-      army.forEach((r, i) => { const [x, row] = r.userData.base; r.position.set(x, 6 - 6 * d + row * 1.4, -9 - row * 3 + 4 * d); r.rotation.x = 0.25 * (1 - d); r.userData.gallop(t * 6 + i, 0.6); r.userData.rider.face(0, 'neutral', t); });
+      const T0 = SC.armee.start; const d = sstep(T0, C.lin + 2, t); sky.open(sstep(T0, T0 + 2.5, t));
+      army.forEach((r, i) => { const [x, row] = r.userData.base, col = i % 4; const u = sstep(T0 + 0.8 + row * 1.0 + col * 0.25, T0 + 7 + row * 1.0 + col * 0.25, t); emerge(r, [0, 7, -21], [x, row * 1.4, -5 - row * 3], u, { arc: 1, endY: 0.1 }); fade(r, sstep(0, 0.12, u)); r.userData.gallop(t * 6 + i, 0.6); r.userData.rider.face(0, 'neutral', t); });
       R.position.set(0, 0, -1 + 0.6 * d); R.userData.gallop(t * 3, 0.3); R.userData.rider.face(0, 'serious', t); fl.position.set(0.6, 4, 1.5);
       camKeys(cam, t, [{ t: T0, p: [0.6, 3.0, 7.5], l: [0, 3.4, -8], f: 56 }, { t: C.lin, p: [2.6, 2.4, 6.0], l: [0, 2.2, -5], f: 54 }, { t: C.epee, p: [2.6, 2.4, 6.0], l: [0, 2.2, -5], f: 54 }, { t: SC.bete.start, p: [2.6, 2.4, 6.0], l: [0, 2.2, -5], f: 54 }]);
       faceShot(cam, R, sstep(C.epee - 1, C.epee + 0.5, t), 2.6, 1.6);
