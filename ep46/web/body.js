@@ -344,4 +344,146 @@ SETS.cover = () => {
     }
   };
 };
-const SHOTS = [['cover', 0, 1e9]];
+
+// ---------- helpers ep46
+function keyAndChain(an) {
+  const key = new THREE.Group(); key.add(box(0.04, 0.3, 0.04, G(0xffd070, 1.6))); key.add(at(new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.02, 6, 16), G(0xffd070, 1.6)), 0, 0.2, 0)); key.add(at(box(0.1, 0.04, 0.04, G(0xffd070, 1.6)), 0.05, -0.12, 0)); an.hand.R.add(key); key.position.set(0, -0.2, 0.05);
+  return key;
+}
+function chainLinks(scene, n = 18) { const m = M(0xb8b4b0, { emissive: new THREE.Color(0x2a2826) }); const g = new THREE.Group(); for (let k = 0; k < n; k++) { const l = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.016, 5, 10), m); l.rotation.y = k % 2 ? Math.PI / 2 : 0; g.add(l); } scene.add(g); g.userData.span = (a, b, sag = 0.25) => g.children.forEach((l, k) => { const u = k / (n - 1); l.position.lerpVectors(a, b, u); l.position.y -= sag * Math.sin(Math.PI * u); }); return g; }
+function bodyChains(dr) { const m = M(0xb8b4b0, { emissive: new THREE.Color(0x2a2826) }); return [0.9, 1.15].map(y => { const r = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.035, 6, 28), m); r.rotation.x = Math.PI / 2; r.scale.set(1, 1.5, 1); r.position.set(0, y, 0); dr.add(r); return r; }); }
+function waxSeal() { const g = new THREE.Group(); g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.5, 0.08, 20), M(0xb01a1a, { emissive: new THREE.Color(0x3a0404) }))); const l = label('✠', { w: 0.6, h: 0.6, color: '#ffd0a0', font: 'bold 400px Inter' }); l.rotation.x = -Math.PI / 2; l.position.y = 0.05; g.add(l); return g; }
+function horse() {
+  const g = new THREE.Group(); const m = M(0xf4f2ee); const legs = [];
+  g.add(at(box(0.45, 0.5, 1.2, m), 0, 1.05, 0));
+  const nk = box(0.22, 0.7, 0.28, m); nk.position.set(0, 1.45, 0.55); nk.rotation.x = 0.5; g.add(nk);
+  g.add(at(box(0.22, 0.26, 0.5, m), 0, 1.78, 0.82)); g.add(at(box(0.06, 0.5, 0.4, M(0xe8e0d0)), 0, 1.6, 0.42));
+  for (const [sx, sz] of [[-1, 1], [1, 1], [-1, -1], [1, -1]]) { const lg = new THREE.Group(); lg.position.set(sx * 0.16, 0.8, sz * 0.48); g.add(lg); lg.add(at(box(0.11, 0.8, 0.11, m), 0, -0.4, 0)); legs.push(lg); }
+  g.userData.walk = (ph, a = 0.4) => legs.forEach((l, i) => l.rotation.x = a * Math.sin(ph + [0, Math.PI, Math.PI, 0][i]));
+  return g;
+}
+
+// ---------- intro : un ange, une cle, une chaine, face au grand dragon
+SETS.intro = () => {
+  const B = nightSet({ fog: [0x0a0814, 12, 60], exposure: 1.0 }); const { scene, cam } = B;
+  const dr = dragon(); dr.position.set(-0.4, 0, -4.5); dr.rotation.y = 0.25; scene.add(dr); faceLight(scene, [-0.4, 2.4, -2.4], 2.2, 0xffe0c0);
+  const an = angel(); scene.add(an.root); keyAndChain(an); const al = glowStar(2.5, 0xfff4d0); scene.add(al); angelLight(scene, [1.6, 3, -1.5]);
+  const rig = claudeRig(scene, [1.1, -0.2, 1.4], -0.5, [-0.45, 0, 0.1], 0xffd070, 0.45, 0.28); faceLight(scene, [0.9, 0.6, 2.8], 1.0);
+  scene.add(at(new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.1, 0.15, 10), M(0x2a2430)), 1.0, -0.28, 1.4));
+  const back = label('◀ une scène avant', { w: 0.8, h: 0.12, color: '#ffd070', font: 'bold 80px Inter' }); rig.holoG.add(back);
+  const K = cardsMgr(scene, cam);
+  K('un ange · une clé · une chaîne… contre le grand dragon', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, 1.5, C.serie, 0.3, 0.2), -0.6);
+  return {
+    ...B, update(t) {
+      dr.userData.tick(t); const d = sstep(0.5, 5, t); an.place(1.5, 5 - 5 * d, -3.6, -0.4); an.pose({ aR: [2.6, 0.15], eR: 0.1, aL: [0.4, 0.2] }); an.face(0, 'serious', t);
+      const hp = new THREE.Vector3(); an.head.getWorldPosition(hp); al.position.set(hp.x, hp.y - 0.3, hp.z - 0.4);
+      const bk = win(t, C.serie + 0.3, C.title, 0.3, 0.3); beamOn(rig, bk, t); fade(back, bk); back.lookAt(cam.position); rig.c.update(t, env('claude', t), {}); const hide = win(t, C.serie + 0.3, SC.chaine.start + 1, 0.3, 0.3); fade(dr, 1 - hide); fade(an.root, 1 - hide);
+      camKeys(cam, t, [{ t: 0, p: [0.3, 2.0, 3.8], l: [0.2, 1.8, -4], f: 54 }, { t: C.serie, p: [0.3, 1.8, 4.4], l: [0.2, 1.6, -4], f: 54 }, { t: C.serie + 0.8, p: [0.9, 0.5, 4.2], l: [0.6, 0.1, 0], f: 48 }, { t: SC.chaine.start, p: [0.8, 0.5, 4.0], l: [0.6, 0.1, 0], f: 48 }]);
+      K.update(t);
+    }
+  };
+};
+
+// ---------- l'ange saisit le dragon ; les quatre noms ; pas de combat
+SETS.chaine = () => {
+  const B = nightSet({ fog: [0x0a0814, 12, 60], exposure: 1.0 }); const { scene, cam } = B;
+  const dr = dragon(); dr.position.set(-0.3, 0, -4); dr.rotation.y = 0.15; scene.add(dr); const rings = bodyChains(dr); faceLight(scene, [-0.3, 2.4, -1.8], 2.2, 0xffe0c0);
+  const an = angel(); scene.add(an.root); keyAndChain(an); const al = glowStar(2.5, 0xfff4d0); scene.add(al); angelLight(scene, [1.6, 3, -1]);
+  const links = chainLinks(scene);
+  const j = john(); j.place(1.7, 0, 1.2, -0.5); scene.add(j.root); faceLight(scene, [1.3, 1.6, 3.6], 1.2);
+  const eden = new THREE.Group(); eden.position.set(-2.6, 0, -2); scene.add(eden); eden.add(at(new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.18, 1.8, 8), holoMat(0x7aff9a, 0.25)), 0, 0.9, 0)); eden.add(at(new THREE.Mesh(new THREE.IcosahedronGeometry(0.9, 1), holoMat(0x7aff9a, 0.15)), 0, 2.2, 0));
+  const snake = serpent(0x7aff9a, 7); snake.scale.setScalar(0.35); snake.position.set(-2.6, 0.9, -1.9); scene.add(snake);
+  const K = cardsMgr(scene, cam); refCard(K);
+  K('Apocalypse 12, 3 : un grand dragon rouge, 7 têtes, 10 cornes', { w: 1.6, h: 0.24, border: '#ff4a3a' }, t => win(t, C.noms + 0.3, C.noms + 3.6, 0.3, 0.2), -0.6);
+  K('le serpent ancien : celui du jardin d\'Éden (Genèse 3)', { w: 1.6, h: 0.24, border: '#7aff9a' }, t => win(t, C.noms + 3.8, C.diable, 0.3, 0.2), -0.6);
+  K('diable : « diabolos », celui qui divise · Satan : « l\'adversaire »', { w: 1.6, h: 0.28, border: '#ffd070' }, t => win(t, C.diable + 0.3, C.simple, 0.3, 0.2), -0.6);
+  K('pas de combat : un ange, une chaîne', { w: 1.6, h: 0.24, border: '#ffffff' }, t => win(t, C.simple + 0.3, SC.abime.start, 0.3, 0.2), -0.6);
+  return {
+    ...B, update(t) {
+      const T0 = SC.chaine.start; dr.userData.tick(t, 1 - 0.7 * sstep(T0 + 8, T0 + 11, t));
+      const d = sstep(T0, T0 + 4, t); an.place(1.2, 5 - 5 * d, -2.6, -0.5); an.pose({ aR: [2.6, 0.15], eR: 0.1, aL: [t > T0 + 6 ? 1.2 : 0.4, 0.4] }); an.face(0, 'serious', t);
+      an.root.updateMatrixWorld(true); const hp = new THREE.Vector3(); an.head.getWorldPosition(hp); al.position.set(hp.x, hp.y - 0.3, hp.z - 0.4);
+      const hl = new THREE.Vector3(); an.hand.L.getWorldPosition(hl); links.userData.span(hl, new THREE.Vector3(0.3, 1.0, -3.6)); fade(links, sstep(T0 + 6, T0 + 7, t));
+      rings.forEach((r, k) => fade(r, sstep(T0 + 8 + k * 0.6, T0 + 8.6 + k * 0.6, t)));
+      const ed = win(t, C.noms + 3.6, C.diable, 0.5, 0.5); fade(eden, ed); fade(snake, ed); snake.userData.tick(t, 0.5);
+      j.pose({ hp: -0.05 }); j.face(0, 'awe', t);
+      camKeys(cam, t, [{ t: T0, p: [0.4, 2.6, 4.2], l: [0.4, 2.6, -3], f: 54 }, { t: T0 + 6, p: [0.3, 2.0, 4.8], l: [0, 1.6, -3], f: 54 }, { t: C.noms, p: [-0.3, 2.2, 3.4], l: [-0.3, 2.0, -4], f: 54 }, { t: C.noms + 3.6, p: [-1.2, 1.8, 2.4], l: [-2.4, 1.4, -2], f: 52 }, { t: C.diable, p: [0, 2.0, 4.6], l: [-0.2, 1.7, -3], f: 54 }, { t: C.simple, p: [1.8, 1.6, 4.2], l: [1.1, 1.6, 0], f: 48 }, { t: SC.abime.start, p: [1.4, 2.0, 5.2], l: [0, 1.6, -3], f: 54 }]);
+      K.update(t);
+    }
+  };
+};
+
+// ---------- l'abime scelle ; abyssos ; le sceau ; l'an mil
+SETS.abime = () => {
+  const B = nightSet({ fog: [0x0a0814, 10, 60], exposure: 1.0 }); const { scene, cam } = B;
+  const pit = pitSet(scene, [0, 0, -3]); pit.userData.red.scale.setScalar(3);
+  const dr = dragon(); dr.scale.setScalar(0.6); scene.add(dr); bodyChains(dr); faceLight(scene, [0, 2.6, -1], 2.0, 0xffe0c0);
+  const seal = waxSeal(); seal.position.set(0, 0.22, -3); scene.add(seal);
+  const an = angel(); an.place(1.9, 0, -2.4, -0.6); scene.add(an.root); keyAndChain(an); angelLight(scene, [1.9, 2.6, -1]);
+  const year = label('AN 1000', { w: 1.6, h: 0.47, color: '#ffd070', font: 'bold 190px Inter' }); year.position.set(0, 2.6, -3); scene.add(year);
+  const K = cardsMgr(scene, cam); refCard(K);
+  K('abyssos (grec) : « sans fond » · Apocalypse 9 et 11', { w: 1.6, h: 0.24, border: '#ff8a5a' }, t => win(t, C.abyssos + 0.3, C.sceau, 0.3, 0.2), -0.6);
+  K('scellés : la fosse aux lions (Daniel 6, 17) · le tombeau de Jésus (Matthieu 27, 66)', { w: 1.6, h: 0.3, border: '#d82a2a' }, t => win(t, C.sceau + 0.3, C.an1000, 0.3, 0.2), -0.6);
+  K('millénium · les « terreurs de l\'an mil » : surtout une légende', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.an1000 + 4, SC.trones.start, 0.3, 0.2), -0.6);
+  return {
+    ...B, update(t) {
+      const T0 = SC.abime.start; const u = sstep(T0 + 1, T0 + 4, t);
+      dr.position.set(0, 1.5 - 4.5 * u, -3); dr.userData.tick(t, 0.6); fade(dr, 1 - sstep(T0 + 3.6, T0 + 4.2, t));
+      const c = sstep(T0 + 4.5, T0 + 6.5, t); pit.userData.lid.rotation.z = -1.4 * (1 - c); pit.userData.lid.position.x = -1.6 * (1 - c); pit.userData.red.material.opacity = 0.9 * (1 - c) + 0.05;
+      const sl = sstep(T0 + 7, T0 + 8, t); seal.scale.setScalar(Math.max(0.001, sl)); fade(seal, sl);
+      an.pose({ aR: [0.6, 0.2], eR: 0.3 }); an.face(0, 'serious', t);
+      fade(year, win(t, C.an1000, SC.trones.start, 0.5, 0.4));
+      camKeys(cam, t, [{ t: T0, p: [0, 3.0, 3.8], l: [0, 0.8, -3], f: 54 }, { t: C.sceau, p: [0, 2.0, -0.6], l: [0, 0.2, -3], f: 48 }, { t: C.an1000, p: [0, 2.4, 3.4], l: [0, 2.0, -3], f: 52 }, { t: SC.trones.start, p: [0, 2.4, 3.8], l: [0, 2.0, -3], f: 52 }]);
+      K.update(t);
+    }
+  };
+};
+
+// ---------- les trones ; la marque de la bete ; la premiere resurrection
+SETS.trones = () => {
+  const B = base({ sky: [0x1a1a4a, 0x8a6a9a], hemi: [0xffffff, 0x3a3048, 0.9], sun: [0xfff8e8, 1.0, [2, 6, 8]], shadow: false, bloom: [0.5, 0.5, 0.85], exposure: 0.85, fog: [0x4a3a6a, 20, 80] }); const { scene, cam } = B;
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(14, 48), M(0x6a5a9a, { emissive: new THREE.Color(0x1a1430) })); floor.rotation.x = -Math.PI / 2; scene.add(floor);
+  const seats = [], ppl = citizens(scene, 5);
+  for (let k = 0; k < 5; k++) { const th = whiteThrone(0.36); th.userData.glow.scale.setScalar(2.5); th.userData.glow.material.opacity = 0.4; th.position.set(-2.4 + k * 1.2, 0, -2 - Math.abs(k - 2) * 0.5); scene.add(th); seats.push(th); }
+  const crowns = ppl.map(() => { const c = new THREE.Group(); const hm = G(0xffcc55, 1.5); for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; c.add(at(box(0.04, 0.08, 0.04, hm), Math.cos(a) * 0.1, 0.04, Math.sin(a) * 0.1)); } c.add(box(0.25, 0.03, 0.25, hm)); scene.add(c); return c; });
+  const six = label('666', { w: 2.0, h: 0.8, color: '#ff4a3a', font: 'bold 400px Inter' }); six.position.set(0, 2.7, -1); scene.add(six);
+  const K = cardsMgr(scene, cam); refCard(K);
+  K('Daniel 7, 22 : « le jugement fut donné aux saints »', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.daniel + 0.3, C.qui, 0.3, 0.2), -0.6);
+  K('restés fidèles à Jésus · ont refusé la marque de la bête', { w: 1.6, h: 0.24, border: '#9adfff' }, t => win(t, C.qui + 0.3, C.marque, 0.3, 0.2), -0.6);
+  K('le grand renversement : les vaincus sur des trônes', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.premiere + 0.3, C.seconde - 7, 0.3, 0.2), -0.6);
+  K('la seconde mort n\'a plus de pouvoir sur eux', { w: 1.6, h: 0.24, border: '#ff8a5a' }, t => win(t, C.seconde + 0.3, SC.fin.start, 0.3, 0.2), -0.6);
+  return {
+    ...B, update(t) {
+      const T0 = SC.trones.start; const sit = sstep(T0 + 2, T0 + 3.5, t);
+      ppl.forEach((h, k) => { const th = seats[k]; h.place(th.position.x, 0.36, th.position.z + 0.15, 0); h.pose(L.sitPose(0.46, {})); h.face(0, t > C.premiere ? 'happy' : 'serious', t); fade(h.root, sit); h.root.updateMatrixWorld(true); const hp = new THREE.Vector3(); h.head.getWorldPosition(hp); crowns[k].position.set(hp.x, hp.y + 0.2, hp.z); fade(crowns[k], sstep(C.premiere, C.premiere + 1.5, t)); });
+      fade(six, win(t, C.marque, C.marque + 6, 0.4, 0.5));
+      camKeys(cam, t, [{ t: T0, p: [0, 2.2, 6.5], l: [0, 1.0, -2.5], f: 52 }, { t: C.qui, p: [0, 1.7, 4.4], l: [0, 1.2, -2.5], f: 50 }, { t: C.marque, p: [0, 2.2, 4.6], l: [0, 2.2, -1], f: 52 }, { t: C.premiere, p: [0.6, 1.6, 3.6], l: [0, 1.1, -2.2], f: 48 }, { t: SC.fin.start, p: [0, 1.9, 5.5], l: [0, 1.1, -2.5], f: 50 }]);
+      K.update(t);
+    }
+  };
+};
+
+// ---------- fin : le ciel s'ouvre, un cavalier sur un cheval blanc (prochain episode)
+SETS.fin = () => {
+  const B = base({ bg: 0x07060e, hemi: [0xe8e8ff, 0x10101a, 0.8], sun: [0xffffff, 1.0, [1, 5, 8]], shadow: false, bloom: [0.6, 0.5, 0.8], exposure: 1.0, fog: [0x07060e, 15, 70] }); const { scene, cam } = B;
+  scene.add(L.stars(600, 60, 1.2)); clouds(scene, 24, -0.6, 12, { em: 0x2a2838, op: 0.8 });
+  const rift = new THREE.Mesh(new THREE.PlaneGeometry(3, 12), new THREE.MeshBasicMaterial({ color: 0xfff4d8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); rift.position.set(0, 5, -12); scene.add(rift);
+  const gl = glowStar(6, 0xfff4d8); gl.position.set(0, 7, -11.5); scene.add(gl);
+  const hs = horse(); scene.add(hs);
+  const rider = new Human({ skin: 0xc8946a, hair: 0x2a1a10, hairStyle: 'long', beard: 'full', top: 0xffffff, bottom: 0xffffff, robe: 0x9a1a1a, robeL: 0.7, hat: 'crown', seed: 4600 }); hs.add(rider.root); rider.root.position.set(0, 1.05, -0.05); rider.pose(L.sitPose(0.3, {}));
+  rider.eyes.forEach(e => e.material = G(0xffa040, 2.5));
+  faceLight(scene, [0.7, 2.4, 0.6], 2.4, 0xffe8d8);
+  const K = cardsMgr(scene, cam);
+  K('PROCHAIN ÉPISODE · Apocalypse 19, 11-21', { w: 1.6, h: 0.24, border: '#ffd070', color: '#ffd070' }, t => win(t, SC.fin.start + 9.5, TL.duration + 1, 0.4, 0.2), -0.6);
+  return {
+    ...B, update(t) {
+      const T0 = SC.fin.start; const o = sstep(T0 + 2, T0 + 4.5, t); rift.material.opacity = 0.35 * o; rift.scale.x = Math.max(0.01, o); gl.material.opacity = 0.3 + 0.5 * o;
+      const r = sstep(T0 + 4.5, T0 + 10, t); hs.position.set(0.3, 5 - 5 * r, -10 + 8.5 * r); hs.rotation.y = -0.35; hs.userData.walk(t * 6, 0.5); fade(hs, sstep(T0 + 4.5, T0 + 5.5, t));
+      rider.face(0, 'serious', t);
+      camKeys(cam, t, [{ t: T0, p: [0, 1.6, 6], l: [0, 3, -12], f: 54 }, { t: T0 + 6, p: [0.4, 1.4, 5.5], l: [0, 2.2, -6], f: 52 }, { t: TL.duration, p: [0.8, 1.4, 3.6], l: [0.3, 1.8, -1.5], f: 50 }]);
+      K.update(t);
+    }
+  };
+};
+
+const SHOTS = [['intro', 0, SC.chaine.start], ['chaine', SC.chaine.start, SC.abime.start], ['abime', SC.abime.start, SC.trones.start], ['trones', SC.trones.start, SC.fin.start], ['fin', SC.fin.start, 1000], ['cover', 1000, 1e9]];
