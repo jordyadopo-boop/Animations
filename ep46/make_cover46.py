@@ -1,4 +1,4 @@
-# Couverture de l'episode 45 : Satan sort de sa prison (image du rendu 3D)
+# Couverture de l'episode 46 : un ange enchaine le dragon (image du rendu 3D)
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import os
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -17,8 +17,8 @@ for y in range(1920):
     k = max(0.0, min(1.0, (y - 1180) / 260)); gd.line([(0, y), (1080, y)], fill=int(215 * min(1, k * 1.6)))
 im = Image.composite(Image.new('RGB', im.size, (12, 8, 6)), im, grad)
 d = ImageDraw.Draw(im)
-f = ImageFont.truetype(BOLD, 100); lines = ['SATAN', 'SORT DE', 'SA PRISON']
-fb = ImageFont.truetype(BOLD, 52); lab = 'ÉPISODE 45'; tw = d.textlength(lab, font=fb)
+f = ImageFont.truetype(BOLD, 100); lines = ['UN ANGE', 'ENCHAÎNE', 'LE DRAGON']
+fb = ImageFont.truetype(BOLD, 52); lab = 'ÉPISODE 46'; tw = d.textlength(lab, font=fb)
 y0 = 1250
 d.rounded_rectangle([(540 - tw / 2 - 34, y0), (540 + tw / 2 + 34, y0 + 92)], radius=46, fill=ORANGE)
 d.text((540, y0 + 46), lab, font=fb, fill='white', anchor='mm')
@@ -29,6 +29,6 @@ sh = sh.filter(ImageFilter.GaussianBlur(14)); im.paste(sh, (0, 8), sh); d = Imag
 for i, ln in enumerate(lines): d.text((540, y + i * lh), ln, font=f, fill='white', anchor='ma', stroke_width=5, stroke_fill=(10, 8, 6))
 yb = y + len(lines) * lh + 26
 d.rectangle([(450, yb), (630, yb + 10)], fill=ORANGE)
-d.text((540, yb + 40), 'Satan comes out of his prison', font=ImageFont.truetype(MED, 44), fill=(235, 228, 215), anchor='ma', stroke_width=3, stroke_fill=(10, 8, 6))
-im.save(os.path.join(OUT, 'couverture_ep45.jpg'), quality=93)
+d.text((540, yb + 40), 'An angel chains the dragon', font=ImageFont.truetype(MED, 44), fill=(235, 228, 215), anchor='ma', stroke_width=3, stroke_fill=(10, 8, 6))
+im.save(os.path.join(OUT, 'couverture_ep46.jpg'), quality=93)
 print('ok')
