@@ -292,7 +292,7 @@ SETS.intro = () => {
   return {
     ...B, update(t) {
       const o = sstep(3, 6, t); pit.userData.lid.rotation.z = -1.4 * o; pit.userData.lid.position.x = -1.6 * o; pit.userData.red.material.opacity = 0.3 + 0.7 * o;
-      sp.position.y = -2.6 + 2.6 * sstep(4.5, 8.5, t); sp.userData.tick(t); sp.userData.h.pose({ aL: [0.5, 0.5], aR: [0.5, 0.5], hp: -0.1 }); sp.userData.h.face(0, 'serious', t); fade(sp, sstep(4.5, 5.5, t) * (1 - 0.8 * win(t, C.serie, C.title + 1, 0.5, 0.5))); pit.userData.red.material.opacity *= 1 - 0.6 * win(t, C.serie, C.title + 1, 0.5, 0.5);
+      sp.position.y = -2.6 + 2.6 * sstep(4.5, 8.5, t); sp.userData.tick(t); sp.userData.h.pose({ aL: [0.5, 0.5], aR: [0.5, 0.5], hp: -0.1 }); sp.userData.h.face(0, 'serious', t); fade(sp, sstep(4.5, 5.5, t) * (1 - win(t, C.serie + 0.3, C.title + 1, 0.5, 0.5))); pit.userData.red.material.opacity *= 1 - 0.6 * win(t, C.serie, C.title + 1, 0.5, 0.5);
       const bk = win(t, C.serie + 0.3, C.title, 0.3, 0.3); beamOn(rig, bk, t); fade(back, bk); back.lookAt(cam.position); rig.c.update(t, env('claude', t), {});
       camKeys(cam, t, [{ t: 0, p: [0, 3.0, 3.5], l: [0, 0, -4], f: 50 }, { t: C.serie, p: [0, 2.2, 4.6], l: [0, 1.6, -4], f: 50 }, { t: C.serie + 0.8, p: [0.9, 0.5, 4.2], l: [0.6, 0.1, 0], f: 48 }, { t: SC.prison.start, p: [0.8, 0.5, 4.0], l: [0.6, 0.1, 0], f: 48 }]);
       K.update(t);
