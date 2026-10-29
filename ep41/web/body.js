@@ -310,7 +310,10 @@ SETS.geant = () => {
 };
 // ---------- couverture : l'arbre de vie au bord du fleuve de cristal
 SETS.cover = () => {
-  const B = goldenTreeWorld(); const { scene, cam } = B; B.tick(3);
+  const B = goldenTreeWorld({ bloom: [0.9, 0.6, 0.68], exposure: 0.95 }); const { scene, cam } = B; B.tick(3);
+  const flare = glowStar(330, 0xfff0c0); flare.position.set(0, 150, -80); flare.material.opacity = 0.6; scene.add(flare);
+  const core = glowStar(110, 0xffe8a0); core.position.set(0, 60, -30); core.material.opacity = 0.35; scene.add(core);
+  const shine = new THREE.PointLight(0xffd070, 6, 600, 1.0); shine.position.set(0, 140, 120); scene.add(shine);
   return { ...B, update() { cam.position.set(0, 40, 560); cam.fov = 56; cam.updateProjectionMatrix(); cam.lookAt(0, 70, 0); B.follow(cam); } };
 };
 
