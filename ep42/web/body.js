@@ -141,9 +141,26 @@ function citizens(scene, n = 5) {
 // ---------- la Jerusalem celeste : cube d'or translucide, muraille de jaspe, 12 fondements, 12 portes de perle
 const STONES = [['jaspe', 0x5aa87a], ['saphir', 0x2a5ad8], ['calcédoine', 0x9ab8c8], ['émeraude', 0x1ac85a], ['sardonyx', 0xd86a4a], ['sardoine', 0xc82a2a], ['chrysolithe', 0xc8d84a], ['béryl', 0x4ac8b8], ['topaze', 0xf0b82a], ['chrysoprase', 0x7ae87a], ['hyacinthe', 0xf07a2a], ['améthyste', 0x9a4ad8]];
 function pearlMat() { return M(0xf8f4fa, { emissive: new THREE.Color(0x4a4650) }); }
+// la ville a l'interieur du cube : rues d'or, maisons et tours aux fenetres eclairees (construite pour S = 6)
+function addTown(city, S, heart) {
+  const town = new THREE.Group(); town.position.y = 0.36; town.scale.setScalar(S / 6); city.add(town);
+  town.add(at(box(5.9, 0.04, 5.9, M(0xffd870, { emissive: new THREE.Color(0x6a4a10) })), 0, 0.02, 0));
+  const win = G(0xfff0b0, 1.6);
+  for (let i = 0; i < 70; i++) {
+    const x = (hash(i * 3) - 0.5) * 5.2, z = (hash(i * 7) - 0.5) * 5.2; if (Math.abs(x) < 0.5 || Math.abs(z) < 0.5) continue;
+    const tall = hash(i * 11) > 0.8, w = tall ? 0.35 : 0.45 + hash(i) * 0.3, h = tall ? 2.2 + hash(i * 5) * 2 : 0.4 + hash(i * 5) * 0.9;
+    const col = [0xfff4dc, 0xffe2a0, 0xf0d890, 0xffffff][i % 4];
+    town.add(at(box(w, h, w, M(col, { emissive: new THREE.Color(col).multiplyScalar(0.18) })), x, h / 2 + 0.04, z));
+    if (!tall) { const r = new THREE.Mesh(new THREE.ConeGeometry(w * 0.75, 0.3, 4), M(0xd8a040)); r.rotation.y = Math.PI / 4; r.position.set(x, h + 0.19, z); town.add(r); }
+    else town.add(at(new THREE.Mesh(new THREE.SphereGeometry(w * 0.6, 10, 6), M(0xffd870, { emissive: new THREE.Color(0x6a4a10) })), x, h + 0.1, z));
+    for (let k = 0; k < Math.floor(h / 0.35); k++) for (const sx of [-1, 1]) town.add(at(box(0.07, 0.1, 0.02, win), x + sx * w * 0.22, 0.25 + k * 0.35, z + w / 2 + 0.01));
+  }
+  if (heart) { const hs = glowStar(5, 0xffffff); hs.position.set(0, 1.6, 0); town.add(hs); }
+  return town;
+}
 function makeCity(S = 4, o = {}) {
   const g = new THREE.Group();
-  const cube = new THREE.Mesh(new THREE.BoxGeometry(S, S, S), new THREE.MeshLambertMaterial({ color: 0xffd870, emissive: new THREE.Color(0x6a4a10), transparent: true, opacity: o.cubeOp ?? 0.55, depthWrite: false }));
+  const cube = new THREE.Mesh(new THREE.BoxGeometry(S, S, S), new THREE.MeshLambertMaterial({ color: 0xffd870, emissive: new THREE.Color(0x6a4a10), transparent: true, opacity: o.cubeOp ?? 0.3, depthWrite: false }));
   cube.position.y = S / 2 + 0.36; g.add(cube);
   const edges = new THREE.LineSegments(new THREE.EdgesGeometry(cube.geometry), new THREE.LineBasicMaterial({ color: new THREE.Color(0xfff0b0).multiplyScalar(1.6), transparent: true })); edges.position.copy(cube.position); g.add(edges);
   // 12 fondements (bandes de couleur) sous la muraille
@@ -156,7 +173,8 @@ function makeCity(S = 4, o = {}) {
     const w = box(2 * R, wh, 0.06, jasper); w.position.set(0, wallY + wh / 2, R); sg.add(w);
     for (let k = -1; k <= 1; k++) { const p = new THREE.Mesh(new THREE.CircleGeometry(wh * 0.42, 20), pearlMat()); p.position.set(k * R * 0.6, wallY + wh * 0.48, R + 0.035); sg.add(p); gates.push(p); }
   }
-  g.userData = { cube, edges, gates, S };
+  const town = o.town === false ? null : addTown(g, S, o.heart);
+  g.userData = { cube, edges, gates, S, town };
   return g;
 }
 function clouds(scene, n, y, R, o = {}) { const mat = M(0xffffff, { emissive: new THREE.Color(o.em ?? 0x403c50), transparent: true, opacity: o.op ?? 0.85 }); const arr = []; for (let i = 0; i < n; i++) { const c = new THREE.Mesh(new THREE.IcosahedronGeometry(0.6 + hash(i) * 1.2, 1), mat); c.scale.y = 0.45; c.position.set((hash(i * 3) - 0.5) * R * 2, y + (hash(i * 5) - 0.5), (hash(i * 7) - 0.5) * R * 2); scene.add(c); arr.push(c); } return arr; }
@@ -185,7 +203,7 @@ SETS.intro = () => {
   return {
     ...B, update(t) {
       city.rotation.y = 0.15 * t; city.position.y = -1.2 + 0.1 * Math.sin(t * 0.6);
-      const bk = win(t, C.serie + 0.3, C.title, 0.3, 0.3); glow.material.opacity = 1 - 0.75 * bk; city.userData.cube.material.opacity = 0.55 - 0.3 * bk; beamOn(rig, bk, t); fade(back, bk); back.lookAt(cam.position); rig.c.update(t, env('claude', t), {});
+      const bk = win(t, C.serie + 0.3, C.title, 0.3, 0.3); glow.material.opacity = 1 - 0.75 * bk; city.userData.cube.material.opacity = 0.3 - 0.15 * bk; beamOn(rig, bk, t); fade(back, bk); back.lookAt(cam.position); rig.c.update(t, env('claude', t), {});
       camKeys(cam, t, [{ t: 0, p: [0, 1.4, 9.5], l: [0, 1.0, -6], f: 50 }, { t: C.serie, p: [0, 1.0, 7.5], l: [0, 0.9, -6], f: 50 }, { t: C.serie + 0.8, p: [0.9, 0.5, 4.2], l: [0.6, 0.1, 0], f: 48 }, { t: SC.montagne.start, p: [0.8, 0.5, 4.0], l: [0.6, 0.1, 0], f: 48 }]);
       K.update(t);
     }
@@ -278,7 +296,7 @@ SETS.mesure = () => {
       const u = sstep(T0 + 3, C.stades, t), v = sstep(C.stades, C.stades + 4, t); const S = 3, R = 0.36;
       rule.position.set(-1.5 + 3 * u, R + 0.02, -0.5); if (v > 0) rule.position.set(-1.5, R + S * v, -0.5); rule.scale.set(1 + 30 * (v > 0 ? 0 : u), v > 0 ? 1 + 70 * v : 1, 1); if (v > 0) rule.position.y = R + S * v / 2;
       fade(rule, win(t, T0 + 3, C.cube, 0.3, 0.5)); fade(lW, win(t, C.stades - 1, C.cube, 0.3, 0.5)); fade(lH, win(t, C.stades + 2, C.cube, 0.3, 0.5));
-      fade(holy, win(t, C.cube + 1.0, SC.pierres.start, 0.6, 0.3)); city.userData.cube.material.opacity = 0.55 * (1 - 0.5 * win(t, C.cube + 1.0, SC.pierres.start, 0.6, 0.3));
+      fade(holy, win(t, C.cube + 1.0, SC.pierres.start, 0.6, 0.3)); city.userData.cube.material.opacity = 0.3 * (1 - 0.5 * win(t, C.cube + 1.0, SC.pierres.start, 0.6, 0.3));
       camKeys(cam, t, [{ t: T0, p: [1.4, 1.6, 6.5], l: [1.0, 1.3, -0.5], f: 50 }, { t: C.stades, p: [0.4, 2.0, 7.0], l: [0, 1.6, -2], f: 52 }, { t: C.cube, p: [0.0, 2.4, 7.4], l: [0, 1.6, -2], f: 52 }, { t: C.cube + 2, p: [0.0, 2.2, 6.8], l: [0, 1.0, 0.2], f: 50 }, { t: SC.pierres.start, p: [0.0, 2.0, 6.2], l: [0, 1.0, 0.4], f: 50 }]);
       K.update(t);
     }
@@ -363,21 +381,7 @@ SETS.fin = () => {
 // ---------- couverture : la ville d'or descend au-dessus des nuages
 SETS.cover = () => {
   const B = mountainSet({ bloom: [0.6, 0.5, 0.82] }); const { scene, cam } = B;
-  const city = makeCity(6, { cubeOp: 0.22 }); city.position.set(0, 3.2, -16); city.rotation.y = 0.5; scene.add(city);
-  // la ville a l'interieur du cube : rues d'or, maisons et tours aux fenetres eclairees
-  const town = new THREE.Group(); town.position.y = 0.36; city.add(town);
-  town.add(at(box(5.9, 0.04, 5.9, M(0xffd870, { emissive: new THREE.Color(0x6a4a10) })), 0, 0.02, 0));
-  const win = G(0xfff0b0, 1.6);
-  for (let i = 0; i < 70; i++) {
-    const x = (hash(i * 3) - 0.5) * 5.2, z = (hash(i * 7) - 0.5) * 5.2; if (Math.abs(x) < 0.5 || Math.abs(z) < 0.5) continue;
-    const tall = hash(i * 11) > 0.8, w = tall ? 0.35 : 0.45 + hash(i) * 0.3, h = tall ? 2.2 + hash(i * 5) * 2 : 0.4 + hash(i * 5) * 0.9;
-    const col = [0xfff4dc, 0xffe2a0, 0xf0d890, 0xffffff][i % 4];
-    town.add(at(box(w, h, w, M(col, { emissive: new THREE.Color(col).multiplyScalar(0.18) })), x, h / 2 + 0.04, z));
-    if (!tall) { const r = new THREE.Mesh(new THREE.ConeGeometry(w * 0.75, 0.3, 4), M(0xd8a040)); r.rotation.y = Math.PI / 4; r.position.set(x, h + 0.19, z); town.add(r); }
-    else town.add(at(new THREE.Mesh(new THREE.SphereGeometry(w * 0.6, 10, 6), M(0xffd870, { emissive: new THREE.Color(0x6a4a10) })), x, h + 0.1, z));
-    for (let k = 0; k < Math.floor(h / 0.35); k++) for (const sx of [-1, 1]) town.add(at(box(0.07, 0.1, 0.02, win), x + sx * w * 0.22, 0.25 + k * 0.35, z + w / 2 + 0.01));
-  }
-  const heart = glowStar(5, 0xffffff); heart.position.set(0, 1.6, 0); town.add(heart);
+  const city = makeCity(6, { cubeOp: 0.22, heart: true }); city.position.set(0, 3.2, -16); city.rotation.y = 0.5; scene.add(city);
   const g = glowStar(14, 0xffe8a0); g.position.set(0, 9.5, -17); scene.add(g);
   return { ...B, update() { cam.position.set(2.2, 6.2, -1.5); cam.fov = 58; cam.updateProjectionMatrix(); cam.lookAt(0, 4.6, -16); } };
 };
