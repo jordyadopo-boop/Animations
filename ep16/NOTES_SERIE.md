@@ -96,4 +96,8 @@
   Ciel très clair (heavenCity, portes) : exposition 0,74-0,78. Un objet derrière un mur : faire disparaître le mur (fade) avant le plan.
 - Images de test : `node render.js --stills t1,t2,... stills` (images sans sous-titres) puis `python3 sheet.py stills sheet.jpg`.
 - Dépendances à réinstaller dans une nouvelle machine : `pip install edge-tts faster-whisper scipy` et `npm install` dans epN/ (three).
+- ⚠ RÈGLE (oct. 2026, demande de Mr A) : avant de COMMENCER chaque nouvel épisode, lui demander son accord en proposant
+  le titre et la couverture (description, ou maquette si possible). Ne rien fabriquer avant sa réponse.
+- Livrés ensuite : 44 LA MORT ELLE-MÊME VA MOURIR (Ap 20,11-15) · 45 SATAN SORT DE SA PRISON (Ap 20,7-10).
+  Ép. 46 (Ap 20,1-6) : script et audio écrits (148 s), titre proposé « UN ANGE ENCHAÎNE LE DRAGON » ; en attente de l'accord de Mr A.
 - Méthode de vérification : images fixes ffmpeg (répéter le premier temps) + `python3 sheet.py stills sheet.jpg`. Pour voir des images avant le rendu complet, voir le rendu des épisodes précédents (render.js accepte un intervalle d'images).
