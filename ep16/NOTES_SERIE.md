@@ -102,5 +102,6 @@
 - Apparence de Satan voulue par Mr A : silhouette de bouc (corps massif à poils gris, tête de bouc barbue, grandes cornes annelées recourbées vers l'extérieur), ailes de dragon, troisième œil au front → devil() dans ep45/web/body.js ; à réutiliser pour le dragon/Satan des épisodes suivants.
 - Livraison : envoyer les épisodes DANS L'ORDRE de la série (couverture, vidéo, légende), jamais un épisode avant le précédent.
 - Ép. 42 : Mr A voulait voir la ville dans le cube → addTown() dans ep42/web/body.js (maisons, tours, fenêtres) ; à réutiliser pour la Jérusalem céleste.
-  Ép. 46 (Ap 20,1-6) : script et audio écrits (148 s), titre proposé « UN ANGE ENCHAÎNE LE DRAGON » ; en attente de l'accord de Mr A.
+- Livré : 46 UN ANGE ENCHAÎNE LE DRAGON (Ap 20,1-6, 149 s). Le « dragon » = grand dragon rouge à 7 têtes et 10 cornes (Ap 12,3), dragon() dans ep46/web/body.js ; Mr A ne veut pas le diable-bouc quand le texte dit « dragon ».
+- Prochain : 47 Ap 19,11-21 (le cavalier au cheval blanc) → proposer titre + couverture à Mr A avant de commencer.
 - Méthode de vérification : images fixes ffmpeg (répéter le premier temps) + `python3 sheet.py stills sheet.jpg`. Pour voir des images avant le rendu complet, voir le rendu des épisodes précédents (render.js accepte un intervalle d'images).
