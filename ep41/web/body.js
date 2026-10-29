@@ -255,10 +255,63 @@ SETS.fin = () => {
   };
 };
 
+
+function softGlow(size) {
+  const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'); const gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  gr.addColorStop(0, 'rgba(255,230,160,0.9)'); gr.addColorStop(0.35, 'rgba(255,200,90,0.3)'); gr.addColorStop(1, 'rgba(255,180,60,0)'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: canvasTex(c), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false })); s.scale.setScalar(size); return s;
+}
+// ---------- l'arbre de vie geant, en or, plante sur la planete, qui monte jusqu'aux nuages
+function goldenTreeWorld(o = {}) {
+  const B = base({ sky: [0x1a1050, 0xffc890], hemi: [0xfff0d0, 0x2a2040, 0.8], sun: [0xffe8c0, 1.0, [20, 40, 30]], shadow: false, bloom: [0.75, 0.5, 0.74], exposure: 0.9, fog: [0x6a5070, 700, 2400], ...o });
+  const { scene } = B; scene.add(L.stars(500, 600, 1.0));
+  const R = 260; const pg = new THREE.IcosahedronGeometry(R, 5); { const p = pg.attributes.position, cols = []; for (let i = 0; i < p.count; i += 3) { const x = (p.getX(i) + p.getX(i + 1) + p.getX(i + 2)) / 3 / R, y = (p.getY(i) + p.getY(i + 1) + p.getY(i + 2)) / 3 / R, z = (p.getZ(i) + p.getZ(i + 1) + p.getZ(i + 2)) / 3 / R; const n = Math.sin(x * 5.1 + 1.3) + Math.sin(z * 4.3 + y * 3.1) + Math.sin((x + z) * 7.7) * 0.5; const sea = n < -0.25 && y < 0.93; const c = new THREE.Color(sea ? 0x1a5aa8 : (n < -0.05 ? 0xc8b070 : (hash(i) > 0.5 ? 0x2a8a4a : 0x3a9a3a))); for (let k = 0; k < 3; k++) cols.push(c.r, c.g, c.b); } pg.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3)); }
+  const planet = new THREE.Mesh(pg, M(0xffffff, { vertexColors: true, emissive: new THREE.Color(0x061008) })); planet.position.set(0, -R, 0); scene.add(planet);
+  const halo = new THREE.Mesh(new THREE.SphereGeometry(R * 1.02, 48, 24), new THREE.MeshBasicMaterial({ color: 0x9ad8ff, transparent: true, opacity: 0.18, side: THREE.BackSide, depthWrite: false })); halo.position.copy(planet.position); scene.add(halo);
+  // fleuve de cristal qui part du pied de l'arbre
+  const riv = new THREE.Mesh(new THREE.PlaneGeometry(4, 300), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xc8f0ff).multiplyScalar(1.3), transparent: true, opacity: 0.85 })); riv.rotation.x = -Math.PI / 2; riv.position.set(0, 0.3, 150); scene.add(riv);
+  const tree = new THREE.Group(); scene.add(tree);
+  const gold = M(0xe8a830, { emissive: new THREE.Color(0x6a4008) }), leafM = M(0xffb020, { emissive: new THREE.Color(0xa86a08) }), leafM2 = M(0xffd040, { emissive: new THREE.Color(0xe8a818) });
+  const lights = [];
+  function branch(parent, len, rad, depth, seed) {
+    const g = new THREE.Group(); parent.add(g);
+    const c = new THREE.Mesh(new THREE.CylinderGeometry(rad * 0.65, rad, len, 7), gold); c.position.y = len / 2; g.add(c);
+    const tip = new THREE.Group(); tip.position.y = len; g.add(tip);
+    if (depth === 0) { for (let k = 0; k < 4; k++) { const l = new THREE.Mesh(new THREE.IcosahedronGeometry(len * (0.35 + hash(seed + k) * 0.3), 0), hash(seed * 3 + k) > 0.5 ? leafM : leafM2); l.position.set((hash(seed + k * 7) - 0.5) * len * 0.8, (hash(seed + k * 11) - 0.3) * len * 0.5, (hash(seed + k * 13) - 0.5) * len * 0.8); tip.add(l); } return g; }
+    const n = depth > 2 ? 3 : 4;
+    for (let k = 0; k < n; k++) { const b = branch(tip, len * 0.68, rad * 0.62, depth - 1, seed * 4 + k + 1); b.rotation.y = k / n * Math.PI * 2 + hash(seed + k) * 0.8; b.rotation.z = 0.5 + hash(seed * 2 + k) * 0.35; }
+    if (depth >= 2) { const up = branch(tip, len * 0.6, rad * 0.6, depth - 2, seed * 9 + 7); up.rotation.z = 0.12; }
+    return g;
+  }
+  branch(tree, 60, 9, 5, 1);
+  const roots = []; for (let k = 0; k < 7; k++) { const r = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 5, 30, 6), gold); r.rotation.z = 1.25; r.rotation.y = k / 7 * Math.PI * 2; r.position.set(Math.cos(k / 7 * Math.PI * 2) * 12, 2, -Math.sin(k / 7 * Math.PI * 2) * 12); r.lookAt(0, 6, 0); r.rotateX(Math.PI / 2); scene.add(r); roots.push(r); }
+  const glow = softGlow(380); glow.position.set(0, 190, -40); glow.material.opacity = 0.55; scene.add(glow);
+  
+  const pl = new THREE.PointLight(0xffd070, 3, 500, 1.2); pl.position.set(0, 180, 60); scene.add(pl);
+  // couche de nuages a mi-hauteur
+  const cm = M(0xffffff, { emissive: new THREE.Color(0x4a4058), transparent: true, opacity: 0.7 });
+  const cl = []; for (let i = 0; i < 60; i++) { const a = hash(i) * Math.PI * 2, rr = 25 + hash(i * 3) * 160; const c = new THREE.Mesh(new THREE.IcosahedronGeometry(10 + hash(i * 5) * 18, 1), cm); c.scale.y = 0.35; c.position.set(Math.cos(a) * rr, 72 + (hash(i * 7) - 0.5) * 16, Math.sin(a) * rr * 0.8 - 20); scene.add(c); cl.push(c); }
+  const sparks = []; for (let i = 0; i < 80; i++) { const sp = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 0), G(0xfff0b0, 2)); scene.add(sp); sparks.push(sp); }
+  const dome = scene.children[0]; B.follow = (cam) => dome.position.copy(cam.position);
+  B.tick = (t) => { tree.rotation.y = 0.02 * Math.sin(t * 0.2); cl.forEach((c, i) => c.position.x += 0.0 * i); sparks.forEach((sp, i) => { const u = (t * 0.03 + hash(i)) % 1; const a = hash(i * 3) * Math.PI * 2, rr = 20 + hash(i * 5) * 90; sp.position.set(Math.cos(a + t * 0.05) * rr, 20 + u * 260, Math.sin(a + t * 0.05) * rr); }); glow.scale.setScalar(380 + 15 * Math.sin(t)); };
+  B.tick(0);
+  return B;
+}
+SETS.geant = () => {
+  const B = goldenTreeWorld(); const { scene, cam } = B;
+  const K = cardsMgr(scene, cam); refCard(K);
+  return {
+    ...B, update(t) {
+      const T0 = SC.arbre.start; B.tick(t);
+      camKeys(cam, t, [{ t: T0, p: [0, 40, 600], l: [0, 80, 0], f: 50 }, { t: C.eden, p: [70, 25, 330], l: [0, 110, 0], f: 52 }]); B.follow(cam);
+      K.update(t);
+    }
+  };
+};
 // ---------- couverture : l'arbre de vie au bord du fleuve de cristal
 SETS.cover = () => {
-  const B = heavenCity({ bloom: [0.5, 0.5, 0.85] }); const { scene, cam } = B; B.tick(2);
-  return { ...B, update() { cam.position.set(0.2, 1.3, 2.6); cam.fov = 56; cam.updateProjectionMatrix(); cam.lookAt(1.5, 1.6, -1.5); } };
+  const B = goldenTreeWorld(); const { scene, cam } = B; B.tick(3);
+  return { ...B, update() { cam.position.set(0, 40, 560); cam.fov = 56; cam.updateProjectionMatrix(); cam.lookAt(0, 70, 0); B.follow(cam); } };
 };
 
-const SHOTS = [['intro', 0, SC.fleuve.start], ['fleuve', SC.fleuve.start, SC.arbre.start], ['arbre', SC.arbre.start, SC.face.start], ['face', SC.face.start, SC.nuit.start], ['nuit', SC.nuit.start, SC.fin.start], ['fin', SC.fin.start, 1000], ['cover', 1000, 1e9]];
+const SHOTS = [['intro', 0, SC.fleuve.start], ['fleuve', SC.fleuve.start, SC.arbre.start], ['geant', SC.arbre.start, C.eden], ['arbre', C.eden, SC.face.start], ['face', SC.face.start, SC.nuit.start], ['nuit', SC.nuit.start, SC.fin.start], ['fin', SC.fin.start, 1000], ['cover', 1000, 1e9]];

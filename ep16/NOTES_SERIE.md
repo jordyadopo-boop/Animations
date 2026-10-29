@@ -86,6 +86,7 @@
   · 46 Ap 20,1-6 · 47 Ap 19,11-21 · … jusqu'à Genèse 1,1. Ensuite les lettres : ne garder que les passages qui racontent une scène.
 - Le brouillon « 5e dimension » est rangé dans brouillon_5e_dimension/ (à reprendre plus tard si Mr A le demande).
 - Titres : raconter comme une histoire, et dire clairement QUI agit (ép. 39 : « IL REVIENT BIENTÔT », choisi par Mr A).
+- Visuel voulu par Mr A pour l'arbre de vie : un arbre IMMENSE en or brillant, planté sur la planète vue de loin, qui dépasse les nuages (goldenTreeWorld dans ep41/web/body.js) ; à réutiliser pour l'Éden.
 - Livrés : 39 IL REVIENT BIENTÔT · 40 L'ANGE QUI REFUSA D'ÊTRE ADORÉ (Ap 22,6-15) · 41 L'ARBRE DE VIE EST DE RETOUR (Ap 22,1-5).
 - Ép. 42 « UNE VILLE D'OR DESCEND DU CIEL » (Ap 21,9-27) EN COURS (ep42/) : script, audio (langcheck 100 % fr) et web/body.js écrits, pas encore testés en images.
   ⚠ L'audio dure 221 s, au-dessus du maximum de 3 min : raccourcir le script (viser 150-175 s), relancer build_audio.py, puis faire des images de test, la couverture (make_cover42.py à adapter) et la légende (legende_ep42.txt), puis lancer le rendu.
