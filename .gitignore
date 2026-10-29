@@ -203,3 +203,11 @@ ep43/cov
 ep43/node_modules
 ep43/stills
 ep43/sheet.jpg
+ep44/seg
+ep44/tts_cache
+ep44/build
+ep44/web/main.js
+ep44/cov
+ep44/node_modules
+ep44/stills
+ep44/sheet.jpg

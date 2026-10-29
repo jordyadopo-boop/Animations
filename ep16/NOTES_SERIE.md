@@ -89,6 +89,7 @@
 - Visuel voulu par Mr A pour l'arbre de vie : un arbre IMMENSE en or brillant, planté sur la planète vue de loin, qui dépasse les nuages (goldenTreeWorld dans ep41/web/body.js) ; à réutiliser pour l'Éden. Pour la couverture, il préfère la version TRÈS lumineuse (grand éclat en croix devant l'arbre, bloom fort : SETS.cover de l'ép. 41).
 - Livrés : 39 IL REVIENT BIENTÔT · 40 L'ANGE QUI REFUSA D'ÊTRE ADORÉ (Ap 22,6-15) · 41 L'ARBRE DE VIE EST DE RETOUR (Ap 22,1-5).
 - Livré : 42 UNE VILLE D'OR DESCEND DU CIEL (Ap 21,9-27), 175 s (script raccourci de 221 s).
+- Livré : 43 DIEU ESSUIE TOUTE LARME (Ap 21,1-8), 165 s. Visuels : la Terre qui se dissout, Patmos et la mer qui disparaît, tente du tabernacle, larme essuyée (tear() dans ep43/web/body.js), mots barrés (strikeWord), Α et Ω, source.
 - Leçons ép. 42 : ne pas coder les animations en « cue + N secondes » (tout se décale quand on raccourcit le texte) : ajouter des
   ("cue", ...) dans le script et s'y caler. Une étiquette 3D enfant d'un groupe qui tourne devient invisible (vue de côté/de dos) :
   faire tourner seulement l'objet, ou utiliser card(). Champ horizontal étroit en 9:16 : un mur de 14 m demande la caméra à ~15 m.
