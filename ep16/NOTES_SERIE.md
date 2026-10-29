@@ -103,5 +103,6 @@
 - Livraison : envoyer les épisodes DANS L'ORDRE de la série (couverture, vidéo, légende), jamais un épisode avant le précédent.
 - Ép. 42 : Mr A voulait voir la ville dans le cube → addTown() dans ep42/web/body.js (maisons, tours, fenêtres) ; à réutiliser pour la Jérusalem céleste.
 - Livré : 46 UN ANGE ENCHAÎNE LE DRAGON (Ap 20,1-6, 149 s). Le « dragon » = grand dragon rouge à 7 têtes et 10 cornes (Ap 12,3), dragon() dans ep46/web/body.js ; Mr A ne veut pas le diable-bouc quand le texte dit « dragon ».
-- Prochain : 47 Ap 19,11-21 (le cavalier au cheval blanc) → proposer titre + couverture à Mr A avant de commencer.
+- Livré : 47 UN CAVALIER BLANC SORT DU CIEL (Ap 19,11-21, 154 s). bigRider()/skyRift()/faceShot() dans ep47/web/body.js : de face, la tête du cheval cache le visage du cavalier → gros plans de trois quarts avec faceShot.
+- Prochain : 48 Ap 19,1-10 (Alléluia, les noces de l'Agneau) → proposer titre + couverture à Mr A avant de commencer.
 - Méthode de vérification : images fixes ffmpeg (répéter le premier temps) + `python3 sheet.py stills sheet.jpg`. Pour voir des images avant le rendu complet, voir le rendu des épisodes précédents (render.js accepte un intervalle d'images).
