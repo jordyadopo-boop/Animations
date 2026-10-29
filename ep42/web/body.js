@@ -363,9 +363,23 @@ SETS.fin = () => {
 // ---------- couverture : la ville d'or descend au-dessus des nuages
 SETS.cover = () => {
   const B = mountainSet({ bloom: [0.6, 0.5, 0.82] }); const { scene, cam } = B;
-  const city = makeCity(6); city.position.set(0, 3.2, -16); city.rotation.y = 0.5; scene.add(city);
-  const g = glowStar(14, 0xffe8a0); g.position.set(0, 7, -16.5); scene.add(g);
-    return { ...B, update() { cam.position.set(1.4, 1.5, 3.6); cam.fov = 56; cam.updateProjectionMatrix(); cam.lookAt(0, 5.0, -16); } };
+  const city = makeCity(6, { cubeOp: 0.22 }); city.position.set(0, 3.2, -16); city.rotation.y = 0.5; scene.add(city);
+  // la ville a l'interieur du cube : rues d'or, maisons et tours aux fenetres eclairees
+  const town = new THREE.Group(); town.position.y = 0.36; city.add(town);
+  town.add(at(box(5.9, 0.04, 5.9, M(0xffd870, { emissive: new THREE.Color(0x6a4a10) })), 0, 0.02, 0));
+  const win = G(0xfff0b0, 1.6);
+  for (let i = 0; i < 70; i++) {
+    const x = (hash(i * 3) - 0.5) * 5.2, z = (hash(i * 7) - 0.5) * 5.2; if (Math.abs(x) < 0.5 || Math.abs(z) < 0.5) continue;
+    const tall = hash(i * 11) > 0.8, w = tall ? 0.35 : 0.45 + hash(i) * 0.3, h = tall ? 2.2 + hash(i * 5) * 2 : 0.4 + hash(i * 5) * 0.9;
+    const col = [0xfff4dc, 0xffe2a0, 0xf0d890, 0xffffff][i % 4];
+    town.add(at(box(w, h, w, M(col, { emissive: new THREE.Color(col).multiplyScalar(0.18) })), x, h / 2 + 0.04, z));
+    if (!tall) { const r = new THREE.Mesh(new THREE.ConeGeometry(w * 0.75, 0.3, 4), M(0xd8a040)); r.rotation.y = Math.PI / 4; r.position.set(x, h + 0.19, z); town.add(r); }
+    else town.add(at(new THREE.Mesh(new THREE.SphereGeometry(w * 0.6, 10, 6), M(0xffd870, { emissive: new THREE.Color(0x6a4a10) })), x, h + 0.1, z));
+    for (let k = 0; k < Math.floor(h / 0.35); k++) for (const sx of [-1, 1]) town.add(at(box(0.07, 0.1, 0.02, win), x + sx * w * 0.22, 0.25 + k * 0.35, z + w / 2 + 0.01));
+  }
+  const heart = glowStar(5, 0xffffff); heart.position.set(0, 1.6, 0); town.add(heart);
+  const g = glowStar(14, 0xffe8a0); g.position.set(0, 9.5, -17); scene.add(g);
+  return { ...B, update() { cam.position.set(2.2, 6.2, -1.5); cam.fov = 58; cam.updateProjectionMatrix(); cam.lookAt(0, 4.6, -16); } };
 };
 
 const SHOTS = [['intro', 0, SC.montagne.start], ['montagne', SC.montagne.start, SC.portes.start], ['portes', SC.portes.start, SC.mesure.start], ['mesure', SC.mesure.start, SC.pierres.start], ['pierres', SC.pierres.start, SC.temple.start], ['temple', SC.temple.start, SC.fin.start], ['fin', SC.fin.start, 1000], ['cover', 1000, 1e9]];
