@@ -86,3 +86,8 @@
   · 46 Ap 20,1-6 · 47 Ap 19,11-21 · … jusqu'à Genèse 1,1. Ensuite les lettres : ne garder que les passages qui racontent une scène.
 - Le brouillon « 5e dimension » est rangé dans brouillon_5e_dimension/ (à reprendre plus tard si Mr A le demande).
 - Titres : raconter comme une histoire, et dire clairement QUI agit (ép. 39 : « IL REVIENT BIENTÔT », choisi par Mr A).
+- Livrés : 39 IL REVIENT BIENTÔT · 40 L'ANGE QUI REFUSA D'ÊTRE ADORÉ (Ap 22,6-15) · 41 L'ARBRE DE VIE EST DE RETOUR (Ap 22,1-5).
+- Ép. 42 « UNE VILLE D'OR DESCEND DU CIEL » (Ap 21,9-27) EN COURS (ep42/) : script, audio (langcheck 100 % fr) et web/body.js écrits, pas encore testés en images.
+  ⚠ L'audio dure 221 s, au-dessus du maximum de 3 min : raccourcir le script (viser 150-175 s), relancer build_audio.py, puis faire des images de test, la couverture (make_cover42.py à adapter) et la légende (legende_ep42.txt), puis lancer le rendu.
+  Teaser déjà écrit pour l'ép. 43 (Ap 21,1-8) : le ciel et la terre disparaissent, Dieu essuie toute larme, « la mer n'existe plus ».
+- Méthode de vérification : images fixes ffmpeg (répéter le premier temps) + `python3 sheet.py stills sheet.jpg`. Pour voir des images avant le rendu complet, voir le rendu des épisodes précédents (render.js accepte un intervalle d'images).
