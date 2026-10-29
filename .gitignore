@@ -195,3 +195,11 @@ ep42/cov
 ep42/node_modules
 ep42/stills
 ep42/sheet.jpg
+ep43/seg
+ep43/tts_cache
+ep43/build
+ep43/web/main.js
+ep43/cov
+ep43/node_modules
+ep43/stills
+ep43/sheet.jpg

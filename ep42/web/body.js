@@ -169,7 +169,7 @@ function mountainSet(o = {}) {
   clouds(scene, 18, -3.5, 25);
   return B;
 }
-function angelBowl(an, color = 0xc83a2a) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 6, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), G(color, 1.3)); an.hand.L.add(b); b.position.set(0, -0.08, 0.06); return b; }
+function angelBowl(an) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 6, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), M(0xc89a40, { emissive: new THREE.Color(0x3a2008), side: THREE.DoubleSide })); an.hand.L.add(b); b.position.set(0, -0.08, 0.06); return b; }
 
 // ---------- intro : la ville-cube flotte dans la nuit
 SETS.intro = () => {
@@ -185,8 +185,8 @@ SETS.intro = () => {
   return {
     ...B, update(t) {
       city.rotation.y = 0.15 * t; city.position.y = -1.2 + 0.1 * Math.sin(t * 0.6);
-      const bk = win(t, C.serie + 0.3, C.title, 0.3, 0.3); beamOn(rig, bk, t); fade(back, bk); back.lookAt(cam.position); rig.c.update(t, env('claude', t), {});
-      camKeys(cam, t, [{ t: 0, p: [0, 1.0, 6.0], l: [0, 0.6, -6], f: 50 }, { t: C.serie, p: [0, 0.6, 4.6], l: [0, 0.6, -6], f: 50 }, { t: C.serie + 0.8, p: [0.9, 0.5, 4.2], l: [0.6, 0.1, 0], f: 48 }, { t: SC.montagne.start, p: [0.8, 0.5, 4.0], l: [0.6, 0.1, 0], f: 48 }]);
+      const bk = win(t, C.serie + 0.3, C.title, 0.3, 0.3); glow.material.opacity = 1 - 0.75 * bk; city.userData.cube.material.opacity = 0.55 - 0.3 * bk; beamOn(rig, bk, t); fade(back, bk); back.lookAt(cam.position); rig.c.update(t, env('claude', t), {});
+      camKeys(cam, t, [{ t: 0, p: [0, 1.4, 9.5], l: [0, 1.0, -6], f: 50 }, { t: C.serie, p: [0, 1.0, 7.5], l: [0, 0.9, -6], f: 50 }, { t: C.serie + 0.8, p: [0.9, 0.5, 4.2], l: [0.6, 0.1, 0], f: 48 }, { t: SC.montagne.start, p: [0.8, 0.5, 4.0], l: [0.6, 0.1, 0], f: 48 }]);
       K.update(t);
     }
   };
@@ -199,11 +199,11 @@ SETS.montagne = () => {
   const an = angel(); an.place(0.6, 0, 0.3, -0.6); scene.add(an.root); angelLight(scene, [0.6, 2.2, 1.2]); faceLight(scene, [0, 1.6, 3.2], 1.2);
   const bowl = angelBowl(an);
   const city = makeCity(6); scene.add(city); const cglow = glowStar(16, 0xffe8a0); scene.add(cglow);
-  const babel = new THREE.Group(); scene.add(babel); for (let k = 0; k < 6; k++) babel.add(at(new THREE.Mesh(new THREE.CylinderGeometry(1.2 - k * 0.17, 1.3 - k * 0.17, 0.7, 10), holoMat(0xff8a5a, 0.35)), 0, k * 0.7 + 0.35, 0)); babel.position.set(-7, -3, -16);
+  const babel = new THREE.Group(); scene.add(babel); for (let k = 0; k < 6; k++) babel.add(at(new THREE.Mesh(new THREE.CylinderGeometry(1.2 - k * 0.17, 1.3 - k * 0.17, 0.7, 10), holoMat(0xff8a5a, 0.35)), 0, k * 0.7 + 0.35, 0)); babel.position.set(-3.2, -3, -14);
   const K = cardsMgr(scene, cam); refCard(K);
   K('un des 7 anges des 7 derniers fléaux', { w: 1.6, h: 0.24, border: '#c83a2a' }, t => win(t, SC.montagne.start + 1.5, C.descend - 2.0, 0.3, 0.2), -0.6);
-  K('l\'épouse = la ville = le peuple de Dieu réuni', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.epouse + 0.3, C.epouse + 5.5, 0.3, 0.2), -0.6);
-  K('Babel monte vers le ciel · la ville en descend', { w: 1.6, h: 0.24, border: '#ff8a5a' }, t => win(t, C.epouse + 5.7, SC.portes.start, 0.3, 0.2), -0.6);
+  K('l\'épouse = la ville = le peuple de Dieu réuni', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.epouse + 0.3, C.babel, 0.3, 0.2), -0.6);
+  K('Babel monte vers le ciel · la ville en descend', { w: 1.6, h: 0.24, border: '#ff8a5a' }, t => win(t, C.babel + 0.2, SC.portes.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
       const T0 = SC.montagne.start;
@@ -211,7 +211,7 @@ SETS.montagne = () => {
       an.pose({ aL: [0.9, 0.2], eL: 0.8, aR: [t > C.descend ? 1.6 : 0.3, 0.2], eR: 0.1 }); an.face(env('ange', t), 'serious', t);
       j.pose({ hp: t > C.descend + 2 ? -0.25 : 0, hy: t > C.descend + 2 ? 0.3 : 0 }); j.face(0, t > C.descend ? 'awe' : 'neutral', t);
       const d = sstep(C.descend + 1.0, C.epouse, t); city.position.set(0, lerp(26, 0.5, d) - 0, -22); cglow.position.set(0, city.position.y + 4, -22.5); cglow.material.opacity = 0.9 * d + 0.1;
-      fade(babel, win(t, C.epouse + 5.7, SC.portes.start, 0.5, 0.3)); babel.position.y = -3 + 2 * sstep(C.epouse + 5.7, C.epouse + 9, t);
+      fade(babel, win(t, C.babel, SC.portes.start, 0.5, 0.3)); babel.position.y = -3 + 2 * sstep(C.babel, C.babel + 3.5, t);
       camKeys(cam, t, [{ t: T0, p: [0.1, 1.5, 3.4], l: [0.2, 1.3, 0.3], f: 46 }, { t: C.descend, p: [0.1, 1.5, 3.4], l: [0.2, 1.3, 0.3], f: 46 }, { t: C.descend + 1.5, p: [0.0, 1.3, 4.6], l: [0, 4.0, -22], f: 52 }, { t: C.epouse, p: [0.2, 1.4, 4.4], l: [0, 2.5, -22], f: 52 }, { t: SC.portes.start, p: [-0.8, 1.6, 4.6], l: [-2, 2.0, -18], f: 52 }]);
       K.update(t);
     }
@@ -220,7 +220,7 @@ SETS.montagne = () => {
 
 // ---------- les 12 portes, les anges, les noms des tribus et des apotres
 SETS.portes = () => {
-  const B = base({ sky: [0xf4ecff, 0xffe8c8], hemi: [0xffffff, 0xc8b890, 0.9], sun: [0xfff8e8, 1.0, [3, 8, 8]], shadowSize: 8, bloom: [0.45, 0.5, 0.88], exposure: 0.9, fog: [0xfff0e0, 20, 90], target: [0, 1, 0] }); const { scene, cam } = B;
+  const B = base({ sky: [0xf4ecff, 0xffe8c8], hemi: [0xffffff, 0xc8b890, 0.9], sun: [0xfff8e8, 1.0, [3, 8, 8]], shadowSize: 8, bloom: [0.4, 0.5, 0.9], exposure: 0.78, fog: [0xfff0e0, 25, 90], target: [0, 1, 0] }); const { scene, cam } = B;
   scene.add(L.groundPlane(80, 30, 0xd8c8a8, 0.1, 3));
   const wallMat = M(0x7ac8a0, { emissive: new THREE.Color(0x1a4a30) });
   const wall = new THREE.Group(); scene.add(wall);
@@ -229,23 +229,23 @@ SETS.portes = () => {
   const tribes = ['RUBEN', 'JUDA', 'LÉVI'], apos = ['PIERRE', 'JEAN', 'JACQUES'];
   const gl = [], al = [], angels = [];
   [-3.2, 0, 3.2].forEach((x, i) => {
-    wall.add(at(new THREE.Mesh(new THREE.CircleGeometry(1.05, 32), pearlMat()), x, top + 1.25, -1.28));
-    const tl = label(tribes[i], { w: 1.1, h: 0.2, color: '#1a3a5a', font: 'bold 110px Inter' }); tl.position.set(x, top + 2.65, -1.28); wall.add(tl); gl.push(tl);
-    const ap = label(apos[i], { w: 1.1, h: 0.2, color: '#ffffff', font: 'bold 110px Inter' }); ap.position.set(x, 0.72, -1.24); wall.add(ap); al.push(ap);
+    wall.add(at(new THREE.Mesh(new THREE.CircleGeometry(1.05, 32), M(0xd8d0dc, { emissive: new THREE.Color(0x2a2630) })), x, top + 1.25, -1.29)); wall.add(at(new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.14, 12, 40), pearlMat()), x, top + 1.25, -1.26)); wall.add(at(glowStar(1.4, 0xffffff), x - 0.3, top + 1.6, -1.1));
+    const tl = label(tribes[i], { w: 1.6, h: 0.3, color: '#0a2a4a', font: 'bold 120px Inter' }); tl.position.set(x, top + 2.65, -1.28); wall.add(tl); gl.push(tl);
+    const ap = label(apos[i], { w: 1.6, h: 0.3, color: '#ffffff', font: 'bold 120px Inter' }); ap.position.set(x, 0.72, -1.24); wall.add(ap); al.push(ap);
     const an = angel(); an.place(x + 1.2, top, -0.95, 0); an.root.scale.setScalar(0.85); scene.add(an.root); angels.push(an);
   });
   scene.add(at(box(14, 0.02, 1.0, M(0xd8c8a8)), 0, top - 0.01, -1.0));
   angelLight(scene, [0, 3, 1.5]);
   const K = cardsMgr(scene, cam); refCard(K);
-  K('3 portes × 4 côtés = 12 portes', { w: 1.6, h: 0.24, border: '#ffffff' }, t => win(t, C.tribus + 0.3, C.tribus + 5.5, 0.3, 0.2), -0.6);
-  K('en haut : les 12 tribus d\'Israël · Ancien Testament', { w: 1.6, h: 0.24, border: '#5a9ad8' }, t => win(t, C.tribus + 5.7, C.tribus + 11.5, 0.3, 0.2), -0.6);
-  K('en bas : les 12 apôtres · Nouveau Testament', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.tribus + 11.7, SC.mesure.start, 0.3, 0.2), -0.6);
+  K('3 portes × 4 côtés = 12 portes', { w: 1.6, h: 0.24, border: '#ffffff' }, t => win(t, C.tribus + 0.3, C.haut, 0.3, 0.2), -0.6);
+  K('en haut : les 12 tribus d\'Israël · Ancien Testament', { w: 1.6, h: 0.24, border: '#5a9ad8' }, t => win(t, C.haut + 0.2, C.apotres, 0.3, 0.2), -0.6);
+  K('en bas : les 12 apôtres · Nouveau Testament', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.apotres + 0.2, SC.mesure.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
       const T0 = SC.portes.start;
       angels.forEach((a, i) => { a.pose({ aR: [0.3 + 0.1 * Math.sin(t + i), 0.2] }); a.face(0, 'neutral', t); });
-      gl.forEach((l, i) => fade(l, sstep(T0 + 7 + i * 0.4, T0 + 8 + i * 0.4, t))); al.forEach((l, i) => fade(l, sstep(T0 + 13 + i * 0.4, T0 + 14 + i * 0.4, t)));
-      camKeys(cam, t, [{ t: T0, p: [0, 2.0, 7.5], l: [0, 2.0, -1.6], f: 50 }, { t: C.tribus, p: [0, 1.8, 6.5], l: [0, 1.8, -1.6], f: 50 }, { t: C.tribus + 5.5, p: [0, 3.2, 4.5], l: [0, 3.6, -1.6], f: 48 }, { t: C.tribus + 11.5, p: [0, 0.8, 4.2], l: [0, 0.7, -1.6], f: 48 }, { t: SC.mesure.start, p: [0, 1.0, 5.0], l: [0, 1.0, -1.6], f: 48 }]);
+      gl.forEach((l, i) => fade(l, sstep(C.haut - 0.5 + i * 0.4, C.haut + 0.5 + i * 0.4, t))); al.forEach((l, i) => fade(l, sstep(C.apotres - 0.5 + i * 0.4, C.apotres + 0.5 + i * 0.4, t)));
+      camKeys(cam, t, [{ t: T0, p: [0, 2.6, 15], l: [0, 2.2, -1.6], f: 50 }, { t: C.tribus, p: [0, 2.4, 13], l: [0, 2.2, -1.6], f: 50 }, { t: C.haut, p: [0, 3.4, 7.0], l: [0, 3.6, -1.6], f: 48 }, { t: C.apotres, p: [0, 1.4, 6.5], l: [0, 1.0, -1.6], f: 48 }, { t: SC.mesure.start, p: [0, 1.5, 7.5], l: [0, 1.2, -1.6], f: 48 }]);
       K.update(t);
     }
   };
@@ -257,7 +257,7 @@ SETS.mesure = () => {
   scene.add(L.stars(500, 60, 1.0));
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), M(0x2a2438)); floor.rotation.x = -Math.PI / 2; scene.add(floor);
   const city = makeCity(3); city.position.set(0, 0, -2); scene.add(city);
-  const an = angel(); an.place(2.6, 0, 0.4, -0.7); scene.add(an.root); angelLight(scene, [2.6, 2.4, 1.6]);
+  const an = angel(); an.place(1.9, 0, 1.0, -0.5); scene.add(an.root); angelLight(scene, [1.9, 2.4, 2.4]);
   const reed = box(0.03, 2.2, 0.03, G(0xffd070, 1.6)); an.hand.R.add(reed); reed.position.set(0, -0.3, 0.05);
   // regle qui parcourt les aretes
   const rule = box(0.04, 0.04, 0.04, G(0xffd070, 2)); scene.add(rule);
@@ -265,11 +265,11 @@ SETS.mesure = () => {
   const lH = label('12 000 stades', { w: 1.0, h: 0.16, color: '#ffd070', font: 'bold 100px Inter' }); lH.position.set(-2.0, 2.0, -0.5); lH.rotation.z = Math.PI / 2; scene.add(lH);
   // lieu tres saint : petit cube, l'arche
   const holy = new THREE.Group(); holy.position.set(0, 0, 1.4); scene.add(holy);
-  const hc = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), holoMat(0x9adfff, 0.25)); hc.position.y = 0.5; holy.add(hc); holy.add(new THREE.LineSegments(new THREE.EdgesGeometry(hc.geometry), new THREE.LineBasicMaterial({ color: 0x9adfff }))).position.y = 0.5;
+  const hc = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), holoMat(0x9adfff, 0.12)); hc.position.y = 0.5; holy.add(hc); holy.add(new THREE.LineSegments(new THREE.EdgesGeometry(hc.geometry), new THREE.LineBasicMaterial({ color: 0x9adfff }))).position.y = 0.5;
   const ark = box(0.36, 0.2, 0.22, M(0xe8c060, { emissive: new THREE.Color(0x4a3008) })); ark.position.y = 0.12; holy.add(ark);
   const K = cardsMgr(scene, cam); refCard(K);
-  K('12 000 stades ≈ 2 200 km', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.stades + 0.3, C.stades + 5.0, 0.3, 0.2), -0.6);
-  K('≈ de Paris à Athènes… en long, en large et en haut', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.stades + 5.2, C.cube, 0.3, 0.2), -0.6);
+  K('12 000 stades ≈ 2 200 km', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.stades + 0.3, C.athenes, 0.3, 0.2), -0.6);
+  K('≈ de Paris à Athènes… en long, en large et en haut', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.athenes + 0.2, C.cube, 0.3, 0.2), -0.6);
   K('1 Rois 6, 20 : le lieu très saint était un cube', { w: 1.6, h: 0.24, border: '#9adfff' }, t => win(t, C.cube + 2.0, SC.pierres.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
@@ -279,7 +279,7 @@ SETS.mesure = () => {
       rule.position.set(-1.5 + 3 * u, R + 0.02, -0.5); if (v > 0) rule.position.set(-1.5, R + S * v, -0.5); rule.scale.set(1 + 30 * (v > 0 ? 0 : u), v > 0 ? 1 + 70 * v : 1, 1); if (v > 0) rule.position.y = R + S * v / 2;
       fade(rule, win(t, T0 + 3, C.cube, 0.3, 0.5)); fade(lW, win(t, C.stades - 1, C.cube, 0.3, 0.5)); fade(lH, win(t, C.stades + 2, C.cube, 0.3, 0.5));
       fade(holy, win(t, C.cube + 1.0, SC.pierres.start, 0.6, 0.3)); city.userData.cube.material.opacity = 0.55 * (1 - 0.5 * win(t, C.cube + 1.0, SC.pierres.start, 0.6, 0.3));
-      camKeys(cam, t, [{ t: T0, p: [1.6, 1.8, 6.0], l: [0.6, 1.4, -1.0], f: 50 }, { t: C.stades, p: [0.4, 2.0, 7.0], l: [0, 1.6, -2], f: 52 }, { t: C.cube, p: [0.0, 2.4, 7.4], l: [0, 1.6, -2], f: 52 }, { t: C.cube + 2, p: [0.0, 1.6, 4.4], l: [0, 0.7, 0.8], f: 50 }, { t: SC.pierres.start, p: [0.0, 1.5, 4.0], l: [0, 0.7, 1.0], f: 50 }]);
+      camKeys(cam, t, [{ t: T0, p: [1.4, 1.6, 6.5], l: [1.0, 1.3, -0.5], f: 50 }, { t: C.stades, p: [0.4, 2.0, 7.0], l: [0, 1.6, -2], f: 52 }, { t: C.cube, p: [0.0, 2.4, 7.4], l: [0, 1.6, -2], f: 52 }, { t: C.cube + 2, p: [0.0, 2.2, 6.8], l: [0, 1.0, 0.2], f: 50 }, { t: SC.pierres.start, p: [0.0, 2.0, 6.2], l: [0, 1.0, 0.4], f: 50 }]);
       K.update(t);
     }
   };
@@ -293,7 +293,7 @@ SETS.pierres = () => {
   const wall = new THREE.Group(); wall.position.set(0, 0, -2); scene.add(wall);
   STONES.forEach(([, c], i) => wall.add(at(box(8, 0.22, 0.4, M(c, { emissive: new THREE.Color(c).multiplyScalar(0.3) })), 0, 0.11 + i * 0.22, 0)));
   // gemmes flottantes nommees
-  const named = [0, 1, 3, 8, 11]; const gems = named.map((si, k) => { const [n, c] = STONES[si]; const gm = new THREE.Group(); gm.position.set(-1.2 + k * 0.6, 1.6 + (k % 2) * 0.35, 0.2); scene.add(gm); gm.add(new THREE.Mesh(new THREE.OctahedronGeometry(0.13, 0), G(c, 1.2))); const l = label(n, { w: 0.55, h: 0.1, color: '#ffffff', font: 'bold 90px Inter' }); l.position.y = -0.22; gm.add(l); return gm; });
+  const named = [0, 1, 3, 8, 11]; const gems = named.map((si, k) => { const [n, c] = STONES[si]; const gm = new THREE.Group(); gm.position.set(-0.64 + k * 0.32, 1.35 + (k % 2) * 0.6, 0.2); scene.add(gm); gm.add(gm.userData.gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.17, 0), G(c, 1.2))); const l = card(n, { w: 0.42, h: 0.12, border: '#ffffff' }); l.position.y = -0.27; gm.add(l); return gm; });
   // pectoral : 4 rangees de 3
   const plate = new THREE.Group(); plate.position.set(0, 1.5, 0.8); scene.add(plate);
   plate.add(at(box(0.9, 1.15, 0.04, M(0xc8a050, { emissive: new THREE.Color(0x3a2808) })), 0, 0, -0.03));
@@ -304,17 +304,17 @@ SETS.pierres = () => {
   const pearl = new THREE.Mesh(new THREE.TorusGeometry(1.4, 0.35, 16, 40), pearlMat()); pearl.position.y = 1.4; gate.add(pearl);
   const shine = glowStar(5, 0xffffff); shine.position.set(0, 1.4, -0.5); gate.add(shine);
   const K = cardsMgr(scene, cam); refCard(K);
-  K('12 pierres précieuses · 12 fondements', { w: 1.6, h: 0.24, border: '#9a4ad8' }, t => win(t, C.liste + 0.3, C.liste + 6.0, 0.3, 0.2), -0.6);
-  K('Exode 28 : le pectoral du grand prêtre, 12 pierres', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.liste + 6.2, C.liste + 12.0, 0.3, 0.2), -0.6);
-  K('chaque porte : une seule perle', { w: 1.6, h: 0.24, border: '#ffffff' }, t => win(t, C.perle + 0.3, SC.temple.start, 0.3, 0.2), -0.6);
-  const P2 = () => C.liste + 6.0;
+  K('12 pierres précieuses · 12 fondements', { w: 1.6, h: 0.24, border: '#9a4ad8' }, t => win(t, C.liste + 0.3, C.pectoral, 0.3, 0.2), -0.6);
+  K('Exode 28 : le pectoral du grand prêtre, 12 pierres', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.pectoral + 0.2, C.perles, 0.3, 0.2), -0.6);
+  K('chaque porte : une seule perle', { w: 1.6, h: 0.24, border: '#ffffff' }, t => win(t, C.perles + 1.0, SC.temple.start, 0.3, 0.2), -0.6);
+  const P2 = () => C.pectoral;
   return {
     ...B, update(t) {
       const T0 = SC.pierres.start;
-      gems.forEach((g, i) => { g.rotation.y = t * 0.8 + i; fade(g, win(t, C.liste + 0.5 + i * 0.6, P2(), 0.3, 0.4)); });
-      fade(plate, win(t, P2() + 0.3, C.liste + 13, 0.5, 0.5)); plate.rotation.y = 0.25 * Math.sin(t * 0.7);
-      const pk = sstep(C.liste + 12, C.liste + 14, t); fade(gate, pk); fade(street, pk); pearl.rotation.z = t * 0.1;
-      camKeys(cam, t, [{ t: T0, p: [0, 1.4, 4.6], l: [0, 1.2, -2], f: 50 }, { t: C.liste, p: [0, 1.6, 3.6], l: [0, 1.5, -1], f: 48 }, { t: P2(), p: [0, 1.5, 2.8], l: [0, 1.5, 0.8], f: 46 }, { t: C.liste + 12.5, p: [0, 1.5, 2.8], l: [0, 1.5, 0.8], f: 46 }, { t: C.liste + 14, p: [0, 1.0, 1.2], l: [0, 1.3, -6], f: 52 }, { t: SC.temple.start, p: [0, 0.8, -1.8], l: [0, 1.3, -6], f: 52 }]);
+      gems.forEach((g, i) => { g.userData.gem.rotation.y = t * 0.8 + i; fade(g, win(t, C.liste + 0.5 + i * 0.6, P2(), 0.3, 0.4)); });
+      fade(plate, win(t, P2() + 0.3, C.perles + 1, 0.5, 0.5)); plate.rotation.y = 0.25 * Math.sin(t * 0.7);
+      const pk = sstep(C.perles, C.perles + 2, t); fade(wall, 1 - pk); fade(gate, pk); fade(street, pk); pearl.rotation.z = t * 0.1;
+      camKeys(cam, t, [{ t: T0, p: [0, 1.4, 4.6], l: [0, 1.2, -2], f: 50 }, { t: C.liste, p: [0, 1.6, 4.0], l: [0, 1.5, -1], f: 48 }, { t: P2(), p: [0, 1.5, 2.8], l: [0, 1.5, 0.8], f: 46 }, { t: C.perles, p: [0, 1.5, 2.8], l: [0, 1.5, 0.8], f: 46 }, { t: C.perles + 2, p: [0, 1.0, 1.2], l: [0, 1.3, -6], f: 52 }, { t: SC.temple.start, p: [0, 0.8, -1.8], l: [0, 1.3, -6], f: 52 }]);
       K.update(t);
     }
   };
@@ -322,10 +322,10 @@ SETS.pierres = () => {
 
 // ---------- pas de temple ; pas de soleil ; portes toujours ouvertes ; le livre de vie
 SETS.temple = () => {
-  const B = heavenCity(); const { scene, cam } = B;
+  const B = heavenCity({ exposure: 0.74, bloom: [0.35, 0.5, 0.92] }); const { scene, cam } = B;
   const ghostT = new THREE.Group(); ghostT.position.set(0, 0, -6); scene.add(ghostT);
   const hm = holoMat(0xffd070, 0.3); ghostT.add(at(box(2.4, 1.6, 1.6, hm), 0, 0.8, 0)); for (let k = -2; k <= 2; k++) ghostT.add(at(box(0.12, 1.6, 0.12, hm), k * 0.5, 0.8, 0.85)); const roof = new THREE.Mesh(new THREE.ConeGeometry(1.6, 0.6, 4), hm); roof.rotation.y = Math.PI / 4; roof.position.y = 1.9; ghostT.add(roof);
-  const j = john(); j.place(1.3, 0, 1.6, -0.4); scene.add(j.root); faceLight(scene, [0.6, 1.6, 4.0], 1.2);
+  const j = john(); j.place(0.75, 0, 1.6, -0.3); scene.add(j.root); faceLight(scene, [0.6, 1.6, 4.0], 1.2);
   const ppl = citizens(scene, 4);
   const book = openBook(versePage(['LIVRE DE VIE', '', 'de l\'Agneau']), versePage(['', '', ''])); book.position.set(-0.6, 1.2, 1.8); book.rotation.x = 0.9; book.scale.setScalar(1.6); scene.add(book);
   const K = cardsMgr(scene, cam); refCard(K);
@@ -335,9 +335,9 @@ SETS.temple = () => {
     ...B, update(t) {
       const T0 = SC.temple.start; B.tick(t);
       fade(ghostT, 1 - sstep(C.sanstemple + 1.0, C.sanstemple + 4.0, t)); j.pose({ hp: -0.15 }); j.face(0, 'awe', t);
-      fade(book, win(t, C.ouvertes - 7.5, C.ouvertes, 0.5, 0.5));
-      ppl.forEach((h, i) => { const k = clamp((t - C.ouvertes - i * 1.2) / 8, 0, 1); h.place(-0.8 + (i % 2) * 0.6, 0, 4.5 - 6 * k - i * 0.4, Math.PI); h.pose(L.walkPose(t * 4 + i, k > 0 && k < 1 ? 0.6 : 0, {})); h.face(0, 'happy', t); fade(h.root, t > C.ouvertes - 0.5 ? 1 : 0); });
-      camKeys(cam, t, [{ t: T0, p: [0.4, 1.6, 5.0], l: [0, 1.2, -6], f: 50 }, { t: C.sanstemple + 4, p: [0.6, 1.6, 4.4], l: [0.4, 1.4, 0], f: 48 }, { t: C.ouvertes - 7.5, p: [0.0, 1.8, 4.0], l: [-0.4, 1.3, 1.2], f: 46 }, { t: C.ouvertes, p: [0.0, 2.2, 6.4], l: [0, 1.0, -4], f: 52 }, { t: SC.fin.start, p: [0.0, 2.4, 6.6], l: [0, 1.0, -6], f: 52 }]);
+      fade(book, win(t, C.livre, C.ouvertes, 0.5, 0.5));
+      ppl.forEach((h, i) => { const k = clamp((t - C.ouvertes - i * 1.2) / 8, 0, 1); h.place(-0.7 + (i % 2) * 0.6, 0, -9 + 10 * k - i * 0.6, 0); h.pose(L.walkPose(t * 4 + i, k > 0 && k < 1 ? 0.6 : 0, {})); h.face(0, 'happy', t); fade(h.root, t > C.ouvertes - 0.5 ? 1 : 0); });
+      camKeys(cam, t, [{ t: T0, p: [0.4, 1.6, 5.0], l: [0, 1.2, -6], f: 50 }, { t: C.sanstemple + 4, p: [0.6, 1.6, 4.4], l: [0.4, 1.4, 0], f: 48 }, { t: C.livre, p: [0.0, 1.8, 4.0], l: [-0.4, 1.3, 1.2], f: 46 }, { t: C.ouvertes, p: [0.0, 2.2, 6.4], l: [0, 1.0, -4], f: 52 }, { t: SC.fin.start, p: [0.0, 2.4, 6.6], l: [0, 1.0, -6], f: 52 }]);
       K.update(t);
     }
   };
@@ -365,8 +365,7 @@ SETS.cover = () => {
   const B = mountainSet({ bloom: [0.6, 0.5, 0.82] }); const { scene, cam } = B;
   const city = makeCity(6); city.position.set(0, 3.2, -16); city.rotation.y = 0.5; scene.add(city);
   const g = glowStar(14, 0xffe8a0); g.position.set(0, 7, -16.5); scene.add(g);
-  const j = john(); j.place(0.4, 0, 0.8, 0.3 + Math.PI); scene.add(j.root);
-  return { ...B, update() { cam.position.set(1.4, 1.5, 3.6); cam.fov = 56; cam.updateProjectionMatrix(); cam.lookAt(0, 5.0, -16); } };
+    return { ...B, update() { cam.position.set(1.4, 1.5, 3.6); cam.fov = 56; cam.updateProjectionMatrix(); cam.lookAt(0, 5.0, -16); } };
 };
 
 const SHOTS = [['intro', 0, SC.montagne.start], ['montagne', SC.montagne.start, SC.portes.start], ['portes', SC.portes.start, SC.mesure.start], ['mesure', SC.mesure.start, SC.pierres.start], ['pierres', SC.pierres.start, SC.temple.start], ['temple', SC.temple.start, SC.fin.start], ['fin', SC.fin.start, 1000], ['cover', 1000, 1e9]];

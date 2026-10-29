@@ -87,7 +87,11 @@
 - Le brouillon « 5e dimension » est rangé dans brouillon_5e_dimension/ (à reprendre plus tard si Mr A le demande).
 - Titres : raconter comme une histoire, et dire clairement QUI agit (ép. 39 : « IL REVIENT BIENTÔT », choisi par Mr A).
 - Livrés : 39 IL REVIENT BIENTÔT · 40 L'ANGE QUI REFUSA D'ÊTRE ADORÉ (Ap 22,6-15) · 41 L'ARBRE DE VIE EST DE RETOUR (Ap 22,1-5).
-- Ép. 42 « UNE VILLE D'OR DESCEND DU CIEL » (Ap 21,9-27) EN COURS (ep42/) : script, audio (langcheck 100 % fr) et web/body.js écrits, pas encore testés en images.
-  ⚠ L'audio dure 221 s, au-dessus du maximum de 3 min : raccourcir le script (viser 150-175 s), relancer build_audio.py, puis faire des images de test, la couverture (make_cover42.py à adapter) et la légende (legende_ep42.txt), puis lancer le rendu.
-  Teaser déjà écrit pour l'ép. 43 (Ap 21,1-8) : le ciel et la terre disparaissent, Dieu essuie toute larme, « la mer n'existe plus ».
+- Livré : 42 UNE VILLE D'OR DESCEND DU CIEL (Ap 21,9-27), 175 s (script raccourci de 221 s).
+- Leçons ép. 42 : ne pas coder les animations en « cue + N secondes » (tout se décale quand on raccourcit le texte) : ajouter des
+  ("cue", ...) dans le script et s'y caler. Une étiquette 3D enfant d'un groupe qui tourne devient invisible (vue de côté/de dos) :
+  faire tourner seulement l'objet, ou utiliser card(). Champ horizontal étroit en 9:16 : un mur de 14 m demande la caméra à ~15 m.
+  Ciel très clair (heavenCity, portes) : exposition 0,74-0,78. Un objet derrière un mur : faire disparaître le mur (fade) avant le plan.
+- Images de test : `node render.js --stills t1,t2,... stills` (images sans sous-titres) puis `python3 sheet.py stills sheet.jpg`.
+- Dépendances à réinstaller dans une nouvelle machine : `pip install edge-tts faster-whisper scipy` et `npm install` dans epN/ (three).
 - Méthode de vérification : images fixes ffmpeg (répéter le premier temps) + `python3 sheet.py stills sheet.jpg`. Pour voir des images avant le rendu complet, voir le rendu des épisodes précédents (render.js accepte un intervalle d'images).
