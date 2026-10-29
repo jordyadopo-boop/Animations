@@ -226,11 +226,41 @@ function army(scene, n, R0, R1, cx = 0, cz = 0, color = 0x2a2430) {
   return arr;
 }
 
+// le diable d'apres Gustave Dore (Paradis perdu, 1866) : homme muscle torse nu, cheveux boucles, petites cornes, pagne, grandes ailes de chauve-souris
+function batWing(sx) {
+  const sh = new THREE.Shape(); sh.moveTo(0, 0);
+  const tip = [1.25, 0.95], pts = [[0.35, 0.55], [0.8, 0.85], tip];
+  pts.forEach(p => sh.lineTo(p[0], p[1]));
+  // bord inferieur festonne
+  const lows = [[1.05, 0.35], [0.95, -0.05], [0.65, 0.12], [0.5, -0.35], [0.25, -0.05], [0.08, -0.45]];
+  let prev = tip; lows.forEach((p, i) => { sh.quadraticCurveTo((prev[0] + p[0]) / 2 - 0.06, (prev[1] + p[1]) / 2 - 0.06, p[0], p[1]); prev = p; });
+  sh.lineTo(0, -0.1); sh.lineTo(0, 0);
+  const g = new THREE.Group();
+  const mem = new THREE.Mesh(new THREE.ShapeGeometry(sh), M(0x4a3e42, { side: THREE.DoubleSide, emissive: new THREE.Color(0x1c1416) })); mem.scale.x = sx; g.add(mem);
+  const bone = M(0x5a4a48);
+  [[0, 0, ...tip], [0.35, 0.55, 1.05, 0.35], [0.35, 0.55, 0.65, 0.12], [0.2, 0.3, 0.25, -0.05]].forEach(([x0, y0, x1, y1]) => { const l = Math.hypot(x1 - x0, y1 - y0); const b = box(l, 0.035, 0.035, bone); b.position.set(sx * (x0 + x1) / 2, (y0 + y1) / 2, 0.01); b.rotation.z = sx * Math.atan2(y1 - y0, x1 - x0); g.add(b); });
+  return g;
+}
+function devil(o = {}) {
+  const g = new THREE.Group();
+  const h = new Human({ skin: 0xd8b49a, hair: 0x1a1210, hairStyle: 'curly', top: 0xd8b49a, bottom: 0xd8b49a, shortSleeve: true, seed: 4520 });
+  g.add(h.root);
+  // pagne
+  const cloth = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.27, 0.3, 8, 1, true), M(0xb8b0a4, { side: THREE.DoubleSide })); cloth.position.y = -0.1; h.pelvis.add(cloth);
+  // petites cornes dans les boucles
+  for (const s of [-1, 1]) { const c = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.12, 6), M(0xd8ccb0)); c.position.set(s * 0.09, 0.36, 0.06); c.rotation.z = -s * 0.35; h.neck.add(c); }
+  // ailes
+  const wings = [-1, 1].map(sx => { const w = batWing(sx); w.position.set(sx * 0.12, 0.5, -0.16); w.scale.setScalar(o.wing ?? 1.4); h.spine.add(w); return w; });
+  g.userData = { h, wings, tick: (t, k = 1) => wings.forEach((w, i) => { w.rotation.y = (i ? -1 : 1) * (0.35 + 0.12 * Math.sin(t * 2.2) * k); w.rotation.z = (i ? 1 : -1) * 0.05 * Math.sin(t * 2.2) * k; }) };
+  g.userData.tick(0);
+  return g;
+}
+
 // ---------- intro : la grille de la prison s'ouvre
 SETS.intro = () => {
   const B = nightSet({ fog: [0x0a0814, 10, 60], exposure: 1.0 }); const { scene, cam } = B;
   const pit = pitSet(scene, [0, 0, -4]);
-  const sp = serpent(); sp.position.set(0, -4, -4); scene.add(sp);
+  const sp = devil(); sp.position.set(0, -2.6, -4); scene.add(sp);
   const rig = claudeRig(scene, [1.1, -0.2, 1.4], -0.5, [-0.45, 0, 0.1], 0xffd070, 0.45, 0.28); faceLight(scene, [0.9, 0.6, 2.8], 1.0);
   scene.add(at(new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.1, 0.15, 10), M(0x2a2430)), 1.0, -0.28, 1.4));
   const back = label('◀ une scène avant', { w: 0.8, h: 0.12, color: '#ffd070', font: 'bold 80px Inter' }); rig.holoG.add(back);
@@ -239,7 +269,7 @@ SETS.intro = () => {
   return {
     ...B, update(t) {
       const o = sstep(3, 6, t); pit.userData.lid.rotation.z = -1.4 * o; pit.userData.lid.position.x = -1.6 * o; pit.userData.red.material.opacity = 0.3 + 0.7 * o;
-      sp.position.y = -4 + 3.6 * sstep(4.5, 8.5, t); sp.userData.tick(t); fade(sp, sstep(4.5, 5.5, t) * (1 - 0.8 * win(t, C.serie, C.title + 1, 0.5, 0.5))); pit.userData.red.material.opacity *= 1 - 0.6 * win(t, C.serie, C.title + 1, 0.5, 0.5);
+      sp.position.y = -2.6 + 2.6 * sstep(4.5, 8.5, t); sp.userData.tick(t); sp.userData.h.pose({ aL: [0.5, 0.5], aR: [0.5, 0.5], hp: -0.1 }); sp.userData.h.face(0, 'serious', t); fade(sp, sstep(4.5, 5.5, t) * (1 - 0.8 * win(t, C.serie, C.title + 1, 0.5, 0.5))); pit.userData.red.material.opacity *= 1 - 0.6 * win(t, C.serie, C.title + 1, 0.5, 0.5);
       const bk = win(t, C.serie + 0.3, C.title, 0.3, 0.3); beamOn(rig, bk, t); fade(back, bk); back.lookAt(cam.position); rig.c.update(t, env('claude', t), {});
       camKeys(cam, t, [{ t: 0, p: [0, 3.0, 3.5], l: [0, 0, -4], f: 50 }, { t: C.serie, p: [0, 2.2, 4.6], l: [0, 1.6, -4], f: 50 }, { t: C.serie + 0.8, p: [0.9, 0.5, 4.2], l: [0.6, 0.1, 0], f: 48 }, { t: SC.prison.start, p: [0.8, 0.5, 4.0], l: [0.6, 0.1, 0], f: 48 }]);
       K.update(t);
@@ -251,7 +281,7 @@ SETS.intro = () => {
 SETS.prison = () => {
   const B = nightSet({ fog: [0x0a0814, 10, 60], exposure: 1.0 }); const { scene, cam } = B;
   const pit = pitSet(scene, [0, 0, -3.5]); pit.userData.lid.rotation.z = -1.4; pit.userData.lid.position.x = -1.6; pit.userData.red.scale.setScalar(3);
-  const sp = serpent(); sp.position.set(0, 0.3, -3.5); scene.add(sp);
+  const sp = devil(); sp.position.set(0, 0, -3.5); scene.add(sp);
   const j = john(); j.place(1.4, 0, 0.8, -0.5); scene.add(j.root); faceLight(scene, [1.0, 1.6, 3.4], 1.2);
   const mil = label('1 000', { w: 2.2, h: 0.8, color: '#ffd070', font: 'bold 400px Inter' }); mil.position.set(-0.8, 3.2, -4); scene.add(mil);
   const tl = new THREE.Group(); tl.position.set(-0.4, 3.0, -2.0); scene.add(tl);
@@ -264,7 +294,7 @@ SETS.prison = () => {
   K('Apocalypse 20, 3 : « relâché pour un peu de temps »', { w: 1.6, h: 0.24, border: '#ff8a5a' }, t => win(t, C.pourquoi + 3, SC.gog.start, 0.3, 0.2), -0.6);
   return {
     ...B, update(t) {
-      const T0 = SC.prison.start; sp.userData.tick(t); sp.position.x = 1.3 * win(t, C.millenaire, C.pourquoi + 1, 1, 1) + 0.8 * sstep(C.pourquoi, SC.gog.start, t);
+      const T0 = SC.prison.start; sp.userData.tick(t); sp.userData.h.pose({ aL: [0.3, 0.35], aR: [0.3, 0.35], hp: 0.05 }); sp.userData.h.face(0, 'serious', t); sp.position.x = 1.3 * win(t, C.millenaire, C.pourquoi + 1, 1, 1) + 0.8 * sstep(C.pourquoi, SC.gog.start, t);
       fade(mil, win(t, C.millenaire, C.augustin, 0.5, 0.5)); fade(tl, win(t, C.augustin + 0.5, C.pourquoi, 0.5, 0.5));
       j.pose({ hp: 0.05 }); j.face(0, t > C.pourquoi ? 'awe' : 'fear', t);
       camKeys(cam, t, [{ t: T0, p: [0.8, 2.2, 4.2], l: [0, 1.8, -3.5], f: 50 }, { t: C.millenaire, p: [0, 2.6, 5.5], l: [-0.4, 2.8, -3.5], f: 52 }, { t: C.pourquoi - 0.3, p: [0, 2.6, 5.5], l: [-0.4, 2.8, -3.5], f: 52 }, { t: C.pourquoi + 1.5, p: [1.6, 1.6, 3.6], l: [1.2, 1.5, 0.6], f: 48 }, { t: SC.gog.start, p: [1.8, 1.8, 4.2], l: [0.6, 2.0, -2], f: 50 }]);
@@ -337,7 +367,7 @@ SETS.diable = () => {
   const B = nightSet({ fog: [0x0a0814, 10, 60], exposure: 1.0 }); const { scene, cam } = B;
   const glowL = new THREE.Mesh(new THREE.PlaneGeometry(60, 3), new THREE.MeshBasicMaterial({ color: 0xff6a20, transparent: true, opacity: 0.6, fog: false, depthWrite: false, blending: THREE.AdditiveBlending })); glowL.position.set(0, 0.6, -30); scene.add(glowL);
   const lake = new THREE.Mesh(new THREE.PlaneGeometry(30, 10), G(0xff5a10, 0.9)); lake.rotation.x = -Math.PI / 2; lake.position.set(0, 0.02, -24); scene.add(lake);
-  const sp = serpent(); scene.add(sp); const tag = card('LE DIABLE', { w: 1.0, h: 0.2, border: '#ff4a3a' }); scene.add(tag);
+  const sp = devil(); scene.add(sp); const tag = card('LE DIABLE', { w: 1.0, h: 0.2, border: '#ff4a3a' }); scene.add(tag);
   const beast = orb('LA BÊTE', 0x5a2a2a), prophet = orb('LE FAUX PROPHÈTE', 0x3a2a5a); beast.position.set(-1.6, 2.4, -6); prophet.position.set(1.6, 2.4, -6); scene.add(beast); scene.add(prophet);
   const tree = new THREE.Group(); tree.position.set(-0.6, 0, 0); scene.add(tree); tree.add(at(new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.15, 1.6, 8), holoMat(0x7aff9a, 0.25)), 0, 0.8, 0)); tree.add(at(new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 1), holoMat(0x7aff9a, 0.15)), 0, 2.0, 0));
   const eve = new Human({ holo: 0x9adfff, hairStyle: 'long', seed: 4510 }); eve.place(0.4, 0, 0.3, -0.4); scene.add(eve.root);
@@ -348,8 +378,8 @@ SETS.diable = () => {
   return {
     ...B, update(t) {
       const T0 = SC.diable.start; const u = sstep(T0 + 2, T0 + 6.5, t);
-      sp.position.set(0.5 - 0.5 * u, 1.0 + 2.5 * Math.sin(Math.PI * u) - 1.0 * u, -2 - 20 * u); sp.userData.tick(t, 0.6); fade(sp, 1 - sstep(0.92, 1, u)); sp.scale.setScalar(0.6);
-      tag.position.copy(sp.position).add(new THREE.Vector3(0, 3.4 * 0.6 + 0.4, 0)); tag.quaternion.copy(cam.quaternion); fade(tag, 1 - sstep(0.6, 0.9, u));
+      sp.position.set(0.5 - 0.5 * u, 1.0 + 2.5 * Math.sin(Math.PI * u) - 1.0 * u, -2 - 20 * u); sp.userData.tick(t * 2, 1.5); sp.userData.h.pose({ aL: [2.4, 0.4], aR: [2.4, 0.4], lean: -0.3 }); sp.userData.h.face(0, 'fear', t); fade(sp, 1 - sstep(0.92, 1, u)); sp.scale.setScalar(0.8);
+      tag.position.copy(sp.position).add(new THREE.Vector3(0, 2.3, 0)); tag.quaternion.copy(cam.quaternion); fade(tag, 1 - sstep(0.6, 0.9, u));
       glowL.material.opacity = 0.4 + 0.3 * win(t, T0 + 6.3, T0 + 9, 0.3, 2) + 0.05 * Math.sin(t * 5);
       const ed = win(t, C.seducteur + 1, C.bete, 0.5, 0.5); fade(tree, ed); fade(eve.root, ed * 0.5); fade(sp2, ed); sp2.userData.tick(t, 0.5); eve.pose({ aR: [1.0, 0.1], eR: 0.4 });
       const bp = win(t, C.bete, SC.fin.start + 0.5, 0.6, 0.3); fade(beast, bp); fade(prophet, bp); beast.children[0].rotation.y = t; prophet.children[0].rotation.y = -t;
@@ -383,10 +413,18 @@ SETS.fin = () => {
 
 // ---------- couverture : la grille arrachee, la lueur rouge, le serpent qui sort
 SETS.cover = () => {
-  const B = nightSet({ fog: [0x0a0814, 10, 60], exposure: 1.1, bloom: [0.9, 0.6, 0.7] }); const { scene, cam } = B;
-  const pit = pitSet(scene, [0, 0, -3.5]); pit.userData.lid.rotation.z = -1.2; pit.userData.lid.position.x = -1.5; pit.userData.red.scale.setScalar(8);
-  const sp = serpent(); sp.position.set(0, 0.2, -3.5); sp.userData.tick(2.2); scene.add(sp);
-  return { ...B, update() { cam.position.set(0, 3.2, 3.2); cam.fov = 58; cam.updateProjectionMatrix(); cam.lookAt(0, 1.6, -3.5); } };
+  const B = nightSet({ fog: [0x0a0814, 10, 60], exposure: 1.0, bloom: [0.6, 0.5, 0.82], hemi: [0xffd0c0, 0x10101a, 0.8], sun: [0xffc0a0, 1.0, [1, 4, 6]] }); const { scene, cam } = B;
+  scene.add(at(box(8, 5, 0.2, M(0x2a1010, { emissive: new THREE.Color(0x1a0404) })), 0, 2, -2.6));
+  const red = glowStar(4, 0xff6a3a); red.position.set(0, 1.2, -2.3); scene.add(red);
+  const d = devil({ wing: 1.6 }); d.position.set(0, 0, -0.8); scene.add(d); const h = d.userData.h;
+  d.userData.wings.forEach((w, i) => { w.rotation.y = (i ? -1 : 1) * 0.25; });
+  h.pose({ lean: 0.15, hp: -0.1, aL: [1.3, 0.55], eL: 0.3, aR: [1.3, 0.55], eR: 0.3 }); h.face(0, 'serious', 0);
+  const iron = M(0x5a5460, { emissive: new THREE.Color(0x100c10) });
+  scene.add(at(box(3.2, 0.08, 0.08, iron), 0, 2.45, -0.25)); scene.add(at(box(3.2, 0.08, 0.08, iron), 0, 0.05, -0.25));
+  [-1.4, -1.0, 1.0, 1.4].forEach(x => scene.add(at(new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 2.4, 8), iron), x, 1.25, -0.25)));
+  for (const sx of [-1, 1]) { const lo = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 1.25, 8), iron); lo.position.set(sx * 0.45, 0.65, -0.25); lo.rotation.z = sx * 0.3; scene.add(lo); const hi = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 1.25, 8), iron); hi.position.set(sx * 0.45, 1.85, -0.25); hi.rotation.z = -sx * 0.3; scene.add(hi); }
+  faceLight(scene, [0, 1.9, 0.6], 1.6, 0xffd8c0);
+  return { ...B, update() { cam.position.set(0.1, 1.7, 3.6); cam.fov = 54; cam.updateProjectionMatrix(); cam.lookAt(0, 0.7, -0.6); } };
 };
 
 const SHOTS = [['intro', 0, SC.prison.start], ['prison', SC.prison.start, SC.gog.start], ['gog', SC.gog.start, SC.camp.start], ['camp', SC.camp.start, SC.diable.start], ['diable', SC.diable.start, SC.fin.start], ['fin', SC.fin.start, 1000], ['cover', 1000, 1e9]];
