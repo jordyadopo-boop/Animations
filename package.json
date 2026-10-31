@@ -10,6 +10,7 @@
     "preview": "node render/serve.js"
   },
   "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.3.0",
     "@fontsource/luckiest-guy": "^5.3.0",
     "three": "0.170.0"
   }
