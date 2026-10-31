@@ -1,13 +1,13 @@
 # Série « FOI DE MÈRE » (titre de travail) — Bible, partie 1
 
 > Série animée **2D** (dessin à plat : trait fin sombre, aplats de couleurs, ombre simple, grands yeux ronds).
-> Drame familial et spirituel, inspiré d'une histoire vraie, en Côte d'Ivoire (1988 → 2002).
+> Drame familial et spirituel, inspiré d'une histoire vraie, en Côte d'Ivoire (1989 → 2002).
 > Personnages, lieux dessinés et dialogues **originaux**.
 
 ---
 
 ## 1. Le pitch
-Une jeune journaliste d'Abidjan quitte tout — sa ville, sa famille — pour suivre l'homme qu'elle aime, un militaire, à **Bouaké**.
+Vers 1989, une jeune journaliste d'Abidjan quitte tout — sa ville, sa famille — pour suivre l'homme qu'elle aime, un militaire, à **Bouaké**.
 Amour, dettes, séparations, réconciliations, trois garçons… et une foi qui ne la quitte jamais.
 Jusqu'au jour de **septembre 2002** où la guerre entre dans Bouaké, et où il faut fuir avec ses trois enfants, sans voiture.
 
@@ -16,8 +16,8 @@ Jusqu'au jour de **septembre 2002** où la guerre entre dans Bouaké, et où il 
 |---|---|---|
 | **La mère** (« Maman ») | Journaliste, croyante, courageuse, têtue dans sa foi. | Élégante, robe en pagne, cheveux tressés ou foulard, carnet de reporter. |
 | **Le père** | Militaire. Aimé, mais souvent absent, criblé de dettes. | Grand, carré, treillis vert, béret. |
-| **Le grand frère** | Premier fils. 12 ans en 2002, en 6e. Protecteur. | Grand et mince, uniforme scolaire kaki. |
-| **Les jumeaux** | Nés 6 ans après le grand frère. 6 ans en 2002, en CP1. Identiques. | Petits, uniformes kaki ; un détail les distingue (couleur du cartable). |
+| **Le grand frère** | Premier fils, né en **1990**. 12 ans en 2002, en 6e. Protecteur. | Grand et mince, uniforme scolaire kaki. |
+| **Les jumeaux** | Nés en **1996**, 6 ans après le grand frère. 5-6 ans à la rentrée 2001, en CP1. Identiques. | Petits, uniformes kaki ; un détail les distingue (couleur du cartable). |
 | **L'amie d'en face** | Voisine du bâtiment d'en face. Devient une sœur. | Foulard, rire facile. |
 | **Son mari** | A une voiture. Il conduit pendant la fuite. | Moustache, chemise à carreaux. |
 | **Leur fille** | Enfant de l'amie. | Couettes. |
@@ -27,12 +27,12 @@ Jusqu'au jour de **septembre 2002** où la guerre entre dans Bouaké, et où il 
 ## 3. Chronologie de la partie 1 (à corriger avec toi)
 | Année | Événement |
 |---|---|
-| ~1988 | Elle quitte Abidjan et sa famille, qui n'accepte pas ce choix. Elle s'installe à Bouaké avec lui. |
-| ~1989 | Naissance du premier fils. |
-| ~1994 | Dettes : les créanciers vident la maison. Elle part avec son fils (5 ans). |
+| ~1989 | Elle quitte Abidjan et sa famille, qui n'accepte pas ce choix. Elle s'installe à Bouaké avec lui. |
+| **1990** | Naissance du premier fils. |
+| ~1994 | Dettes : les créanciers vident la maison. Elle part avec son fils (4-5 ans). |
 | ~1994-1995 | Séparés un an. Lui se débrouille pour s'occuper de son fils (week-ends, école). *(Inventé : il vend sa moto pour payer l'école.)* |
-| ~1995 | Réconciliation. Elle tombe enceinte. |
-| ~1995-1996 | Naissance des jumeaux. La famille vit dans un duplex. |
+| 1995 | Réconciliation, un an après. Elle tombe enceinte. |
+| **1996** | Naissance des jumeaux (deux garçons), 6 ans après le premier fils. La famille vit dans un duplex. |
 | 1996-2001 | Années heureuses mais fragiles : absences du père, nuits dehors, nouvelles dettes, meubles repris puis rachetés par elle, incompréhensions. |
 | 2001 | Un matin, après le départ du père au travail, un camion de déménagement vide la maison de *ses* meubles à elle. Petit appartement (2 chambres + salon) au 5e étage d'un immeuble, dans un autre quartier. Rencontre avec l'amie d'en face. |
 | 2001-2002 | Les jumeaux en CP1, le grand frère en 6e. |

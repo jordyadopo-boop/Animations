@@ -17,9 +17,9 @@ const check = (c) => (ctx) => { ctx.strokeStyle = c; ctx.lineWidth = 5; for (let
 export const CAST = {
   maman: { h: 440, kind: 'woman', skin: SKIN.b, hair: 'braids', hairC: '#1a1210', outfit: 'dress', c1: '#e0682f', c2: '#f2c14e', c3: '#2c6e63', shoes: '#5a2b1d', label: 'Maman', sub: 'journaliste' },
   papa: { h: 490, kind: 'man', skin: SKIN.c, hair: 'beret', hairC: '#15100d', outfit: 'military', shoes: '#1a1614', label: 'Papa', sub: 'militaire' },
-  grand: { h: 360, kind: 'teen', skin: SKIN.a, hair: 'short', hairC: '#15100d', outfit: 'uniform', long: true, shoes: '#2a2420', label: 'Le grand frère', sub: '12 ans · 6e' },
-  jumeau1: { h: 245, kind: 'child', skin: SKIN.b, hair: 'short', hairC: '#15100d', outfit: 'uniform', shoes: '#2a2420', bag: '#c0392b', label: 'Jumeau 1', sub: '6 ans · CP1' },
-  jumeau2: { h: 245, kind: 'child', skin: SKIN.b, hair: 'short', hairC: '#15100d', outfit: 'uniform', shoes: '#2a2420', bag: '#2e6fb5', label: 'Jumeau 2', sub: '6 ans · CP1' },
+  grand: { h: 360, kind: 'teen', skin: SKIN.a, hair: 'short', hairC: '#15100d', outfit: 'uniform', long: true, shoes: '#2a2420', label: 'Le grand frère', sub: '11 ans · 6e' },
+  jumeau1: { h: 245, kind: 'child', skin: SKIN.b, hair: 'short', hairC: '#15100d', outfit: 'uniform', shoes: '#2a2420', bag: '#c0392b', label: 'Jumeau 1', sub: '5 ans · CP1' },
+  jumeau2: { h: 245, kind: 'child', skin: SKIN.b, hair: 'short', hairC: '#15100d', outfit: 'uniform', shoes: '#2a2420', bag: '#2e6fb5', label: 'Jumeau 2', sub: '5 ans · CP1' },
   amie: { h: 420, kind: 'woman', skin: SKIN.d, hair: 'wrap', hairC: '#1a1210', outfit: 'dress', c1: '#6a3fa0', c2: '#f4d35e', c3: '#e8e0f0', shoes: '#3a2418', label: 'L’amie d’en face', sub: 'voisine' },
   mari: { h: 470, kind: 'man', skin: SKIN.a, hair: 'short', hairC: '#15100d', outfit: 'check', c1: '#3f6fa5', c2: '#d9e2ec', shoes: '#2a1d14', moustache: true, label: 'Son mari', sub: 'il a la voiture' },
   fille: { h: 230, kind: 'child', skin: SKIN.d, hair: 'puffs', hairC: '#15100d', outfit: 'dress', c1: '#f28aa0', c2: '#ffffff', c3: '#ffffff', shoes: '#c0392b', girl: true, label: 'Leur fille', sub: '7 ans' },
