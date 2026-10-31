@@ -135,7 +135,7 @@ function theme(name, t0, until) {
   if (name === 'fin') [[2.0, 69, 4], [6.2, 72, 4], [10.4, 70, 3], [13.0, 69, 5.5]].forEach(([t, m, d]) => lines.push([t, m, d, 0.13]));
   lines.forEach(([t, m, d, v]) => { if (t < span) mus(t0 + t, cello(m, Math.min(d, span - t + 0.3), v), 1, m > 60 ? 0.25 : -0.25); });
   notes.forEach(([t, m, d, v]) => { if (t < span) mus(t0 + t, piano(m, Math.min(d, span - t + 0.5), v), 1, ((m % 7) / 7 - 0.5) * 0.6); });
-  chords.forEach(([t, ms, d]) => mus(t0 + t, pad(ms, d, 0.06, 700), 1));
+  chords.forEach(([t, ms, d]) => d > 0.2 && t < span && mus(t0 + t, pad(ms, Math.min(d, span - t + 0.5), 0.06, 700), 1));
 }
 
 // ---------- rendu ----------
