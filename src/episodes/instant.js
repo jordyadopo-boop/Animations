@@ -25,23 +25,23 @@ export const CUES = [
   ['clench', 2.15], ['gasp', 3.0], ['shout', 3.4, { dur: 2.8 }], ['tick', 2.0, { until: 6.2 }],
   ['tip', 4.4], ['swing', 5.4, { dur: 0.8 }],
   ['freeze', 6.2], ['ring', 6.2, { dur: 5 }], ['room', 6.2, { until: 27 }], ['heart', 8.5, { until: 26.5, from: 46, to: 46, soft: true }],
-  ['piano', 12.0, { theme: 'instant', until: 26.5 }],
+  ['piano', 0.3, { theme: 'tension', until: 6.2 }], ['piano', 7.0, { theme: 'instant', until: 26.8 }],
   ['dive', 25.6], // plongée dans la goutte
   // vision 1 : partir
-  ['paper', 27.0, { until: 55 }], ['piano', 27.2, { theme: 'partir', until: 54.5 }],
+  ['paper', 27.0, { until: 55 }], ['piano', 27.0, { theme: 'partir', until: 55.2 }], ['piano', 55.0, { theme: 'pont', until: 60.2 }],
   ['zip', 28.3], ['wheels', 30.0, { dur: 2.6 }], ['doorClose', 32.9], ['clockFast', 34, { dur: 3.5 }],
   ['phone', 38.2, { dur: 5.4 }], ['voicemail', 43.6], ['rain', 46, { until: 55 }],
   ['undive', 55.0], ['room', 55.0, { until: 60 }], ['heart', 55.5, { until: 59.5, from: 54, to: 64, soft: true }], ['dive', 58.6],
   // vision 2 : l'irréparable
   ['paper', 60.0, { until: 92 }], ['swing', 60.6, { dur: 0.6 }], ['thud', 61.3], ['silence', 61.35, { dur: 2.5 }],
   ['glassRoll', 62.2, { dur: 1.6 }], ['flatline', 64.2, { dur: 3.6 }], ['siren', 67.5, { dur: 7.5 }],
-  ['cuffs', 75.2], ['steps', 76.5, { dur: 3 }], ['cellDoor', 80.4], ['piano', 81.0, { theme: 'cellule', until: 91.5 }],
+  ['cuffs', 75.2], ['steps', 76.5, { dur: 3 }], ['cellDoor', 80.4], ['piano', 63.8, { theme: 'deuil', until: 80.6 }], ['piano', 81.0, { theme: 'cellule', until: 92.2 }], ['piano', 92.0, { theme: 'pont', until: 95.2 }],
   ['undive', 92.0], ['room', 92.0, { until: 95 }], ['heart', 92.2, { until: 95, from: 70, to: 70, soft: true }], ['dive', 94.4],
   // vision 3 : l'héritage
-  ['paper', 95.0, { until: 118 }], ['piano', 95.2, { theme: 'heritage', until: 117.8 }], ['argue', 99.0, { dur: 5 }], ['clench', 107.0], ['heart', 108, { until: 118, from: 80, to: 140 }],
+  ['paper', 95.0, { until: 118 }], ['piano', 95.0, { theme: 'heritage', until: 118.2 }], ['piano', 118.0, { theme: 'main', until: 131.3 }], ['argue', 99.0, { dur: 5 }], ['clench', 107.0], ['heart', 108, { until: 118, from: 80, to: 140 }],
   // retour, la main s'ouvre
   ['undive', 117.9], ['room', 118.0, { until: 131.2 }], ['heart', 118.0, { until: 131, from: 120, to: 50, soft: false }], ['breath', 124.5, { dur: 4 }],
-  ['unfreeze', 131.2], ['shatter', 131.75], ['piano', 133.0, { theme: 'fin', until: 151.5 }],
+  ['unfreeze', 131.2], ['shatter', 131.75], ['piano', 132.4, { theme: 'fin', until: 151.8 }],
 ];
 
 // ---- texte sobre (police Cormorant) en surimpression ----

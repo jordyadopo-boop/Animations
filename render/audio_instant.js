@@ -44,6 +44,11 @@ function piano(m, dur = 3, vel = 0.5) {
 }
 // nappe de cordes (dents de scie filtrées, vibrato lent)
 function pad(ms, dur, vol = 0.15, fc = 900) { let o = new Float32Array(Math.floor(dur * SR)); ms.forEach((m, i) => { const s = osc(dur, (t) => mtof(m) * (1 + 0.003 * Math.sin(t * 5 + i)), 'saw', (t) => swell(t, dur) ** 1.5); o = add(o, s); }); return gain(lp(lp(o, fc), fc), vol); }
+function cello(m, dur, vol = 0.18, bright = 1400) {
+  const f = mtof(m);
+  const s = osc(dur, (t) => f * (1 + 0.006 * Math.min(1, t / 0.6) * Math.sin(2 * Math.PI * 5.2 * t)), 'saw', (t) => Math.min(1, t / 0.35) * Math.min(1, (dur - t) / 0.5) * (0.85 + 0.15 * Math.sin(t * 1.3)));
+  return gain(lp(add(bp(s, f * 2.2, 1.2), gain(lp(s, bright), 0.6)), bright * 1.4), vol);
+}
 function voice(dur, f0, formants, vib = 5, grit = 0) {
   const src = osc(dur, (t) => f0(t) * (1 + 0.02 * Math.sin(2 * Math.PI * vib * t)), 'saw', hold(0.04, 0.15));
   const v = add(...formants.map(([f, g]) => gain(bp(src, f, 6), g)));
@@ -114,6 +119,21 @@ function theme(name, t0, until) {
     [[0, [50, 53, 57, 62]], [4, [41, 48, 57, 65]], [8, [46, 53, 58, 62]], [12.5, [38, 50, 54, 57, 62, 66]]].forEach(([t, ch]) => ch.forEach((m, i) => notes.push([t + i * 0.12, m, 5.5, 0.26])));
     chords.push([0, [38, 45], 12.5]); chords.push([12.5, [38, 45, 50, 54], span - 12.5]);
   }
+  const lines = []; // mélodies à l'archet : [t, midi, durée, volume]
+  if (name === 'tension') { chords.push([0, [33, 40], span]); [[0.5, 45, 2.5], [3.0, 46, 3.2]].forEach(([t, m, d]) => lines.push([t, m, d, 0.12])); }
+  if (name === 'instant') lines.push([3.5, 57, 5, 0.1], [9, 62, 4, 0.1], [13.5, 60, 3, 0.1], [16.5, 58, 3.5, 0.1]);
+  if (name === 'partir') [[1.8, 69, 3.4], [5.4, 67, 1.8], [7.2, 65, 3.6], [10.8, 64, 3.6], [14.4, 62, 3.4], [17.8, 65, 1.8], [19.6, 64, 1.8], [21.4, 62, 3.2], [24.6, 61, 3.4]].forEach(([t, m, d]) => lines.push([t, m, d, 0.16]));
+  if (name === 'pont') { chords.push([0, [38, 45, 53], span]); notes.push([0.2, 62, 3, 0.2], [1.8, 57, 3, 0.18]); }
+  if (name === 'deuil') { chords.push([0, [38, 41, 45], span]); [[0.5, 50, 4], [4.6, 48, 3], [7.6, 46, 4.5], [12.2, 45, 4.5]].forEach(([t, m, d]) => lines.push([t, m, d, 0.2])); }
+  if (name === 'cellule') [[1.2, 57, 3.5], [4.8, 55, 2], [6.8, 53, 4]].forEach(([t, m, d]) => lines.push([t, m, d, 0.13]));
+  if (name === 'heritage') [[1.6, 69, 3.2], [4.8, 67, 1.6], [6.4, 65, 3.2], [9.6, 64, 3.2], [12.8, 65, 1.6], [14.4, 67, 1.6], [16.0, 69, 3.0], [19.2, 70, 3.6]].forEach(([t, m, d], i) => lines.push([t, m, d, 0.13 + i * 0.012]));
+  if (name === 'main') { // la main s'ouvre : la mélodie de « Partir » revient, apaisée, et monte vers la lumière
+    chords.push([0, [38, 45, 50], 6.5]); chords.push([6.5, [41, 48, 53], span - 6.5]);
+    [[0.5, 62, 2.5], [3.0, 65, 2.5], [5.5, 69, 2.5], [8.0, 67, 2.5], [10.5, 69, 2.6]].forEach(([t, m, d]) => notes.push([t, m, d, 0.24]));
+    [[1.0, 57, 5], [6.2, 60, 6]].forEach(([t, m, d]) => lines.push([t, m, d, 0.13]));
+  }
+  if (name === 'fin') [[2.0, 69, 4], [6.2, 72, 4], [10.4, 70, 3], [13.0, 69, 5.5]].forEach(([t, m, d]) => lines.push([t, m, d, 0.13]));
+  lines.forEach(([t, m, d, v]) => { if (t < span) mus(t0 + t, cello(m, Math.min(d, span - t + 0.3), v), 1, m > 60 ? 0.25 : -0.25); });
   notes.forEach(([t, m, d, v]) => { if (t < span) mus(t0 + t, piano(m, Math.min(d, span - t + 0.5), v), 1, ((m % 7) / 7 - 0.5) * 0.6); });
   chords.forEach(([t, ms, d]) => mus(t0 + t, pad(ms, d, 0.06, 700), 1));
 }
@@ -135,7 +155,7 @@ function reverb(inL, inR, wet, size = 1) {
 const [mrl, mrr] = reverb(ML, MR, 0.7, 1.2), [srl, srr] = reverb(L, R, 0.25, 0.9);
 // pendant les visions, l'ambiance des bruitages est plus feutrée ; normalisation douce
 const outL = new Float32Array(N), outR = new Float32Array(N);
-for (let i = 0; i < N; i++) { outL[i] = L[i] + srl[i] + (ML[i] * 0.6 + mrl[i]) * 0.9; outR[i] = R[i] + srr[i] + (MR[i] * 0.6 + mrr[i]) * 0.9; }
+for (let i = 0; i < N; i++) { outL[i] = L[i] + srl[i] + (ML[i] * 0.6 + mrl[i]) * 1.35; outR[i] = R[i] + srr[i] + (MR[i] * 0.6 + mrr[i]) * 1.35; }
 let peak = 0; for (let i = 0; i < N; i++) peak = Math.max(peak, Math.abs(outL[i]), Math.abs(outR[i]));
 // niveau calé sur le 99,9e centile (les rares crêtes, comme le bris de verre, passent dans le limiteur doux)
 const mags = []; for (let i = 0; i < N; i += 7) mags.push(Math.max(Math.abs(outL[i]), Math.abs(outR[i]))); mags.sort((a, b) => a - b);
