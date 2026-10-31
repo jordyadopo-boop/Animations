@@ -179,8 +179,8 @@ export function createWorld(canvas, width, height) {
   composer.setPixelRatio(1); composer.setSize(width, height);
   composer.addPass(new RenderPass(scene, camera));
   const ao = new GTAOPass(scene, camera, width, height);
-  ao.updateGtaoMaterial({ radius: 0.12, distanceExponent: 1.5, thickness: 0.4, scale: 1.2, samples: 12 });
-  ao.blendIntensity = 0.9; composer.addPass(ao);
+  ao.updateGtaoMaterial({ radius: 0.12, distanceExponent: 1.5, thickness: 0.4, scale: 1.2, samples: 6 });
+  ao.blendIntensity = 0.9; composer.addPass(ao); ao.enabled = false; // trop coûteux en rendu logiciel pour un gain à peine visible dans cette scène sombre
   const bokeh = new BokehPass(scene, camera, { focus: 1, aperture: 0.004, maxblur: 0.008 }); bokeh.enabled = false; composer.addPass(bokeh);
   composer.addPass(new OutputPass());
   const dof = (focus, amount = 0) => { bokeh.enabled = amount > 0; bokeh.uniforms.focus.value = focus; bokeh.uniforms.aperture.value = 0.006 * amount; bokeh.uniforms.maxblur.value = 0.012 * amount; };

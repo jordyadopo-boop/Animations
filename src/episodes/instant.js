@@ -89,9 +89,11 @@ const MAN_POS = V3(-0.13, 0, 0.14), WOM_POS = V3(0.33, 0, 0.1), KID_POS = V3(ROO
 const GLASS_TABLE = V3(-0.31, ROOM.table.h + 0.015, 0.47);          // posé sur la table
 const GLASS_FROZEN = V3(-0.19, 0.27, 0.5);                            // en l'air au moment du gel
 
-export function build({ scene, camera, renderer, setCamera, dof, fx, ink, inkCanvas, set3D, room, lights, W, H }) {
+export function build(world) {
+  const { scene, camera, renderer, setCamera, dof, fx, ink, inkCanvas, set3D, room, lights, W, H } = world; window.__world = world;
+  if (new URLSearchParams(location.search).get('noao')) world.ao.enabled = false;
   const man = createHuman('man', { skin: 0x6e4430, skinDark: 0x55321f, shirt: 0x39424f, pants: 0x2b3446, shoes: 0x1a1614 });
-  const wom = createHuman('woman', { skin: 0x8a5638, skinDark: 0x6e422a, shirt: 0xb8662e, skirt: 0x7a2f26, pants: 0x8a5638, shoes: 0x3a2018, hair: 0x120c0a, lips: 0x6a3028, band: 0xd9a531 });
+  const wom = createHuman('woman', { skin: 0x8a5638, skinDark: 0x6e422a, shirt: 0x2f5f5a, skirt: 0x264d4a, pants: 0x8a5638, shoes: 0x3a2018, hair: 0x120c0a, lips: 0x6a3028, band: 0xd9a531 });
   const kid = createHuman('child', { skin: 0x7e4e34, skinDark: 0x603a26, shirt: 0x7fa6c4, pants: 0x7fa6c4, shoes: 0xe0d8c8, longSleeves: true });
   man.root.position.copy(MAN_POS); man.root.rotation.y = PI / 2 - 0.12;
   wom.root.position.copy(WOM_POS); wom.root.rotation.y = -PI / 2 + 0.25;
@@ -180,8 +182,12 @@ export function build({ scene, camera, renderer, setCamera, dof, fx, ink, inkCan
     return { p, r: [0.15, 0.3, rz], spill: clamp(k * 1.4) };
   }
 
-  let tLast = -1;
+  let tLast = -1, shadowsReady = false;
+  renderer.shadowMap.autoUpdate = false; // la scène est figée la plupart du temps : on ne recalcule les ombres que si ça bouge
+  lights.hall.castShadow = false;
   return (t) => {
+    const moving = t < T.freeze + 0.05 || t >= T.restart - 0.05;
+    renderer.shadowMap.needsUpdate = moving || !shadowsReady; shadowsReady = !moving;
     const frozen = t >= T.freeze && t < T.restart;
     const inVision = (t >= T.v1 && t < T.r1) || (t >= T.v2 && t < T.r2) || (t >= T.v3 && t < T.r3);
     // ---------- poses ----------

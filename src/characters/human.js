@@ -85,7 +85,7 @@ export function createHuman(kind = 'man', look = {}) {
   body.add(hips, 'ell', B.hipsS, { pos: [0, 0, 0], blend: 0.03, color: isW ? C.pants : C.pants });
   body.add(spine, 'ell', B.bellyS, { pos: [0, 0.045, 0.008], blend: 0.035 });
   body.add(chest, 'ell', B.chestS, { pos: [0, 0.035, 0], blend: 0.035 });
-  if (isW) [-1, 1].forEach((s) => body.add(chest, 'ell', [0.042, 0.04, 0.04], { pos: [s * 0.045, 0.01, 0.06], blend: 0.03 }));
+  if (isW) [-1, 1].forEach((s) => body.add(chest, 'ell', [0.034, 0.032, 0.03], { pos: [s * 0.042, 0.01, 0.055], blend: 0.03 }));
   body.add(neck, 'cone', [B.neckR * 1.15, B.neckR, B.neck * 0.9], { pos: [0, -0.01, 0], blend: 0.02, color: C.skin, sharp: 0.006 });
   // col (encolure) : le tissu remonte un peu sur le cou
   body.add(chest, 'ell', [B.neckR * 1.6, 0.02, B.neckR * 1.4], { pos: [0, B.chest - 0.008, 0.004], blend: 0.015 });
