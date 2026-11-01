@@ -32,7 +32,7 @@ export function figure(ctx, x, y, Hh, pose, o = {}) {
 }
 // cycle de marche (phase en radians)
 export const walkPose = (ph, k = 1) => ({ legF: [Math.sin(ph) * 0.42 * k, Math.max(0, Math.cos(ph)) * 0.65 * k + 0.05], legB: [-Math.sin(ph) * 0.42 * k, Math.max(0, -Math.cos(ph)) * 0.65 * k + 0.05], armF: [-Math.sin(ph) * 0.35 * k + 0.05, 0.25], armB: [Math.sin(ph) * 0.35 * k + 0.05, 0.25], bob: -Math.abs(Math.cos(ph)) * 0.015 * k, lean: 0.04 * k });
-export const mixPose = (A, B, k) => { const o = {}; for (const key of new Set([...Object.keys(A), ...Object.keys(B)])) { const a = A[key] ?? P0[key], b = B[key] ?? P0[key]; o[key] = Array.isArray(a) ? a.map((v, i) => lerp(v, b[i], k)) : lerp(a, b, k); } return o; };
+export const mixPose = (A, B, k) => { const o = {}; for (const key of new Set([...Object.keys(A), ...Object.keys(B)])) { const a = A[key] ?? P0[key], b = B[key] ?? A[key] ?? P0[key]; /* une clé absente de B garde la valeur de A */ o[key] = Array.isArray(a) ? a.map((v, i) => lerp(v, b[i], k)) : lerp(a, b, k); } return o; };
 
 // ---------------- décor : noir, sol miroir, perspective ----------------
 export const HOR = 600; // ligne d'horizon (sol)
