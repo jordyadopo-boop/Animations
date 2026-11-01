@@ -50,16 +50,6 @@ export const EN = {
   '« Stop. »': '“Stop.”',
   '« Ça va. »': '“I’m fine.”',
   '…peut t’éteindre pour toujours': '…can put you out forever',
-  'Chaque matin,\nil avait peur d’aller à l’école': 'Every morning,\nhe was afraid to go to school',
-  'Pour eux, c’était un jeu': 'For them, it was a game',
-  'Les autres regardaient.\nCertains filmaient.': 'The others watched.\nSome filmed.',
-  'Le soir, ça continuait.\nSur tous les écrans.': 'At night, it kept going.\nOn every screen.',
-  'Il a arrêté de parler.\nDe manger. De rire.': 'He stopped talking.\nEating. Laughing.',
-  'Jusqu’au jour où un seul a dit :\n« Laissez-le. »': 'Until the day one of them said:\n“Leave him alone.”',
-  'Puis un autre. Puis tous.': 'Then another. Then everyone.',
-  'Le harcèlement s’arrête\nquand les témoins ne se taisent plus': 'Bullying stops\nwhen witnesses stop being silent',
-  'Tu n’es pas obligé d’être son ami.\nJuste de ne pas rire.': 'You don’t have to be his friend.\nJust don’t laugh.',
-  'Il suffit d’un': 'It only takes one',
   // titres
   'Invisible': 'Invisible', 'Juste une fois': 'Just once', 'Lève les yeux': 'Look up', 'L’instant': 'The moment', 'Sans un coup': 'Without a blow',
 };

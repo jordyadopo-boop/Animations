@@ -48,9 +48,3 @@ Quel mot t'a le plus blessé ? / Which word hurt you the most?
 "Just once." That's how it always starts.
 Tu as déjà dit non à « juste une fois » ? / Have you ever said no to "just once"?
 #addiction #drugs #alcohol #recovery #lumierehumaine
-
-## 6. IL SUFFIT D'UN (harcèlement à l'école)
-Les autres regardaient. Certains filmaient. 📱
-The others watched. Some filmed.
-Tu aurais été lequel ? / Which one would you have been?
-#bullying #harcelementscolaire #school #stopbullying #lumierehumaine
