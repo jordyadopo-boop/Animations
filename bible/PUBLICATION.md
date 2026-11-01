@@ -22,3 +22,8 @@ Combien d'heures par jour sur ton téléphone ? Sois honnête 👇
 Il n'a jamais reçu un seul coup. Mais chaque jour, des mots.
 Quel mot t'a le plus blessé ? 👇
 #harcelementmoral #harcelement #travail #santémentale #civ #lumierehumaine
+
+## 5. JUSTE UNE FOIS (drogue et alcool)
+« Juste une fois. » C'est comme ça que tout commence. 🍷💊
+Tu as déjà dit non à « juste une fois » ? 👇
+#drogue #alcool #addiction #jeunesse #prisedeconscience #lumierehumaine
