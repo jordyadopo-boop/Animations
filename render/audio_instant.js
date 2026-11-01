@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { ROOT } from './serve.js';
 
-const SR = 44100;
+const SR = 44100, PI = Math.PI;
 const epName = process.argv[2] || 'instant';
 const ep = await import(path.join(ROOT, 'src/episodes', `${epName}.js`)).catch(async (e) => { console.error(e.message); process.exit(1); });
 const N = Math.ceil(ep.duration * SR) + SR;
@@ -97,6 +97,9 @@ const FX = {
   unfreeze: () => add(gain(hp(osc(0.55, 0, 'noise', (t) => (t / 0.55) ** 3), 1500), 0.7), osc(0.55, (t) => 200 + 400 * t, 'sine', (t) => 0.2 * (t / 0.55) ** 2)),
   word: () => add(gain(lp(osc(0.3, 0, 'noise', ad(0.002, 0.06)), 500), 1.4), osc(0.3, (t) => 120 * Math.exp(-t * 8) + 50, 'sine', ad(0.002, 0.08))),
   laugh: () => { const o = new Float32Array(Math.floor(1.4 * SR)); for (let k = 0; k < 5; k++) { const v = voice(0.13, () => 230 - k * 8, [[650, 1], [1100, 0.5]], 0, 0.3); o.set(v.subarray(0, Math.min(v.length, o.length - Math.floor(k * 0.2 * SR))), Math.floor(k * 0.2 * SR)); } return gain(lp(o, 1800), 0.55); },
+  engine(o, t0) { const d = o.until - t0; sfx(t0, gain(lp(add(osc(d, (t) => 52 + Math.sin(t * 0.7) * 3, 'saw', (t) => Math.min(1, t / 0.5) * Math.min(1, (d - t) / 0.3)), gain(osc(d, 0, 'noise', (t) => Math.min(1, t / 0.5) * Math.min(1, (d - t) / 0.3)), 0.4)), 220), 0.35)); },
+  tires: () => gain(bp(osc(1.0, 0, 'noise', (t) => Math.min(1, t / 0.05) * (1 - t)), 2400, 1.5), 1.4),
+  rewind: (o) => { const d = o?.dur || 2.5; return add(gain(bp(osc(d, 0, 'noise', (t) => Math.sin(PI * t / d)), 1800, 1), 0.8), osc(d, (t) => 1200 - 900 * Math.abs(Math.sin(t * 9)), 'tri', (t) => 0.12 * Math.sin(PI * t / d))); },
   notif: () => add(osc(0.12, 1760, 'sine', ad(0.002, 0.05)), (() => { const o = new Float32Array(Math.floor(0.3 * SR)); o.set(osc(0.15, 2350, 'sine', ad(0.002, 0.06)), Math.floor(0.09 * SR)); return o; })()).map((v) => v * 0.25),
   pop: () => add(osc(0.25, (t) => 900 + 1800 * t, 'sine', ad(0.002, 0.05)), gain(hp(osc(0.05, 0, 'noise', ad(0.0005, 0.01)), 3000), 0.5)).map((v) => v * 0.6),
   shatter: () => { const d = 1.6; let o = gain(hp(osc(d, 0, 'noise', ad(0.0005, 0.12)), 2500), 1.1); for (let i = 0; i < 26; i++) { const s = new Float32Array(Math.floor(d * SR)); const p = add(osc(0.4, 2000 + rnd() * 5000, 'sine', ad(0.0005, 0.06 + rnd() * 0.1)), gain(hp(osc(0.03, 0, 'noise', ad(0.0003, 0.008)), 4000), 0.6)); s.set(p, Math.floor((Math.pow(rnd(), 2) * 0.8) * SR)); o = add(o, gain(s, 0.25)); } return add(o, gain(lp(osc(0.3, 0, 'noise', ad(0.001, 0.05)), 400), 1.2)); },

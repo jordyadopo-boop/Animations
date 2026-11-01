@@ -48,3 +48,15 @@ Quel mot t'a le plus blessé ? / Which word hurt you the most?
 "Just once." That's how it always starts.
 Tu as déjà dit non à « juste une fois » ? / Have you ever said no to "just once"?
 #addiction #drugs #alcohol #recovery #lumierehumaine
+
+## 6. UNE SECONDE DE TROP (téléphone au volant)
+Un message. Juste une seconde. 📱🚗
+One message. Just one second.
+Tu lis tes messages en conduisant ? / Do you text while driving?
+#textinganddriving #securiteroutiere #roadsafety #awareness #lumierehumaine
+
+## 7. MÊME LUMIÈRE (racisme)
+À l'intérieur, on brille tous pareil. 🤍
+Inside, we all shine the same.
+Juge le cœur, pas la couleur. / Judge the heart, not the color.
+#racisme #racism #stopracism #unity #lumierehumaine
