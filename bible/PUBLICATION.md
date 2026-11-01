@@ -60,3 +60,21 @@ Tu lis tes messages en conduisant ? / Do you text while driving?
 Inside, we all shine the same.
 Juge le cœur, pas la couleur. / Judge the heart, not the color.
 #racisme #racism #stopracism #unity #lumierehumaine
+
+## 8. CE QUE TU JETTES (gaspillage de nourriture)
+Ce que tu jettes, quelqu'un en rêve. 🍽️
+What you throw away, someone dreams of.
+Tu finis toujours ton assiette ? / Do you always finish your plate?
+#foodwaste #gaspillage #zerowaste #hunger #lumierehumaine
+
+## 9. FILTRE (image de soi)
+Tu n'as pas besoin de filtre pour briller. ✨
+You don't need a filter to shine.
+Tu te montres sans filtre ? / Do you post without filters?
+#selflove #confiance #nofilter #mentalhealth #lumierehumaine
+
+## 10. IL T'AIME ? (contrôle dans le couple)
+L'amour ne contrôle pas. Il libère. 💔
+Love doesn't control. It sets you free.
+Jaloux, ou contrôlant ? / Jealous, or controlling?
+#toxicrelationship #relationtoxique #love #awareness #lumierehumaine
