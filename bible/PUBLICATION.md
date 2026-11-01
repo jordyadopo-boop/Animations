@@ -1,5 +1,20 @@
 # Lumière Humaine — fiches de publication (public international)
 
+## La page
+Bio TikTok (80 caractères max) :
+Une seconde peut tout changer. 🤍
+One second can change everything.
+
+Description longue (YouTube, Facebook, Instagram) :
+Lumière Humaine 🤍
+Des histoires courtes, sans visage, pour parler de ce qu'on n'ose pas dire : violence, dépression, harcèlement, addictions, écrans…
+Chaque vidéo dure une minute. Chaque minute peut changer une vie.
+Partage-les : quelqu'un autour de toi en a peut-être besoin.
+
+Short faceless stories about what we don't dare to say: violence, depression, harassment, addiction, screens…
+One minute each. One minute can change a life.
+Share them: someone around you may need it.
+
 Règles : 5 hashtags maximum (mélange français + anglais), légende bilingue, une question à la fin,
 publier 18 h–21 h heure de Paris, répondre aux commentaires la 1re heure.
 Les vidéos ont les textes en français + sous-titres anglais.
