@@ -1,7 +1,7 @@
 // Photos de profil de la page (1080×1080, lisibles en petit dans un cercle).
-// t = 0 : le bonhomme seul ; t = 1 : la main tendue ; t = 2 : bonhomme + nom de la page.
+// t = 0 : le bonhomme seul ; t = 1 : la main tendue ; t = 2 : bonhomme + nom ; t = 3 / 4 : images 1 et 2 avec le nom.
 import { PI, figure, mixPose } from '../engine/bonhomme.js';
-export const world = 'flat', fps = 1, duration = 3, width = 1080, height = 1080;
+export const world = 'flat', fps = 1, duration = 6, width = 1080, height = 1080;
 
 function fond(ctx, W, H) {
   ctx.fillStyle = '#050506'; ctx.fillRect(0, 0, W, H);
@@ -23,6 +23,15 @@ export function build({ ctx, begin, W, H }) {
   return (t) => {
     begin(); fond(ctx, W, H);
     const v = Math.round(t);
+    const nom = (y, s = 1) => { ctx.save(); ctx.fillStyle = '#f0f0f4'; ctx.textAlign = 'center'; ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 16;
+      ctx.font = `600 ${Math.round(96 * s)}px 'Courier New', monospace`; try { ctx.letterSpacing = `${Math.round(16 * s)}px`; } catch (e) {} ctx.fillText('LUMIÈRE', 548, y);
+      ctx.font = `500 ${Math.round(56 * s)}px 'Courier New', monospace`; try { ctx.letterSpacing = `${Math.round(22 * s)}px`; } catch (e) {} ctx.globalAlpha = 0.85; ctx.fillText('HUMAINE', 552, y + 74 * s); ctx.restore(); };
+    if (v === 3) { sol(ctx, W, 640); faceReflet(ctx, 540, 640, 440, { color: '#ffffff', glow: 44, arms: 0.3 }); nom(850); return; }
+    if (v === 4) { ctx.save(); ctx.translate(540, 300); ctx.scale(0.78, 0.78); ctx.translate(-540, -300);
+      sol(ctx, W, 800); avecReflet(ctx, 330, 800, 520, { kneel: 1, lean: 0.1, head: -0.25, armF: [2.2, -0.25], armB: [0.4, 0.5] }, { color: '#7a7c86', glow: 4 });
+      avecReflet(ctx, 770, 800, 560, { lean: 0.22, head: 0.3, armF: [1.25, 0.2], armB: [0.2, 0.3], legF: [0.18, 0.08], legB: [-0.12, 0.05] }, { color: '#ffffff', glow: 42, flip: -1 });
+      ctx.globalCompositeOperation = 'lighter'; const g = ctx.createRadialGradient(545, 520, 5, 545, 520, 130); g.addColorStop(0, 'rgba(255,250,235,0.55)'); g.addColorStop(1, 'rgba(255,250,235,0)'); ctx.fillStyle = g; ctx.fillRect(400, 400, 300, 300); ctx.restore();
+      ctx.fillStyle = '#050506'; ctx.fillRect(0, 760, W, 320); nom(860); return; }
     if (v === 0) { // le bonhomme lumineux, droit, le regard levé
       sol(ctx, W, 830); faceReflet(ctx, 540, 830, 620, { color: '#ffffff', glow: 50, arms: 0.3 });
     } else if (v === 1) { // la main tendue : un bonhomme lumineux relève un bonhomme gris
@@ -31,9 +40,7 @@ export function build({ ctx, begin, W, H }) {
       avecReflet(ctx, 770, 800, 560, { lean: 0.22, head: 0.3, armF: [1.25, 0.2], armB: [0.2, 0.3], legF: [0.18, 0.08], legB: [-0.12, 0.05] }, { color: '#ffffff', glow: 42, flip: -1 });
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; const g = ctx.createRadialGradient(545, 520, 5, 545, 520, 130); g.addColorStop(0, 'rgba(255,250,235,0.55)'); g.addColorStop(1, 'rgba(255,250,235,0)'); ctx.fillStyle = g; ctx.fillRect(400, 400, 300, 300); ctx.restore();
     } else { // bonhomme + nom
-      sol(ctx, W, 680); faceReflet(ctx, 540, 680, 470, { color: '#ffffff', glow: 40, arms: 0.3 });
-      ctx.fillStyle = '#f0f0f4'; ctx.textAlign = 'center'; ctx.font = "600 92px 'Courier New', monospace"; try { ctx.letterSpacing = '14px'; } catch (e) {}
-      ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 18; ctx.fillText('UNE SECONDE', 547, 880);
+      sol(ctx, W, 600); faceReflet(ctx, 540, 600, 400, { color: '#ffffff', glow: 40, arms: 0.3 }); nom(830, 1.05);
     }
   };
 }
