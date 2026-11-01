@@ -1,6 +1,7 @@
 // « L'INSTANT » version BONHOMMES — court-métrage contre la violence, style minimaliste :
 // bonhommes lumineux sans visage sur fond noir, sol miroir, foule grise, une phrase en haut de l'écran.
 // Horizontal 16:9, ~62 s, musique triste (render/audio_instant.js lit les CUES).
+import { EN } from '../engine/traductions.js';
 export const world = 'flat', fps = 24, duration = 62, width = 1920, height = 1080;
 export const title = 'L’INSTANT';
 
@@ -92,7 +93,11 @@ function crowd(ctx, t, mode, k = 1, seed = 1) {
 function caption(ctx, W, text, a, y = 130, size = 40) {
   if (a <= 0 || !text) return; ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = '#e8e8ec'; ctx.textAlign = 'center'; ctx.font = `500 ${size}px 'Courier New', monospace`;
   try { ctx.letterSpacing = `${Math.round(size * 0.22)}px`; } catch (e) {}
-  String(text).split('\n').forEach((l, i) => ctx.fillText(l.toUpperCase(), W / 2, y + i * size * 1.6)); ctx.restore();
+  const fr = String(text).split('\n'); fr.forEach((l, i) => ctx.fillText(l.toUpperCase(), W / 2, y + i * size * 1.6));
+  const en = EN[text]; // sous-titre anglais, plus petit, sous le français
+  if (en && en !== text) { const es = Math.round(size * 0.8); ctx.font = `italic 500 ${es}px Georgia, serif`; try { ctx.letterSpacing = '1px'; } catch (e) {} ctx.fillStyle = '#d4dbea'; ctx.globalAlpha = a;
+    en.split('\n').forEach((l, i) => ctx.fillText(l, W / 2, y + (fr.length - 1) * size * 1.6 + size * 1.3 + i * es * 1.3)); }
+  ctx.restore();
 }
 
 export function build({ ctx, begin, W, H }) {

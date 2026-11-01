@@ -1,5 +1,6 @@
 // Moteur « BONHOMMES » : bonhommes lumineux sans visage sur fond noir, sol miroir, foule grise,
 // phrase en majuscules espacées en haut de l'écran. Partagé par les vidéos de sensibilisation (16:9).
+import { EN } from './traductions.js';
 export const PI = Math.PI, clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x)), range = (t, a, b) => clamp((t - a) / (b - a));
 export const lerp = (a, b, k) => a + (b - a) * k, ease = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2), eout = (k) => 1 - Math.pow(1 - k, 3);
 export const fade = (t, a, b, c, d) => clamp(Math.min(range(t, a, b), 1 - range(t, c, d)));
@@ -73,7 +74,11 @@ export function crowd(ctx, t, mode, k = 1, seed = 1) {
 export function caption(ctx, W, text, a, y = 130, size = 40) {
   if (a <= 0 || !text) return; ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = '#e8e8ec'; ctx.textAlign = 'center'; ctx.font = `500 ${size}px 'Courier New', monospace`;
   try { ctx.letterSpacing = `${Math.round(size * 0.22)}px`; } catch (e) {}
-  String(text).split('\n').forEach((l, i) => ctx.fillText(l.toUpperCase(), W / 2, y + i * size * 1.6)); ctx.restore();
+  const fr = String(text).split('\n'); fr.forEach((l, i) => ctx.fillText(l.toUpperCase(), W / 2, y + i * size * 1.6));
+  const en = EN[text]; // sous-titre anglais, plus petit, sous le français
+  if (en && en !== text) { const es = Math.round(size * 0.8); ctx.font = `italic 500 ${es}px Georgia, serif`; try { ctx.letterSpacing = '1px'; } catch (e) {} ctx.fillStyle = '#d4dbea'; ctx.globalAlpha = a;
+    en.split('\n').forEach((l, i) => ctx.fillText(l, W / 2, y + (fr.length - 1) * size * 1.6 + size * 1.3 + i * es * 1.3)); }
+  ctx.restore();
 }
 export function mixC(a, b, k) { const p = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; const A = p(a), B = p(b); return `rgb(${A.map((v, i) => Math.round(lerp(v, B[i], clamp(k)))).join(',')})`; }
 export function flash(ctx, W, H, a, on) { if (!on || a <= 0) return; ctx.fillStyle = `rgba(230,236,255,${a * 0.85})`; ctx.fillRect(0, 0, W, H); }
