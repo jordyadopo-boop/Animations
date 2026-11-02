@@ -78,3 +78,15 @@ L'amour ne contrôle pas. Il libère. 💔
 Love doesn't control. It sets you free.
 Jaloux, ou contrôlant ? / Jealous, or controlling?
 #toxicrelationship #relationtoxique #love #awareness #lumierehumaine
+
+## 11. RANCUNE (pardon, deux frères)
+Pardonner, c'est d'abord se libérer soi-même. 🤍
+Forgiving is, first of all, setting yourself free.
+À qui tu ne parles plus ? / Who don't you talk to anymore?
+#forgiveness #pardon #family #brothers #lumierehumaine
+
+## 12. MISE (jeux d'argent, paris sportifs)
+La maison gagne toujours. 🎰
+The house always wins.
+Tu as déjà parié plus que prévu ? / Have you ever bet more than you planned?
+#gambling #parissportifs #addiction #sportsbetting #lumierehumaine
