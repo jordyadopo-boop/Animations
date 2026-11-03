@@ -120,6 +120,18 @@ export const EN = {
   'Au jeu, la maison\ngagne toujours': 'In gambling, the house\nalways wins',
   'Ne mise pas ta vie.': 'Don’t bet your life.',
   'Mise': 'Bet',
+  'Elle riait avec tout le monde': 'She laughed with everyone',
+  'Un jour, quelqu’un a écrit\nune phrase sur elle': 'One day, someone wrote\na sentence about her',
+  'Ce n’était pas vrai.': 'It wasn’t true.',
+  'Mais tout le monde l’a partagée': 'But everyone shared it',
+  'Chaque partage éteignait\nun peu sa lumière': 'Every share dimmed\nher light a little more',
+  'Personne ne savait si c’était vrai.\nPersonne n’a demandé.': 'No one knew if it was true.\nNo one asked.',
+  'Puis le message est arrivé chez lui': 'Then the message reached him',
+  'Il n’a pas partagé.': 'He didn’t share it.',
+  'Il est allé s’asseoir à côté d’elle': 'He went and sat next to her',
+  'Avant de partager,\ndemande-toi : et si c’était toi ?': 'Before you share,\nask yourself: what if it were you?',
+  'Réfléchis avant de partager.': 'Think before you share.',
+  'La Parole': 'Words',
   // titres
   'Invisible': 'Invisible', 'Juste une fois': 'Just once', 'Lève les yeux': 'Look up', 'L’instant': 'The moment', 'Sans un coup': 'Without a blow',
 };
