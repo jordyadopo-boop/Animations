@@ -1,0 +1,20 @@
+// Exporte l'affiche en PNG (2400×3600) et PDF. Usage : node affiches/render_affiche.mjs [--name koumassi_mockeyville]
+import { createRequire } from 'node:module';
+import fs from 'node:fs';
+import path from 'node:path';
+import { serve, ROOT } from '../render/serve.js';
+const { chromium } = createRequire(import.meta.url)('playwright');
+const name = process.argv.includes('--name') ? process.argv[process.argv.indexOf('--name') + 1] : 'koumassi_mockeyville';
+const out = path.join(ROOT, 'out'); fs.mkdirSync(out, { recursive: true });
+const srv = await serve();
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1200, height: 1800 }, deviceScaleFactor: 2 });
+page.on('pageerror', (e) => { console.error('[page]', e.message); process.exit(1); });
+page.on('console', (m) => console.log('[page]', m.text()));
+await page.goto(`http://localhost:${srv.address().port}/affiches/plan.html?name=${name}`);
+await page.waitForFunction(() => window.READY === true, null, { timeout: 0 });
+const png = path.join(out, `affiche_${name}.png`);
+await page.locator('#poster').screenshot({ path: png });
+await page.pdf({ path: path.join(out, `affiche_${name}.pdf`), width: '1200px', height: '1800px', printBackground: true, pageRanges: '1' });
+console.log(png);
+await browser.close(); srv.close();

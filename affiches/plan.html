@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>Plan d'accès</title>
+<style>
+  @font-face { font-family: 'GreatVibes'; src: url('/node_modules/@fontsource/great-vibes/files/great-vibes-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Playfair'; font-weight: 400; src: url('/node_modules/@fontsource/playfair-display/files/playfair-display-latin-400-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Playfair'; font-weight: 400; font-style: italic; src: url('/node_modules/@fontsource/playfair-display/files/playfair-display-latin-400-italic.woff2') format('woff2'); }
+  @font-face { font-family: 'Playfair'; font-weight: 700; src: url('/node_modules/@fontsource/playfair-display/files/playfair-display-latin-700-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Playfair'; font-weight: 900; src: url('/node_modules/@fontsource/playfair-display/files/playfair-display-latin-900-normal.woff2') format('woff2'); }
+  :root{ --bg:#1c0533; --bg2:#260a42; --gold:#d8b04c; --gold2:#f0d27a; --lilac:#d6a6f2; --pale:#ece6f7; --violet:#4b0f8a; --magenta:#a3168e; }
+  html,body{margin:0;background:var(--bg)}
+  #poster{position:relative;width:1200px;height:1800px;overflow:hidden;background:var(--bg);color:#fff;font-family:'Playfair',serif}
+  #pagne{position:absolute;top:0;right:0;width:112px;height:1800px}
+  #orn{position:absolute;inset:0}
+  .caps{font-weight:700;letter-spacing:6px;text-transform:uppercase;color:var(--gold);font-size:22px}
+  #head{position:absolute;left:0;right:112px;top:46px;text-align:center}
+  #names{font-family:'GreatVibes',cursive;font-size:92px;line-height:1;margin:18px 0 4px;color:#fff}
+  #names b{font-family:'Playfair';font-weight:700;font-style:italic;color:var(--gold);font-size:64px;margin:0 18px;position:relative;top:-8px}
+  #date{color:var(--pale);font-size:24px;letter-spacing:3px}
+  #date strong{color:var(--gold);font-weight:900;font-size:30px;letter-spacing:1px}
+  #title{margin-top:22px;font-weight:900;font-size:50px;color:var(--gold2);letter-spacing:1px}
+  #sub{font-style:italic;color:var(--pale);font-size:24px;margin-top:6px}
+  #sub em{color:var(--lilac);font-style:normal;font-weight:700}
+  #map{position:absolute;left:44px;top:420px;width:1000px;height:600px;border-radius:22px;overflow:hidden;
+       box-shadow:0 0 0 2px var(--gold),0 0 0 9px var(--bg),0 0 0 10px rgba(216,176,76,.45),0 18px 50px rgba(0,0,0,.5)}
+  #bottom{position:absolute;left:44px;top:1058px;width:1000px;height:600px}
+  #steps{position:absolute;left:0;top:0;width:560px}
+  #steps h3,#insetBox h3{margin:0 0 10px;font-size:20px}
+  .st{display:flex;gap:14px;align-items:flex-start;margin:0 0 10px}
+  .st .n{flex:0 0 32px;height:32px;border-radius:50%;background:var(--gold);color:var(--bg);font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .st .n.star{background:var(--magenta);color:#fff;box-shadow:0 0 0 3px var(--gold)}
+  .st .t{font-size:20px;line-height:1.18;color:#fff;font-weight:700}
+  .st .t span{display:block;font-weight:400;font-size:16.5px;color:var(--pale);opacity:.9}
+  .st .t i{color:var(--gold);font-style:normal;font-weight:700;font-size:15px;margin-left:6px}
+  .st.warn .n{background:transparent;border:2px solid var(--magenta);color:var(--magenta);box-sizing:border-box}
+  #insetBox{position:absolute;right:0;top:0;width:420px}
+  #inset{width:420px;height:430px;border-radius:18px;overflow:hidden;box-shadow:0 0 0 2px var(--gold)}
+  #foot{position:absolute;left:0;right:112px;bottom:32px;text-align:center}
+  #tip{margin-top:12px;font-size:16px;line-height:1.35;color:var(--pale);font-style:italic}
+  #tip b{color:var(--gold);font-style:normal}
+  #foot .place{font-size:25px;font-weight:700}
+  #foot .addr{font-size:19px;color:var(--pale);margin-top:2px}
+  #foot .dress{margin-top:12px;display:flex;justify-content:center;align-items:center;gap:14px;font-size:17px;color:var(--pale)}
+  #foot .dress .caps{font-size:16px;letter-spacing:4px}
+  .sw{width:28px;height:28px;border-radius:50%;box-shadow:0 0 0 2px rgba(255,255,255,.25)}
+  #credit{position:absolute;left:46px;bottom:10px;font-size:11px;color:rgba(236,230,247,.45);font-family:sans-serif}
+</style></head><body>
+<div id="poster">
+  <svg id="orn"></svg>
+  <svg id="pagne"></svg>
+  <div id="head">
+    <div class="caps">Mariage traditionnel – La Dot</div>
+    <div id="names">Jordy<b>&amp;</b>Marie-Emmanuella</div>
+    <div id="date">SAMEDI <strong>21</strong> NOVEMBRE <strong>2026</strong></div>
+    <div id="title">Plan d'accès</div>
+    <div id="sub">Du Grand Carrefour de Koumassi à Mockeyville — <em>par l'ancienne route de Bassam, sans péage</em></div>
+  </div>
+  <svg id="map" viewBox="0 0 1000 600"></svg>
+  <div id="bottom">
+    <div id="steps"><h3 class="caps">Les repères</h3><div id="list"></div></div>
+    <div id="insetBox"><h3 class="caps">L'arrivée</h3><svg id="inset" viewBox="0 0 420 430"></svg><div id="tip"></div></div>
+  </div>
+  <div id="foot">
+    <div class="place">Cour familiale de la mariée</div>
+    <div class="addr">Quartier Mockeyville, Grand-Bassam · À côté du Terrain Drogba</div>
+    <div class="dress"><span class="caps">Tenue : nos couleurs</span> violet, lilas ou blanc
+      <span class="sw" style="background:#4b0f8a"></span><span class="sw" style="background:#a3168e"></span><span class="sw" style="background:#d6a6f2"></span><span class="sw" style="background:#ece6f7"></span><span class="sw" style="background:#fff"></span></div>
+  </div>
+  <div id="credit">Fond de carte © les contributeurs OpenStreetMap · itinéraire OSRM</div>
+</div>
+<script type="module" src="/affiches/plan.js"></script>
+</body></html>
