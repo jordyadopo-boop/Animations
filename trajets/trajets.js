@@ -1,7 +1,7 @@
 // Réglages de chaque vidéo de trajet (les données réelles sont dans data/<nom>/).
 export default {
   bassam_angre: {
-    title: ['De Grand-Bassam', 'à Angré'],
+    title: ['De Mockeyville', 'à Angré'],
     fromLabel: 'Départ',
     toLabel: 'Milca Cloth Home',
     duration: 20,
