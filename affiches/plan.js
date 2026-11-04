@@ -20,8 +20,8 @@ const km = (x) => (x / 1000).toFixed(1).replace('.', ',') + ' km';
 const airport = poi('Aéroport International Félix Houphouët-Boigny');
 const turns = D.steps.filter((s) => s.type === 'turn');
 const near = (q) => turns.reduce((b, t) => (m(t.loc, q) < m(b.loc, q) ? t : b), turns[0]);
-const mirmont = poi('Mak Mirmont'), dest = D.to.slice().reverse(), kiosque = poi('Kiosque Diallo'), hope = poi('Clinique Hope');
-const tR = near(kiosque), tL = near(hope);
+const mirmont = poi('Mak Mirmont'), dest = D.to.slice().reverse(), bright = poi('BrightSteps Internation School'), drogba = poi('Terrain synthétique Didier Drogba');
+const tR = near(bright), tL = near(drogba);
 const seg = (a, b) => Math.round(Math.abs(along(b)[1] - along(a)[1]) / 10) * 10;
 const STEPS = [
   { p: D.from.slice().reverse(), t: 'Grand Carrefour de Koumassi', s: 'Départ : Bd Félix Houphouët-Boigny, direction Port-Bouët', lab: 'Grand Carrefour de Koumassi' },
@@ -32,8 +32,8 @@ const STEPS = [
   { p: poi('Saint-Jacques de Modeste'), t: 'Modeste', s: 'Saint-Jacques de Modeste', lab: 'Modeste' },
   { p: place('Azuretti'), t: 'Azuretti', s: 'Continuer sur l\'ancienne route jusqu\'à Mockeyville', lab: 'Azuretti' },
   { p: mirmont, t: 'Boulangerie-pâtisserie Mak Mirmont', s: `Tourner à GAUCHE, puis ${seg(mirmont, tR.loc)} m tout droit`, lab: 'Mak Mirmont', mainMap: false, inset: true },
-  { p: tR.loc, t: 'Kiosque Diallo', s: `Tourner à DROITE, ${seg(tR.loc, tL.loc)} m`, lab: 'Kiosque Diallo', mainMap: false, inset: true },
-  { p: tL.loc, t: 'Clinique Hope', s: `Tourner à GAUCHE, puis ${seg(tL.loc, dest)} m tout droit jusqu'à la cour`, lab: 'Clinique Hope', mainMap: false, inset: true },
+  { p: tR.loc, t: 'Espace du Château', s: `Tourner à DROITE, ${seg(tR.loc, tL.loc)} m (école BrightSteps sur la gauche)`, lab: 'Espace du Château', mainMap: false, inset: true },
+  { p: tL.loc, t: 'Terrain synthétique de Mockey-ville', s: `Tourner à GAUCHE : la cour est à ${Math.round(tL.d / 10) * 10} m. Stade Fondation Didier Drogba à droite, Villa Paola en face`, lab: 'Terrain de Mockey-ville', mainMap: false, inset: true },
 ];
 for (const s of STEPS) { const [d, k] = along(s.p); s.km = k; s.dist = d; }
 STEPS[0].km = 0;
@@ -42,8 +42,8 @@ const TOLL = poi('Péage de Grand-Bassam');
 // ---------- liste des repères ----------
 const list = document.getElementById('list');
 STEPS.forEach((s, i) => list.insertAdjacentHTML('beforeend', `<div class="st"><div class="n">${i + 1}</div><div class="t">${s.t}<i>${s.dist > 300 ? '≈ ' : ''}${km(s.km)}</i><span>${s.s}</span></div></div>`));
-list.insertAdjacentHTML('beforeend', `<div class="st"><div class="n star">♥</div><div class="t">Cour familiale de la mariée<i>${km(D.distance)} · ~${Math.round(D.duration / 60)} min</i><span>Quartier Mockeyville, à côté du Terrain Didier Drogba</span></div></div>`);
-document.getElementById('tip').innerHTML = `<b>À retenir :</b> pas d'autoroute, prenez la bretelle <b>« Ancien A100 »</b> (repère ${STEPS.findIndex((s) => s.key) + 1}). À Mockeyville : <b>gauche</b> à la boulangerie Mak Mirmont, <b>droite</b> au Kiosque Diallo, <b>gauche</b> à la Clinique Hope.`;
+list.insertAdjacentHTML('beforeend', `<div class="st"><div class="n star">♥</div><div class="t">Cour familiale de la mariée<i>${km(D.distance)} · ~${Math.round(D.duration / 60)} min</i><span>Quartier Mockeyville, près du Stade Fondation Didier Drogba</span></div></div>`);
+document.getElementById('tip').innerHTML = `<b>À retenir :</b> pas d'autoroute, prenez la bretelle <b>« Ancien A100 »</b> (repère ${STEPS.findIndex((s) => s.key) + 1}). À Mockeyville : <b>gauche</b> à la boulangerie Mak Mirmont, <b>droite</b> à l'Espace du Château, <b>gauche</b> au Terrain synthétique de Mockey-ville.`;
 
 // ---------- dessin d'une carte ----------
 function drawMap(svg, Wd, Hd, center, mPerPx, opts) {
@@ -160,8 +160,8 @@ const marker = (svg, M, [x, y], label, o = {}) => {
 {
   const svg = document.getElementById('inset'), Wd = 420, Hd = 430;
   const to = dest;
-  const center = [(mirmont[0] + to[0]) / 2 + 0.0001, (mirmont[1] + to[1]) / 2 + 0.0001];
-  const M = drawMap(svg, Wd, Hd, center, 1.75, { roadW: { minor: 6, sec: 10, main: 15 }, service: true, glow: 5 });
+  const center = [(mirmont[0] + to[0]) / 2 + 0.0002, (mirmont[1] + to[1]) / 2 + 0.0004];
+  const M = drawMap(svg, Wd, Hd, center, 2.05, { roadW: { minor: 6, sec: 10, main: 15 }, service: true, glow: 5 });
   const ra = D.roadNames.filter((r) => /Ancienne Route de Bassam/.test(r.n));
   const s0 = cum.findIndex((c) => c > LEN - 1400);
   routeOn(svg, M, R.slice(Math.max(0, s0)), 8, 'inset');
@@ -173,10 +173,11 @@ const marker = (svg, M, [x, y], label, o = {}) => {
   const drog = poi('Terrain synthétique Didier Drogba');
   let dg = null;
   if (drog) { const [x, y] = M.P(drog); if (x < Wd - 30 && y > 20) { el('rect', { x: x - 21, y: y - 14, width: 42, height: 28, rx: 4, fill: '#3f7a3a', stroke: '#fff', 'stroke-width': 2 }, svg); el('path', { d: `M${x},${y - 14}V${y + 14}`, stroke: '#fff', 'stroke-width': 1.5 }, svg); el('circle', { cx: x, cy: y, r: 5, fill: 'none', stroke: '#fff', 'stroke-width': 1.5 }, svg); M.boxes.push({ x: x - 24, y: y - 17, width: 48, height: 34 }); dg = [x, y]; } }
+  if (dg) placeLabel(svg, M, dg[0], dg[1], 'Stade Drogba', { size: 14, fill: C.pale }, 18);
   M.boxes.push({ x: Wd - 60, y: Hd - 60, width: 50, height: 50 }, { x: Wd - 160, y: Hd - 45, width: 100, height: 40 });
-  placeLabel(svg, M, ax, ay, 'Cour familiale\nde la mariée', { size: 18, fill: C.gold2 }, 26);
+  placeLabel(svg, M, ax, ay, 'Cour familiale', { size: 19, fill: C.gold2 }, 26);
   for (const [st] of pts) placeLabel(svg, M, ...M.P(st.p), st.lab, { size: 16 }, 17);
-  if (dg) placeLabel(svg, M, dg[0], dg[1], 'Terrain Drogba', { size: 14, fill: C.pale }, 16);
+
   // flèches de direction sur les virages
   const arrow = (q, txt) => { const [x, y] = M.P(q); placeLabel(svg, M, x, y, txt, { size: 15, fill: C.gold2, italic: true, weight: 400 }, 32); };
   arrow(mirmont, '← à gauche'); arrow(tR.loc, 'à droite →'); arrow(tL.loc, '← à gauche');
@@ -185,7 +186,7 @@ const marker = (svg, M, [x, y], label, o = {}) => {
   const g = el('g', { transform: `translate(${Wd - 34},${Hd - 34})` }, svg);
   el('circle', { r: 20, fill: C.bg, opacity: 0.8, stroke: C.gold, 'stroke-width': 1.2 }, g);
   el('path', { d: 'M0,-14 L6,4 L0,0 L-6,4Z', fill: C.gold }, g);
-  const px = 100 / 1.75, sb = el('g', { transform: `translate(${Wd - 150},${Hd - 20})` }, svg);
+  const px = 100 / 2.05, sb = el('g', { transform: `translate(${Wd - 150},${Hd - 20})` }, svg);
   el('path', { d: `M0,0H${px}M0,-5V5M${px},-5V5`, stroke: C.gold, 'stroke-width': 2.5 }, sb);
   text(sb, px / 2, -9, '100 m', { size: 13, fill: C.gold, haloW: 4 });
 }
