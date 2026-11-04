@@ -10,11 +10,11 @@ R, k = 6378137, math.cos(math.radians(LAT0))
 P = lambda lon, lat: [round(math.radians(lon - LON0) * R * k, 1), round(-math.radians(lat - LAT0) * R, 1)]
 
 boxes = []
-E = 0.0125  # ~1,4 km autour du départ et de l'arrivée
+E = 0.022  # ~2,4 km autour du départ et de l'arrivée
 for lon, lat in (coords[0], coords[-1]): boxes.append((lon - E, lat - E, lon + E, lat + E))
-C, last = 0.0035, None  # couloir ~400 m de part et d'autre
+C, last = 0.011, None  # couloir ~1,2 km de part et d'autre
 for lon, lat in coords:
-    if last and abs(lon - last[0]) + abs(lat - last[1]) < 0.004: continue
+    if last and abs(lon - last[0]) + abs(lat - last[1]) < 0.008: continue
     boxes.append((lon - C, lat - C, lon + C, lat + C)); last = (lon, lat)
 cond = ' OR '.join(f'(bbox.xmin > {a} AND bbox.xmax < {c} AND bbox.ymin > {b} AND bbox.ymax < {d})' for a, b, c, d in boxes)
 allb = [min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes)]

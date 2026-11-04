@@ -4,14 +4,9 @@ export default {
     title: ['De Mockeyville', 'à Angré'],
     fromLabel: 'Départ',
     toLabel: 'Milca Cloth Home',
-    duration: 20,
-    // repères affichés pendant la vue d'ensemble [lat, lon]
-    cities: [
-      ['Grand-Bassam', 5.2085, -3.7395],
-      ['Port-Bouët', 5.2555, -3.9265],
-      ['Lagune Ébrié', 5.3050, -3.9650],
-      ['Bingerville', 5.3560, -3.8870],
-      ['Cocody', 5.3480, -3.9900],
-    ],
+    fromZone: 'Mockeyville',   // quartier affiché au départ / à l'arrivée
+    toZone: 'Angré',
+    duration: 40,
+    // les noms de quartiers viennent automatiquement d'OpenStreetMap (data/<nom>/map.json)
   },
 };

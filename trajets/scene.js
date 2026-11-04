@@ -71,7 +71,7 @@ scene.add(sun, sun.target);
 const SUN_DIR = new THREE.Vector3(0.55, 1.0, 0.35).normalize();
 
 // sol
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(600000, 600000).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: '#e4e5e4' }));
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(600000, 600000).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: '#dcdcd8' }));
 ground.receiveShadow = true; scene.add(ground);
 
 // verdure et eau
@@ -86,9 +86,10 @@ ground.receiveShadow = true; scene.add(ground);
 
 // routes : rubans plats
 {
-  const minor = new Builder(), major = new Builder();
-  for (const r of map.roads) {
-    const b = r.w >= 11 ? major : minor, y = r.w >= 11 ? 0.75 : 0.6, h = r.w / 2, pts = r.p;
+  const minor = new Builder(), major = new Builder(), casing = new Builder();
+  const ribbons = [];
+  for (const r of map.roads) { ribbons.push([r.w >= 11 ? major : minor, r.w >= 11 ? 0.9 : 0.7, r.w / 2, r.p]); ribbons.push([casing, 0.55, r.w / 2 + (r.w >= 11 ? 2.2 : 1.2), r.p]); }
+  for (const [b, y, h, pts] of ribbons) {
     for (let i = 0; i < pts.length - 1; i++) {
       const [x1, z1] = pts[i], [x2, z2] = pts[i + 1], dx = x2 - x1, dz = z2 - z1, l = Math.hypot(dx, dz); if (l < 0.01) continue;
       const nx = -dz / l * h, nz = dx / l * h, ex = dx / l * h * 0.5, ez = dz / l * h * 0.5;
@@ -96,9 +97,10 @@ ground.receiveShadow = true; scene.add(ground);
       b.tri(A, B, C, UP); b.tri(A, C, D, UP);
     }
   }
-  const mm = new THREE.Mesh(minor.geometry(), new THREE.MeshLambertMaterial({ color: '#fbfaf7' }));
-  const MM = new THREE.Mesh(major.geometry(), new THREE.MeshLambertMaterial({ color: '#fffdf6' }));
-  mm.receiveShadow = MM.receiveShadow = true; scene.add(mm, MM);
+  const mm = new THREE.Mesh(minor.geometry(), new THREE.MeshLambertMaterial({ color: '#ffffff' }));
+  const MM = new THREE.Mesh(major.geometry(), new THREE.MeshLambertMaterial({ color: '#ffeeb8' }));
+  const cm = new THREE.Mesh(casing.geometry(), new THREE.MeshLambertMaterial({ color: '#c9c7c0' }));
+  mm.receiveShadow = MM.receiveShadow = cm.receiveShadow = true; scene.add(cm, mm, MM);
 }
 
 // bâtiments extrudés (par blocs de 1,5 km pour le découpage hors champ)
@@ -164,26 +166,27 @@ const at = (s) => { s = clamp(s, 0, LEN); let lo = 0, hi = cum.length - 1; while
     for (let k = 0; k <= n; k++) { const gx = Math.floor((mix(x1, x2, k / n) - bx0) / C), gz = Math.floor((mix(z1, z2, k / n) - bz0) / C); for (let a = -rad; a <= rad; a++) for (let b2 = -rad; b2 <= rad; b2++) { const X = gx + a, Z = gz + b2; if (X >= 0 && Z >= 0 && X < GW && Z < GH) occ[Z * GW + X] = 1; } }
   }
   const get = (x, z) => { const gx = Math.floor((x - bx0) / C), gz = Math.floor((z - bz0) / C); return gx < 0 || gz < 0 || gx >= GW || gz >= GH ? 1 : occ[gz * GW + gx]; };
-  const groups = [[], [], []];
-  const tryTree = (x, z, g) => {
+  const groups = new Map();
+  const tryTree = (x, z) => {
     const v = get(x, z); if (v === 1) return; if (v !== 2 && rnd() > 0.45) return;
     for (const [ox, oz] of [[C, 0], [-C, 0], [0, C], [0, -C]]) if (get(x + ox, z + oz) === 1 && rnd() < 0.7) return;
-    groups[g].push([x, z, 2.6 + rnd() * 3.2]);
+    const key = `${Math.floor(x / 1500)},${Math.floor(z / 1500)}`; if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push([x, z, 2.6 + rnd() * 3.2]);
     const id = Math.floor((z - bz0) / C) * GW + Math.floor((x - bx0) / C); occ[id] = 1;
   };
-  const E = 1400;
-  [map.from, map.to].forEach(([cx, cz], g) => { for (let i = 0; i < 90000; i++) tryTree(cx + (rnd() * 2 - 1) * E, cz + (rnd() * 2 - 1) * E, g); });
-  for (let s = 0; s < LEN; s += 9) { const [x, z] = at(s); for (let k = 0; k < 3; k++) tryTree(x + (rnd() * 2 - 1) * 420, z + (rnd() * 2 - 1) * 420, 2); }
+  const E = 2200;
+  [map.from, map.to].forEach(([cx, cz]) => { for (let i = 0; i < 200000; i++) tryTree(cx + (rnd() * 2 - 1) * E, cz + (rnd() * 2 - 1) * E); });
+  for (let s = 0; s < LEN; s += 3) { const [x, z] = at(s); for (let k = 0; k < 4; k++) tryTree(x + (rnd() * 2 - 1) * 1300, z + (rnd() * 2 - 1) * 1300); }
   const geo = new THREE.IcosahedronGeometry(1, 1);
   const mat = new THREE.MeshLambertMaterial({ color: '#ffffff' });
   const GREENS = ['#5cae4a', '#6dbb52', '#4f9f45', '#7cc35a', '#62b04e'].map((c) => new THREE.Color(c));
   window.TREES = [];
-  for (const list of groups) {
+  for (const list of groups.values()) {
     const im = new THREE.InstancedMesh(geo, mat, list.length), m4 = new THREE.Matrix4();
     list.forEach(([x, z, r], i) => { m4.makeScale(r, r * 0.92, r).setPosition(x, r * 1.15, z); im.setMatrixAt(i, m4); im.setColorAt(i, GREENS[Math.floor(hash(x, z) * GREENS.length)]); });
     im.castShadow = im.receiveShadow = true; im.computeBoundingSphere(); scene.add(im); window.TREES.push(im);
   }
-  console.log('arbres', groups.map((g) => g.length).join(' / '));
+  console.log('arbres', [...groups.values()].reduce((a, g) => a + g.length, 0));
 }
 
 // trait de l'itinéraire (épaisseur en pixels) + halo
@@ -197,81 +200,144 @@ const mkLine = (color, width, opacity) => {
 const glow = mkLine('#6fb6ff', 46, 0.35), glow2 = mkLine('#9fd0ff', 26, 0.5), core = mkLine('#1f6bff', 13, 1);
 const SEGS = route.length - 1;
 
-// ---------- chorégraphie ----------
-const DUR = CFG.duration, T0 = 1.4, T1 = DUR - 4.6;
+// ---------- chorégraphie : survol panoramique ----------
+const DUR = CFG.duration, T0 = 4.0, T1 = DUR - 6.0;
 const [fx, fz] = map.from, [tx, tz] = map.to;
-let xs0 = Infinity, xs1 = -Infinity, zs0 = Infinity, zs1 = -Infinity; for (const [x, z] of route) { xs0 = Math.min(xs0, x); xs1 = Math.max(xs1, x); zs0 = Math.min(zs0, z); zs1 = Math.max(zs1, z); }
-const CENTER = [(xs0 + xs1) / 2, (zs0 + zs1) / 2];
-const FWD = new THREE.Vector2(tx - fx, tz - fz).normalize(); // direction générale du voyage
-const D_NEAR = 520, D_FAR = Math.hypot(xs1 - xs0, zs1 - zs0) * 1.05;
-const wide = (t) => sstep(T0 + 1.2, T0 + 5.2, t) * (1 - sstep(T1 - 4.2, T1 - 0.2, t));
-const dist = (t) => Math.exp(mix(Math.log(D_NEAR), Math.log(D_FAR), wide(t))) * (t < T0 ? mix(1.25, 1, sstep(0, T0, t)) : t > T1 ? mix(1, 0.78, sstep(T1, DUR, t)) : 1);
-// abscisse curviligne : vitesse proportionnelle à l'altitude (vitesse constante à l'écran)
-const SN = 4000, sTab = new Float64Array(SN + 1);
-{ let acc = 0; for (let i = 1; i <= SN; i++) { const t = T0 + (T1 - T0) * (i - 0.5) / SN; acc += dist(t) * sstep(T0, T0 + 0.9, t) * (1 - sstep(T1 - 0.9, T1, t)); sTab[i] = acc; } for (let i = 0; i <= SN; i++) sTab[i] *= LEN / acc; }
+// cap de la caméra : direction moyenne du trajet sur la fenêtre [s-600 m, s+2000 m], déroulée sans saut
+const HSTEP = 20, HN = Math.ceil(LEN / HSTEP), HEAD = new Float64Array(HN + 1);
+{
+  let prev = null;
+  for (let i = 0; i <= HN; i++) {
+    const s = i * HSTEP; let vx = 0, vz = 0;
+    for (let u = s - 600; u < s + 2000; u += 40) { const [x1, z1] = at(u), [x2, z2] = at(u + 40), l = Math.hypot(x2 - x1, z2 - z1); if (l > 1e-3) { const wgt = u < s ? 0.5 : 1; vx += (x2 - x1) / l * wgt; vz += (z2 - z1) / l * wgt; } }
+    let a = Math.atan2(vz, vx);
+    if (prev !== null) { while (a - prev > Math.PI) a -= 2 * Math.PI; while (a - prev < -Math.PI) a += 2 * Math.PI; }
+    HEAD[i] = prev = a;
+  }
+}
+const heading = (s) => { const f = clamp(s, 0, LEN) / HSTEP, i = Math.min(HN - 1, Math.floor(f)); return mix(HEAD[i], HEAD[i + 1], f - i); };
+const D_NEAR = 700, D_MID = 1900;
+const wide = (t) => sstep(T0, T0 + 3.5, t) * (1 - sstep(T1 - 3.5, T1, t));
+const dist = (t) => t < T0 ? mix(1050, D_NEAR, sstep(0, T0, t)) : t > T1 ? mix(D_NEAR, 560, sstep(T1, DUR, t)) : Math.exp(mix(Math.log(D_NEAR), Math.log(D_MID), wide(t)));
+// abscisse : vitesse proportionnelle à l'altitude (défilement régulier à l'écran)
+const SN = 6000, sTab = new Float64Array(SN + 1);
+{ let acc = 0; for (let i = 1; i <= SN; i++) { const t = T0 + (T1 - T0) * (i - 0.5) / SN; acc += dist(t) * sstep(T0, T0 + 1.2, t) * (1 - sstep(T1 - 1.2, T1, t)); sTab[i] = acc; } for (let i = 0; i <= SN; i++) sTab[i] *= LEN / acc; }
 const sAt = (t) => { if (t <= T0) return 0; if (t >= T1) return LEN; const f = (t - T0) / (T1 - T0) * SN, i = Math.floor(f); return mix(sTab[i], sTab[Math.min(SN, i + 1)], f - i); };
 
-// éléments d'interface
+// ---------- interface ----------
 const $ = (id) => document.getElementById(id);
-const ui = $('ui');
+const ui = $('ui'), labels = $('labels');
 $('title').innerHTML = CFG.title.map((l) => `<span>${l}</span>`).join('');
 const tagFrom = Object.assign(document.createElement('div'), { className: 'tag', textContent: CFG.fromLabel });
 const tagTo = Object.assign(document.createElement('div'), { className: 'tag', textContent: CFG.toLabel });
 const dotFrom = Object.assign(document.createElement('div'), { className: 'dot' });
 const head = Object.assign(document.createElement('div'), { className: 'dot', id: 'head' });
 ui.prepend(dotFrom, head); ui.append(tagFrom, tagTo);
-const cities = CFG.cities.map(([name, lat, lon]) => { const el = Object.assign(document.createElement('div'), { className: 'city', textContent: name }); ui.append(el); return { el, p: proj(lat, lon) }; });
 const V = new THREE.Vector3();
-const screen = (x, y, z) => { V.set(x, y, z).project(camera); return [(V.x + 1) / 2 * W, (1 - V.y) / 2 * H, V.z < 1]; };
-const place = (el, x, y, z, op = 1, extra = '') => { const [sx, sy, ok] = screen(x, y, z); el.style.left = sx + 'px'; el.style.top = sy + 'px'; el.style.opacity = ok ? op : 0; if (extra !== null) el.style.transform = extra; return [sx, sy]; };
+const screen = (x, y, z) => { V.set(x, y, z).project(camera); return [(V.x + 1) / 2 * W, (1 - V.y) / 2 * H, V.z < 1 && V.z > -1]; };
 const fmt = (m) => (m / 1000).toFixed(1).replace('.', ',') + ' km';
+
+// noms réels des quartiers (OpenStreetMap) proches du trajet + noms des grands axes
+const RANK = { city: 3, town: 3, suburb: 2, village: 2, quarter: 1, neighbourhood: 0, hamlet: 0 };
+const near = (x, z) => { let d = Infinity; for (let i = 0; i < route.length; i += 12) d = Math.min(d, Math.hypot(route[i][0] - x, route[i][1] - z)); return d; };
+const tags = [];
+for (const pl of map.places) {
+  if (near(pl.p[0], pl.p[1]) > 2600) continue;
+  const big = RANK[pl.c] >= 2, el = Object.assign(document.createElement('div'), { className: 'pl' + (big ? ' big' : ''), textContent: pl.n.replace(/ /g, ' ') });
+  labels.append(el); tags.push({ el, x: pl.p[0], z: pl.p[1], rank: RANK[pl.c], w: el.textContent.length * (big ? 30 : 23) + 30, h: big ? 64 : 50, o: 0 });
+}
+const roadsByName = new Map();
+for (const r of map.roadNames) { if (!roadsByName.has(r.n)) roadsByName.set(r.n, { rank: { motorway: 1, trunk: 1, primary: 0.5, secondary: 0, tertiary: -0.5 }[r.c], pts: [] }); roadsByName.get(r.n).pts.push(...r.p); }
+for (const [n, r] of roadsByName) {
+  if (/^(Rue [A-Z]?\d|Rond|Carrefour|Grand Carrefour)/.test(n) && r.rank < 1) continue;
+  const el = Object.assign(document.createElement('div'), { className: 'rd', textContent: n });
+  labels.append(el); tags.push({ el, road: r.pts, rank: r.rank - 3, w: n.length * 14 + 40, h: 38, o: 0 });
+}
+let lastT = -1;
+const ZONES = map.places.filter((p) => RANK[p.c] >= 1 && near(p.p[0], p.p[1]) < 1800).map((p) => ({ n: p.n.replace(/\u00a0/g, ' '), x: p.p[0], z: p.p[1], rank: RANK[p.c] }));
+function updateLabels(t, cx, cz, D, avoid) {
+  const instant = Math.abs(t - lastT) > 0.2; lastT = t;
+  const cand = [];
+  for (const g of tags) {
+    let x = g.x, z = g.z;
+    if (g.road) { let best = Infinity; for (const [px, pz] of g.road) { const d = (px - cx) ** 2 + (pz - cz) ** 2; if (d < best) { best = d; x = px; z = pz; } } if (Math.sqrt(best) > D * 1.1) { g.target = 0; continue; } }
+    const dc = Math.hypot(camera.position.x - x, camera.position.y, camera.position.z - z);
+    const [sx, sy, ok] = screen(x, 0, z);
+    g.sx = sx; g.sy = sy; g.target = 0;
+    if (!ok || dc > D * (g.road ? 2.2 : 3.6) || sx < 40 + g.w / 2 || sx > W - 40 - g.w / 2 || sy < 520 || sy > H - 90) continue;
+    g.scale = clamp(D * 1.5 / dc, 0.85, 1.2);
+    cand.push([g.rank * 2 - dc / D, g]);
+  }
+  cand.sort((a, b) => b[0] - a[0]);
+  const boxes = [...avoid];
+  let n = 0;
+  for (const [, g] of cand) {
+    const w = g.w * g.scale, h = g.h * g.scale, b = [g.sx - w / 2 - 14, g.sy - h / 2 - 10, g.sx + w / 2 + 14, g.sy + h / 2 + 10];
+    if (n >= 9 || boxes.some((o) => b[0] < o[2] && b[2] > o[0] && b[1] < o[3] && b[3] > o[1])) continue;
+    boxes.push(b); g.target = 1; n++;
+  }
+  for (const g of tags) {
+    g.o = instant ? g.target : g.o + (g.target - g.o) * 0.16;
+    if (g.o < 0.01) { g.el.style.display = 'none'; continue; }
+    g.el.style.display = 'block'; g.el.style.opacity = g.o;
+    g.el.style.left = g.sx + 'px'; g.el.style.top = g.sy + 'px';
+    g.el.style.transform = `translate(-50%,-50%) scale(${(g.scale || 1) * mix(0.85, 1, g.o)})`;
+  }
+}
 
 window.renderFrame = (t) => {
   const s = sAt(t), w = wide(t), D = dist(t);
-  // cible caméra : tête du trait lissée, attirée vers le centre en vue d'ensemble
-  let sx = 0, sz = 0; for (let k = -4; k <= 4; k++) { const [x, z] = at(clamp(s, 4 * D * 0.012, LEN - 4 * D * 0.012) + k * D * 0.012); sx += x; sz += z; }
-  const pull = 0.5 * w ** 4;
-  let cx = mix(sx / 9, CENTER[0], pull), cz = mix(sz / 9, CENTER[1], pull);
-  const pitch = THREE.MathUtils.degToRad(mix(47, 72, w));
-  const yaw = Math.atan2(FWD.y, FWD.x) + 0.35 * Math.sin(t * 0.21) - 0.25 + (t / DUR) * 0.5;
-  const fwx = Math.cos(yaw), fwz = Math.sin(yaw);
-  // décale la cible un peu vers l'avant pour laisser la place au titre en haut
-  cx += fwx * D * 0.06; cz += fwz * D * 0.06;
+  let sx = 0, sz = 0; for (let k = -4; k <= 4; k++) { const [x, z] = at(s + k * D * 0.012); sx += x; sz += z; }
+  let yaw = heading(s);
+  if (t < T0 + 1) yaw += 1.5 * (1 - sstep(0, T0 + 1, t));      // tour panoramique autour du départ
+  if (t > T1) yaw -= 1.3 * sstep(T1, DUR, t);                    // tour panoramique autour de l'arrivée
+  const pitch = THREE.MathUtils.degToRad(t < T0 ? mix(24, 30, sstep(0, T0, t)) : t > T1 ? mix(30, 26, sstep(T1, DUR, t)) : mix(30, 37, w));
+  const fwx = Math.cos(yaw), fwz = Math.sin(yaw), ahead = D * mix(0.08, 0.2, w);
+  const cx = sx / 9 + fwx * ahead, cz = sz / 9 + fwz * ahead;
   camera.position.set(cx - fwx * D * Math.cos(pitch), D * Math.sin(pitch), cz - fwz * D * Math.cos(pitch));
   camera.lookAt(cx, 0, cz);
-  camera.near = Math.max(1, D * 0.02); camera.far = D * 20; camera.updateProjectionMatrix(); camera.updateMatrixWorld();
-  scene.fog.near = D * 1.6; scene.fog.far = D * 6;
-  // ombre portée qui suit la caméra
-  const S = clamp(D * 1.3, 250, 9000);
+  camera.near = Math.max(1, D * 0.02); camera.far = D * 5.5; camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+  scene.fog.near = D * 1.3; scene.fog.far = D * 4.6;
+  const S = clamp(D * 1.6, 300, 4000);
   sun.target.position.set(cx, 0, cz); sun.position.set(cx + SUN_DIR.x * S * 2, SUN_DIR.y * S * 2, cz + SUN_DIR.z * S * 2);
   Object.assign(sun.shadow.camera, { left: -S, right: S, top: S, bottom: -S, near: 1, far: S * 5 }); sun.shadow.camera.updateProjectionMatrix();
-  for (const tr of window.TREES) tr.visible = D < 9000;
-  // trait : nombre de segments affichés
-  const [, , idx] = at(s), n = s >= LEN ? SEGS : idx;
+  // trait
+  const [hx, hz, idx] = at(s), n = s >= LEN ? SEGS : idx;
   for (const l of [core, glow, glow2]) l.geometry.instanceCount = Math.max(0, n);
   const pulse = 1 + 0.12 * Math.sin(t * 6);
-  for (const [l, base] of [[glow, 46], [glow2, 26], [core, 13]]) l.material.linewidth = base * mix(1, 0.75, w) * (l === glow ? pulse : 1);
+  for (const [l, base] of [[glow, 46], [glow2, 26], [core, 13]]) l.material.linewidth = base * (l === glow ? pulse : 1);
 
   // interface
   $('title').style.opacity = sstep(0.2, 0.9, t); $('title').style.transform = `translateY(${(1 - sstep(0.2, 0.9, t)) * 30}px)`;
-  const pill = $('pill'); pill.style.opacity = sstep(T0 - 0.3, T0 + 0.2, t);
+  const pill = $('pill'); pill.style.opacity = sstep(T0 - 0.5, T0, t);
   pill.innerHTML = t < T1 + 0.4 ? fmt(s * map.distance / LEN) : `${fmt(map.distance)} <small>· ${Math.round(map.duration / 60)} min</small>`;
   pill.style.transform = `scale(${1 + 0.12 * Math.exp(-Math.pow((t - T1 - 0.45) * 5, 2))})`;
-  place(dotFrom, fx, 3, fz, sstep(0.3, 0.8, t), null);
-  const [fsx, fsy] = screen(fx, 3, fz); tagFrom.style.left = fsx + 'px'; tagFrom.style.top = fsy - 34 + 'px'; tagFrom.style.opacity = sstep(0.5, 1.0, t) * (1 - w * 0.6);
-  const [hx, hz] = at(s); place(head, hx, 3, hz, t > T0 && t < T1 ? 1 : 0, null);
-  // épingle d'arrivée : chute + rebond
+  const avoid = [];
+  const [fsx, fsy, fok] = screen(fx, 3, fz), fo = fok ? sstep(0.3, 0.8, t) * (1 - sstep(T0 + 2, T0 + 3, t)) : 0;
+  Object.assign(dotFrom.style, { left: fsx + 'px', top: fsy + 'px', opacity: fok ? 1 : 0 });
+  Object.assign(tagFrom.style, { left: fsx + 'px', top: fsy - 34 + 'px', opacity: fo });
+  if (fo > 0.05) avoid.push([fsx - 130, fsy - 130, fsx + 130, fsy + 30]);
+  const [hsx, hsy, hok] = screen(hx, 3, hz);
+  Object.assign(head.style, { left: hsx + 'px', top: hsy + 'px', opacity: hok && t > T0 && t < T1 ? 1 : 0 });
+  avoid.push([hsx - 40, hsy - 40, hsx + 40, hsy + 40]);
   const tp = t - (T1 - 0.35), drop = tp < 0 ? -1 : tp < 0.35 ? -(1 - (tp / 0.35) ** 2) : 0;
   const bounce = tp > 0.35 ? Math.exp(-(tp - 0.35) * 7) * Math.sin((tp - 0.35) * 22) * 0.18 : 0;
   const [psx, psy, ok] = screen(tx, 3, tz);
   const pin = $('pin'), ps = $('pinShadow');
   pin.style.left = psx + 'px'; pin.style.top = psy + drop * 320 + 'px'; pin.style.opacity = tp < 0 || !ok ? 0 : 1;
   pin.style.transform = `scale(${1 + bounce}, ${1 - bounce})`;
-  ps.style.left = psx + 'px'; ps.style.top = psy + 'px'; ps.style.opacity = tp < 0 ? 0 : 1 + drop * 0.8;
-  tagTo.style.left = psx + 'px'; tagTo.style.top = psy - 160 + 'px'; tagTo.style.opacity = sstep(T1 + 0.3, T1 + 0.8, t);
+  ps.style.left = psx + 'px'; ps.style.top = psy + 'px'; ps.style.opacity = tp < 0 || !ok ? 0 : 1 + drop * 0.8;
+  tagTo.style.left = psx + 'px'; tagTo.style.top = psy - 160 + 'px'; tagTo.style.opacity = ok ? sstep(T1 + 0.3, T1 + 0.8, t) : 0;
   tagTo.style.transform = `translate(-50%,-100%) scale(${mix(0.7, 1, sstep(T1 + 0.3, T1 + 0.8, t))})`;
-  for (const c of cities) { const [x, y, ok] = screen(c.p[0], 0, c.p[1]); c.el.style.left = x + 'px'; c.el.style.top = y + 'px';
-    c.el.style.opacity = ok ? sstep(0.35, 0.8, w) * sstep(150, 260, x) * sstep(150, 260, W - x) * sstep(430, 520, y) * sstep(80, 200, H - y) : 0; }
+  if (t > T1 - 0.5) avoid.push([psx - 220, psy - 260, psx + 220, psy + 20]);
+  updateLabels(t, cx, cz, D, avoid);
+  // bandeau « quartier traversé » : quartier/commune le plus proche de la tête du trait
+  let zn = null, zd = Infinity; for (const z of ZONES) { const d = Math.hypot(z.x - hx, z.z - hz) * (z.rank >= 2 ? 0.8 : 1); if (d < zd) { zd = d; zn = z; } }
+  const zEl = $('zone'), name = CFG.toZone && Math.hypot(hx - tx, hz - tz) < 1500 ? CFG.toZone : CFG.fromZone && Math.hypot(hx - fx, hz - fz) < 900 ? CFG.fromZone : zn.n;
+  if (zEl.dataset.n !== name) { zEl.dataset.n = name; zEl.querySelector('b').textContent = name; zEl.dataset.t = t; }
+  const zt = t - Number(zEl.dataset.t || 0);
+  zEl.style.opacity = sstep(0.6, 1.2, t) * (Math.abs(zt) > 0.2 || zt < 0 ? 1 : sstep(0, 0.2, zt));
+  zEl.style.transform = `translateY(${Math.abs(zt) > 0.25 || zt < 0 ? 0 : (1 - sstep(0, 0.25, zt)) * 18}px)`;
 
   renderer.render(scene, camera);
 };

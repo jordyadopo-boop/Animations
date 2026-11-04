@@ -35,12 +35,13 @@ const tiles = new Map();
 const add = (z, x, y, detail) => { const key = `${z}/${x}/${y}`; if (!tiles.has(key)) tiles.set(key, { z, x, y, detail }); };
 { const [x0, y1] = t2(box[0], box[1], 12), [x1, y0] = t2(box[2], box[3], 12); for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) add(12, x, y, false); }
 // tuiles détaillées z14 : couloir du trajet + grands abords du départ et de l'arrivée
-const dd = 0.006;
-for (const [lon, lat] of coords) for (const ox of [-dd, 0, dd]) for (const oy of [-dd, 0, dd]) { const [x, y] = t2(lon + ox, lat + oy, 14); add(14, x, y, true); }
-for (const [lat, lon] of [[lat1, lon1], [lat2, lon2]]) for (let ox = -0.02; ox <= 0.02; ox += 0.01) for (let oy = -0.02; oy <= 0.02; oy += 0.01) { const [x, y] = t2(lon + ox, lat + oy, 14); add(14, x, y, true); }
+const dd = 0.014; // ~1,5 km de part et d'autre du trajet
+for (const [lon, lat] of coords) for (let ox = -dd; ox <= dd + 1e-9; ox += dd / 2) for (let oy = -dd; oy <= dd + 1e-9; oy += dd / 2) { const [x, y] = t2(lon + ox, lat + oy, 14); add(14, x, y, true); }
+for (const [lat, lon] of [[lat1, lon1], [lat2, lon2]]) for (let ox = -0.03; ox <= 0.03; ox += 0.01) for (let oy = -0.03; oy <= 0.03; oy += 0.01) { const [x, y] = t2(lon + ox, lat + oy, 14); add(14, x, y, true); }
 console.log(`${tiles.size} tuiles`);
 
-const data = { water: [], green: [], roads: [], rail: [] };
+const data = { water: [], green: [], roads: [], rail: [], places: [], roadNames: [] };
+const seenPlace = new Set();
 const GREEN = new Set(['wood', 'forest', 'grass', 'park', 'garden', 'nature_reserve', 'farmland', 'scrub', 'wetland', 'pitch', 'golf_course', 'cemetery', 'recreation_ground', 'meadow']);
 const WIDTH = { motorway: 22, trunk: 20, primary: 16, secondary: 13, tertiary: 11, minor: 7, service: 5, track: 4, path: 2.5 };
 const polys = (g) => (g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : []);
@@ -63,6 +64,15 @@ for (const t of tiles.values()) {
     if (!t.detail && w < 11) return;
     lines(g).forEach((l) => data.roads.push({ w, c: p.class, d: t.detail ? 1 : 0, p: l.map(P) }));
   });
+  each('place', (p, g) => {
+    if (!p.name || g.type !== 'Point' || !['city', 'town', 'village', 'suburb', 'quarter', 'neighbourhood', 'hamlet'].includes(p.class)) return;
+    const key = p.name + p.class; if (seenPlace.has(key)) return; seenPlace.add(key);
+    data.places.push({ n: p['name:fr'] || p.name, c: p.class, p: P(g.coordinates) });
+  });
+  if (t.detail) each('transportation_name', (p, g) => {
+    if (!p.name || !['motorway', 'trunk', 'primary', 'secondary', 'tertiary'].includes(p.class)) return;
+    lines(g).forEach((l) => data.roadNames.push({ n: p.name, c: p.class, p: l.map(P) }));
+  });
   if (++n % 20 === 0) console.log(`  ${n}/${tiles.size}`);
 }
 const json = {
@@ -73,4 +83,4 @@ const json = {
 };
 fs.writeFileSync(path.join(out, 'map.json'), JSON.stringify(json));
 fs.writeFileSync(path.join(out, 'route_lonlat.json'), JSON.stringify({ coords, box, LAT0, LON0 }));
-console.log(`écrit ${out}/map.json (${(fs.statSync(path.join(out, 'map.json')).size / 1e6).toFixed(1)} Mo) — eau ${data.water.length}, vert ${data.green.length}, routes ${data.roads.length}`);
+console.log(`écrit ${out}/map.json (${(fs.statSync(path.join(out, 'map.json')).size / 1e6).toFixed(1)} Mo) — lieux ${data.places.length}, noms de rues ${data.roadNames.length}, eau ${data.water.length}, vert ${data.green.length}, routes ${data.roads.length}`);

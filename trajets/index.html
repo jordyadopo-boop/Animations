@@ -12,6 +12,10 @@
   #title span{display:block}
   #pill{position:absolute;left:60px;top:300px;transform-origin:0 50%;background:#1f6bff;color:#fff;font-weight:800;font-size:64px;padding:14px 34px;border-radius:60px;
         box-shadow:0 10px 30px rgba(31,107,255,.35);font-variant-numeric:tabular-nums;white-space:nowrap}
+  #zone{position:absolute;left:60px;top:410px;background:rgba(255,255,255,.94);color:#1b2846;font-size:38px;font-weight:700;padding:12px 28px 12px 22px;
+        border-radius:40px;box-shadow:0 6px 20px rgba(0,0,0,.14);white-space:nowrap;display:flex;align-items:center;gap:14px}
+  #zone i{display:inline-block;width:22px;height:22px;border-radius:50%;background:#1f6bff;box-shadow:0 0 0 6px rgba(31,107,255,.22)}
+  #zone span{color:#6a7387;font-weight:700}
   #pill small{font-size:40px;font-weight:700;opacity:.85}
   .tag{position:absolute;transform:translate(-50%,-100%);background:#fff;color:#14213d;font-weight:700;font-size:40px;padding:12px 26px;border-radius:22px;
        box-shadow:0 8px 24px rgba(0,0,0,.18);white-space:nowrap}
@@ -21,18 +25,23 @@
   #head{width:34px;height:34px;margin:-17px 0 0 -17px;border-width:7px}
   #pin{position:absolute;width:110px;height:150px;margin:-150px 0 0 -55px;transform-origin:50% 100%}
   #pinShadow{position:absolute;width:70px;height:22px;margin:-11px 0 0 -35px;border-radius:50%;background:rgba(0,0,0,.28);filter:blur(4px)}
-  .city{position:absolute;transform:translate(-50%,-50%);color:#3a4a66;font-weight:800;font-size:44px;letter-spacing:6px;text-transform:uppercase;
-        text-shadow:0 0 12px #fff,0 0 24px #fff}
+  #labels{position:absolute;inset:0}
+  .pl{position:absolute;display:none;color:#34425e;font-weight:700;font-size:40px;white-space:nowrap;
+      text-shadow:0 0 6px #fff,0 0 12px #fff,0 0 20px #fff,0 2px 2px #fff}
+  .pl.big{color:#1b2846;font-weight:800;font-size:54px;letter-spacing:1px}
+  .rd{position:absolute;display:none;background:rgba(255,255,255,.92);color:#5b6273;font-weight:700;font-size:27px;padding:6px 18px;border-radius:30px;
+      white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.15);border:2px solid #e8dcb0}
 </style>
 <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
 </head><body>
 <div id="stage"><canvas id="c" width="1080" height="1920"></canvas>
   <div id="ui">
+    <div id="labels"></div>
     <div id="pinShadow"></div>
     <svg id="pin" viewBox="0 0 110 150"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5a4f"/><stop offset="1" stop-color="#d81f26"/></linearGradient></defs>
       <path d="M55 146 C40 112 6 88 6 52 A49 49 0 0 1 104 52 C104 88 70 112 55 146Z" fill="url(#pg)" stroke="#a5121a" stroke-width="3"/>
       <circle cx="55" cy="52" r="19" fill="#fff"/></svg>
-    <div id="title"></div><div id="pill"></div>
+    <div id="title"></div><div id="pill"></div><div id="zone"><i></i><span>Quartier :</span> <b></b></div>
   </div>
 </div>
 <script type="module" src="/trajets/scene.js"></script>
