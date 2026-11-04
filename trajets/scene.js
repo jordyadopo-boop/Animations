@@ -197,11 +197,14 @@ const mkLine = (color, width, opacity) => {
   m.resolution.set(W, H);
   const l = new Line2(g, m); l.renderOrder = 10; l.frustumCulled = false; scene.add(l); return l;
 };
-const glow = mkLine('#6fb6ff', 46, 0.35), glow2 = mkLine('#9fd0ff', 26, 0.5), core = mkLine('#1f6bff', 13, 1);
+const LC = { glow: '#6fb6ff', glow2: '#9fd0ff', core: '#1f6bff', ...(CFG.theme?.line || {}) };
+const glow = mkLine(LC.glow, 46, 0.35), glow2 = mkLine(LC.glow2, 26, CFG.theme?.line ? 0.95 : 0.5), core = mkLine(LC.core, 13, 1);
 const SEGS = route.length - 1;
 
 // ---------- chorégraphie : survol panoramique ----------
-const DUR = CFG.duration, T0 = 4.0, T1 = DUR - 6.0;
+const DUR = CFG.duration, T0 = 4.0, T1 = DUR - (CFG.endHold || 6.0);
+// ralenti final (derniers virages) : on parcourt les derniers `meters` en `seconds`, caméra basse et cap fixe
+const SLOW = CFG.slowEnd || null, TS = SLOW ? T1 - SLOW.seconds : T1;
 const [fx, fz] = map.from, [tx, tz] = map.to;
 // cap de la caméra : direction moyenne du trajet sur la fenêtre [s-600 m, s+2000 m], déroulée sans saut
 const HSTEP = 20, HN = Math.ceil(LEN / HSTEP), HEAD = new Float64Array(HN + 1);
@@ -217,17 +220,39 @@ const HSTEP = 20, HN = Math.ceil(LEN / HSTEP), HEAD = new Float64Array(HN + 1);
 }
 const heading = (s) => { const f = clamp(s, 0, LEN) / HSTEP, i = Math.min(HN - 1, Math.floor(f)); return mix(HEAD[i], HEAD[i + 1], f - i); };
 const D_NEAR = 700, D_MID = 1900;
-const wide = (t) => sstep(T0, T0 + 3.5, t) * (1 - sstep(T1 - 3.5, T1, t));
-const dist = (t) => t < T0 ? mix(1050, D_NEAR, sstep(0, T0, t)) : t > T1 ? mix(D_NEAR, 560, sstep(T1, DUR, t)) : Math.exp(mix(Math.log(D_NEAR), Math.log(D_MID), wide(t)));
+const D_SLOW = SLOW?.dist || 520;
+const wide = (t) => sstep(T0, T0 + 3.5, t) * (1 - sstep(TS - 3.5, TS, t));
+const dist = (t) => t < T0 ? mix(1050, D_NEAR, sstep(0, T0, t))
+  : t > T1 ? mix(SLOW ? D_SLOW : D_NEAR, SLOW ? D_SLOW * 0.95 : 560, sstep(T1, DUR, t))
+  : t > TS ? mix(D_NEAR, D_SLOW, sstep(TS, TS + 1.5, t))
+  : Math.exp(mix(Math.log(D_NEAR), Math.log(D_MID), wide(t)));
+const LEN_A = SLOW ? Math.max(0, LEN - SLOW.meters) : LEN;
 // abscisse : vitesse proportionnelle à l'altitude (défilement régulier à l'écran)
 const SN = 6000, sTab = new Float64Array(SN + 1);
-{ let acc = 0; for (let i = 1; i <= SN; i++) { const t = T0 + (T1 - T0) * (i - 0.5) / SN; acc += dist(t) * sstep(T0, T0 + 1.2, t) * (1 - sstep(T1 - 1.2, T1, t)); sTab[i] = acc; } for (let i = 0; i <= SN; i++) sTab[i] *= LEN / acc; }
-const sAt = (t) => { if (t <= T0) return 0; if (t >= T1) return LEN; const f = (t - T0) / (T1 - T0) * SN, i = Math.floor(f); return mix(sTab[i], sTab[Math.min(SN, i + 1)], f - i); };
+{ let acc = 0; for (let i = 1; i <= SN; i++) { const t = T0 + (TS - T0) * (i - 0.5) / SN; acc += dist(t) * sstep(T0, T0 + 1.2, t) * (1 - sstep(TS - 1.2, TS, t)); sTab[i] = acc; } for (let i = 0; i <= SN; i++) sTab[i] *= LEN_A / acc; }
+const sAt = (t) => {
+  if (t <= T0) return 0; if (t >= T1) return LEN;
+  if (t >= TS) { const u = (t - TS) / (T1 - TS); return mix(LEN_A, LEN, u * u * (3 - 2 * u)); }
+  const f = (t - T0) / (TS - T0) * SN, i = Math.floor(f); return mix(sTab[i], sTab[Math.min(SN, i + 1)], f - i);
+};
+const SLOW_YAW = SLOW ? (() => { const [x1, z1] = at(LEN_A), [x2, z2] = at(LEN); return Math.atan2(z2 - z1, x2 - x1); })() : 0;
 
 // ---------- interface ----------
 const $ = (id) => document.getElementById(id);
 const ui = $('ui'), labels = $('labels');
-$('title').innerHTML = CFG.title.map((l) => `<span>${l}</span>`).join('');
+$('title').innerHTML = CFG.titleHTML || CFG.title.map((l) => `<span>${l}</span>`).join('');
+if (CFG.theme?.name) document.getElementById('stage').classList.add(CFG.theme.name);
+if (CFG.endCard) { const e = Object.assign(document.createElement('div'), { id: 'endcard' }); e.innerHTML = CFG.endCard; ui.append(e); }
+if (CFG.turns) ui.append(Object.assign(document.createElement('div'), { id: 'turn' }));
+if (CFG.theme?.pagne) {
+  const NS = 'http://www.w3.org/2000/svg', sv = document.createElementNS(NS, 'svg'); sv.id = 'pagne'; sv.setAttribute('viewBox', '0 0 70 1920');
+  let o = '<rect width="70" height="1920" fill="#c3bbf0"/>'; const cw = 8.75;
+  for (let r = 0; r < 1920 / cw; r++) for (let c = 0; c < 8; c++) { const ph = (r % 20) / 20, x0 = 1 + 6 * (ph < 0.5 ? ph * 2 : 2 - ph * 2), d = Math.abs(c - x0);
+    const col = d < 1.3 ? ((r + c) % 3 ? '#6a2690' : '#4f1a78') : d < 2.2 ? '#9c49b9' : d < 2.9 ? '#d79ae3' : (r + c) % 2 ? '#a69ef0' : '#b2aaf4';
+    o += `<rect x="${(c * cw + 1.2).toFixed(1)}" y="${(r * cw + 1.2).toFixed(1)}" width="${(cw - 2.4).toFixed(1)}" height="${(cw - 2.4).toFixed(1)}" rx="1.5" fill="${col}"/>`; }
+  sv.innerHTML = o + '<rect width="5" height="1920" fill="#d8b04c"/>'; ui.append(sv);
+}
+if (CFG.theme?.pin) { const st = document.querySelectorAll('#pg stop'); st[0].setAttribute('stop-color', CFG.theme.pin[0]); st[1].setAttribute('stop-color', CFG.theme.pin[1]); document.querySelector('#pin path').setAttribute('stroke', CFG.theme.pin[2]); }
 const tagFrom = Object.assign(document.createElement('div'), { className: 'tag', textContent: CFG.fromLabel });
 const tagTo = Object.assign(document.createElement('div'), { className: 'tag', textContent: CFG.toLabel });
 const dotFrom = Object.assign(document.createElement('div'), { className: 'dot' });
@@ -253,6 +278,18 @@ for (const [n, r] of roadsByName) {
   const el = Object.assign(document.createElement('div'), { className: 'rd', textContent: n });
   labels.append(el); tags.push({ el, road: r.pts, rank: r.rank - 3, w: n.length * 14 + 40, h: 38, o: 0 });
 }
+for (const [i, lm] of (CFG.landmarks || []).entries()) {
+  const [x, z] = proj(lm.lat, lm.lon), el = Object.assign(document.createElement('div'), { className: 'lm' });
+  el.innerHTML = `<i>${lm.num ?? i + 1}</i>${lm.n}`; labels.append(el);
+  tags.push({ el, x, z, rank: 6, w: lm.n.length * 21 + 90, h: 60, o: 0, near: lm.near ?? 2.6 });
+}
+for (const av of CFG.avoid || []) {
+  const [x, z] = proj(av.lat, av.lon), el = Object.assign(document.createElement('div'), { className: 'lm av' });
+  el.innerHTML = `<i>✕</i>${av.n}`; labels.append(el);
+  tags.push({ el, x, z, rank: 7, w: av.n.length * 21 + 90, h: 60, o: 0, near: 3.2 });
+}
+// bandeaux de virage : affichés quand la tête du trait approche du carrefour
+const TURNS = (CFG.turns || []).map((tn) => { const [x, z] = proj(tn.lat, tn.lon); let best = [Infinity, 0]; for (let i = 0; i < route.length; i += 2) { const d = Math.hypot(route[i][0] - x, route[i][1] - z); if (d < best[0]) best = [d, cum[i]]; } return { ...tn, s: best[1] }; });
 let lastT = -1;
 const ZONES = map.places.filter((p) => RANK[p.c] >= 1 && near(p.p[0], p.p[1]) < 1800).map((p) => ({ n: p.n.replace(/\u00a0/g, ' '), x: p.p[0], z: p.p[1], rank: RANK[p.c] }));
 function updateLabels(t, cx, cz, D, avoid) {
@@ -264,7 +301,7 @@ function updateLabels(t, cx, cz, D, avoid) {
     const dc = Math.hypot(camera.position.x - x, camera.position.y, camera.position.z - z);
     const [sx, sy, ok] = screen(x, 0, z);
     g.sx = sx; g.sy = sy; g.target = 0;
-    if (!ok || dc > D * (g.road ? 2.2 : 3.6) || sx < 40 + g.w / 2 || sx > W - 40 - g.w / 2 || sy < 520 || sy > H - 90) continue;
+    if (!ok || dc > D * (g.road ? 2.2 : g.near || 3.6) || sx < 40 + g.w / 2 || sx > W - 40 - g.w / 2 || sy < (CFG.theme ? 660 : 520) || sy > H - 90 || (CFG.theme?.pagne && sx > W - 70 - g.w / 2)) continue;
     g.scale = clamp(D * 1.5 / dc, 0.85, 1.2);
     cand.push([g.rank * 2 - dc / D, g]);
   }
@@ -279,7 +316,7 @@ function updateLabels(t, cx, cz, D, avoid) {
   for (const g of tags) {
     g.o = instant ? g.target : g.o + (g.target - g.o) * 0.16;
     if (g.o < 0.01) { g.el.style.display = 'none'; continue; }
-    g.el.style.display = 'block'; g.el.style.opacity = g.o;
+    g.el.style.display = g.el.classList.contains('lm') ? 'flex' : 'block'; g.el.style.opacity = g.o;
     g.el.style.left = g.sx + 'px'; g.el.style.top = g.sy + 'px';
     g.el.style.transform = `translate(-50%,-50%) scale(${(g.scale || 1) * mix(0.85, 1, g.o)})`;
   }
@@ -290,8 +327,9 @@ window.renderFrame = (t) => {
   let sx = 0, sz = 0; for (let k = -4; k <= 4; k++) { const [x, z] = at(s + k * D * 0.012); sx += x; sz += z; }
   let yaw = heading(s);
   if (t < T0 + 1) yaw += 1.5 * (1 - sstep(0, T0 + 1, t));      // tour panoramique autour du départ
-  if (t > T1) yaw -= 1.3 * sstep(T1, DUR, t);                    // tour panoramique autour de l'arrivée
-  const pitch = THREE.MathUtils.degToRad(t < T0 ? mix(24, 30, sstep(0, T0, t)) : t > T1 ? mix(30, 26, sstep(T1, DUR, t)) : mix(30, 37, w));
+  if (SLOW && t > TS) { let y2 = SLOW_YAW; while (y2 - yaw > Math.PI) y2 -= 2 * Math.PI; while (y2 - yaw < -Math.PI) y2 += 2 * Math.PI; yaw = mix(yaw, y2, sstep(TS - 1.0, TS + 1.0, t)); }
+  if (t > T1) yaw -= (SLOW ? 0.7 : 1.3) * sstep(T1, DUR, t);                    // tour panoramique autour de l'arrivée
+  const pitch = THREE.MathUtils.degToRad(t < T0 ? mix(24, 30, sstep(0, T0, t)) : t > T1 ? mix(SLOW ? 42 : 30, SLOW ? 36 : 26, sstep(T1, DUR, t)) : SLOW && t > TS - 1 ? mix(30, 42, sstep(TS - 1, TS + 1.5, t)) : mix(30, 37, w));
   const fwx = Math.cos(yaw), fwz = Math.sin(yaw), ahead = D * mix(0.08, 0.2, w);
   const cx = sx / 9 + fwx * ahead, cz = sz / 9 + fwz * ahead;
   camera.position.set(cx - fwx * D * Math.cos(pitch), D * Math.sin(pitch), cz - fwz * D * Math.cos(pitch));
@@ -338,6 +376,16 @@ window.renderFrame = (t) => {
   const zt = t - Number(zEl.dataset.t || 0);
   zEl.style.opacity = sstep(0.6, 1.2, t) * (Math.abs(zt) > 0.2 || zt < 0 ? 1 : sstep(0, 0.2, zt));
   zEl.style.transform = `translateY(${Math.abs(zt) > 0.25 || zt < 0 ? 0 : (1 - sstep(0, 0.25, zt)) * 18}px)`;
+
+  // virage en cours
+  const tEl = $('turn'); let cur = null;
+  for (const tn of TURNS) if (s > tn.s - (tn.before || 260) && s < tn.s + 40 && t < T1 + 0.2) cur = tn;
+  if (tEl) {
+    if (cur && tEl.dataset.k !== cur.name) { tEl.dataset.k = cur.name; tEl.innerHTML = `<b>${cur.dir === 'gauche' ? '⬅' : cur.dir === 'droite' ? '➡' : '⬆'}</b><div><span>${cur.dir === 'gauche' ? 'Tournez à gauche' : cur.dir === 'droite' ? 'Tournez à droite' : cur.dir}</span>${cur.name}</div>`; }
+    tEl.style.opacity = cur ? 1 : 0; tEl.style.transform = `translateX(-50%) scale(${cur ? 1 : 0.9})`;
+  }
+  // carte finale
+  const end = $('endcard'); if (end) { const e = sstep(DUR - 4.2, DUR - 3.2, t); end.style.opacity = e; end.style.transform = `translate(-50%, ${(1 - e) * 40}px)`; }
 
   renderer.render(scene, camera);
 };

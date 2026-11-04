@@ -1,6 +1,6 @@
 // Récupère les vraies données d'un trajet : itinéraire OSRM + tuiles OpenFreeMap (eau, verdure, routes).
 // Les bâtiments viennent d'Overture Maps (voir buildings.py).
-// Usage : node trajets/fetch.mjs --name bassam_angre --from 5.216750,-3.767524 --to 5.390552,-3.945248 [--mode driving]
+// Usage : node trajets/fetch.mjs --name bassam_angre --from 5.216750,-3.767524 --to 5.390552,-3.945248 [--via "lat,lon;lat,lon"] [--mode driving]
 import { VectorTile } from '@mapbox/vector-tile';
 import Pbf from 'pbf';
 import fs from 'node:fs';
@@ -14,7 +14,10 @@ const mode = args.mode || 'driving';
 const out = path.join(DIR, 'data', args.name); fs.mkdirSync(out, { recursive: true });
 
 // 1. itinéraire réel
-const r = await (await fetch(`https://router.project-osrm.org/route/v1/${mode}/${lon1},${lat1};${lon2},${lat2}?overview=full&geometries=geojson`)).json();
+// --via "lat,lon;lat,lon" : points de passage imposés (dans l'ordre)
+const via = args.via ? args.via.split(';').map((v) => v.split(',').map(Number)) : [];
+const wp = [[lat1, lon1], ...via, [lat2, lon2]].map(([la, lo]) => `${lo},${la}`).join(';');
+const r = await (await fetch(`https://router.project-osrm.org/route/v1/${mode}/${wp}?overview=full&geometries=geojson&continue_straight=true`)).json();
 const route = r.routes[0];
 console.log(`trajet : ${(route.distance / 1000).toFixed(1)} km, ${Math.round(route.duration / 60)} min, ${route.geometry.coordinates.length} points`);
 

@@ -189,6 +189,30 @@ const marker = (svg, M, [x, y], label, o = {}) => {
   const px = 100 / 2.05, sb = el('g', { transform: `translate(${Wd - 150},${Hd - 20})` }, svg);
   el('path', { d: `M0,0H${px}M0,-5V5M${px},-5V5`, stroke: C.gold, 'stroke-width': 2.5 }, sb);
   text(sb, px / 2, -9, '100 m', { size: 13, fill: C.gold, haloW: 4 });
+
+  // loupe sur les derniers mètres : du carrefour du Terrain de Mockey-ville jusqu'à la cour
+  {
+    const LR = 78, LX = 318, LY = 262, last = Math.round(tL.d / 10) * 10;
+    const mid = [(tL.loc[0] + to[0]) / 2, (tL.loc[1] + to[1]) / 2];
+    el('line', { x1: ax, y1: ay, x2: LX - LR * 0.55, y2: LY - LR * 0.8, stroke: C.gold, 'stroke-width': 2, 'stroke-dasharray': '4 4' }, svg);
+    const defs = svg.querySelector('defs');
+    const cp = el('clipPath', { id: 'loupeClip' }, defs); el('circle', { cx: LR, cy: LR, r: LR }, cp);
+    const box = el('svg', { id: 'loupe', x: LX - LR, y: LY - LR, width: 2 * LR, height: 2 * LR, viewBox: `0 0 ${2 * LR} ${2 * LR}`, overflow: 'hidden' }, svg);
+    const inner = el('g', { 'clip-path': 'url(#loupeClip)' }, box);
+    inner.id = 'loupe';
+    const L = drawMap(inner, 2 * LR, 2 * LR, mid, 0.62, { roadW: { minor: 18, sec: 22, main: 26 }, service: true, glow: 4 });
+    const k0 = cum.findIndex((c) => c > LEN - 160);
+    routeOn(inner, L, R.slice(Math.max(0, k0)), 9, 'loupe');
+    const [jx, jy] = L.P(tL.loc), [dx, dy] = L.P(to);
+    marker(inner, L, [jx, jy], 10, { r: 12 });
+    el('circle', { cx: dx, cy: dy, r: 15, fill: C.magenta, stroke: C.gold, 'stroke-width': 2.5 }, inner);
+    el('text', { x: dx, y: dy + 5.5, 'text-anchor': 'middle', 'font-size': 15, fill: '#fff', 'font-family': 'Playfair', 'font-weight': 900 }, inner).textContent = '♥';
+    const g2 = el('g', { transform: `translate(${(jx + dx) / 2 + 30},${(jy + dy) / 2 + 4})` }, inner);
+    text(g2, 0, 0, `${last} m`, { size: 17, fill: C.gold2, haloW: 4 });
+    el('circle', { cx: LX, cy: LY, r: LR, fill: 'none', stroke: C.gold, 'stroke-width': 3 }, svg);
+    el('circle', { cx: LX, cy: LY, r: LR + 4, fill: 'none', stroke: C.bg, 'stroke-width': 3, opacity: 0.8 }, svg);
+    text(svg, LX, LY + LR + 22, `Les ${last} derniers mètres`, { size: 14, fill: C.pale, italic: true, weight: 400, haloW: 4 });
+  }
 }
 
 // ---------- pagne (motif zigzag en pixels, d'après le vrai pagne) ----------
