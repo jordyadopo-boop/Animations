@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>Trajet 3D</title>
+<style>
+  @font-face { font-family: 'Jakarta'; font-weight: 800; src: url('/node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-800-normal.woff2') format('woff2'); }
+  @font-face { font-family: 'Jakarta'; font-weight: 700; src: url('/node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-700-normal.woff2') format('woff2'); }
+  html,body{margin:0;background:#000;overflow:hidden}
+  #stage{position:relative;overflow:hidden;width:1080px;height:1920px;font-family:'Jakarta',sans-serif}
+  canvas{display:block}
+  #ui{position:absolute;inset:0;pointer-events:none}
+  #title{position:absolute;left:64px;top:100px;color:#0f1f3d;font-weight:800;font-size:84px;line-height:1.04;letter-spacing:-2px;
+         text-shadow:0 0 18px rgba(255,255,255,.9),0 0 40px rgba(255,255,255,.7)}
+  #title span{display:block}
+  #pill{position:absolute;left:60px;top:300px;transform-origin:0 50%;background:#1f6bff;color:#fff;font-weight:800;font-size:64px;padding:14px 34px;border-radius:60px;
+        box-shadow:0 10px 30px rgba(31,107,255,.35);font-variant-numeric:tabular-nums;white-space:nowrap}
+  #pill small{font-size:40px;font-weight:700;opacity:.85}
+  .tag{position:absolute;transform:translate(-50%,-100%);background:#fff;color:#14213d;font-weight:700;font-size:40px;padding:12px 26px;border-radius:22px;
+       box-shadow:0 8px 24px rgba(0,0,0,.18);white-space:nowrap}
+  .tag:after{content:'';position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);border:14px solid transparent;border-bottom:0;border-top-color:#fff}
+  .dot{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:#1f6bff;border:9px solid #fff;box-sizing:border-box;
+       box-shadow:0 0 0 14px rgba(31,107,255,.25),0 4px 14px rgba(0,0,0,.3)}
+  #head{width:34px;height:34px;margin:-17px 0 0 -17px;border-width:7px}
+  #pin{position:absolute;width:110px;height:150px;margin:-150px 0 0 -55px;transform-origin:50% 100%}
+  #pinShadow{position:absolute;width:70px;height:22px;margin:-11px 0 0 -35px;border-radius:50%;background:rgba(0,0,0,.28);filter:blur(4px)}
+  .city{position:absolute;transform:translate(-50%,-50%);color:#3a4a66;font-weight:800;font-size:44px;letter-spacing:6px;text-transform:uppercase;
+        text-shadow:0 0 12px #fff,0 0 24px #fff}
+</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<div id="stage"><canvas id="c" width="1080" height="1920"></canvas>
+  <div id="ui">
+    <div id="pinShadow"></div>
+    <svg id="pin" viewBox="0 0 110 150"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5a4f"/><stop offset="1" stop-color="#d81f26"/></linearGradient></defs>
+      <path d="M55 146 C40 112 6 88 6 52 A49 49 0 0 1 104 52 C104 88 70 112 55 146Z" fill="url(#pg)" stroke="#a5121a" stroke-width="3"/>
+      <circle cx="55" cy="52" r="19" fill="#fff"/></svg>
+    <div id="title"></div><div id="pill"></div>
+  </div>
+</div>
+<script type="module" src="/trajets/scene.js"></script>
+</body></html>

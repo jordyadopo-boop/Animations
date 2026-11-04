@@ -12,6 +12,11 @@
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.3.0",
     "@fontsource/luckiest-guy": "^5.3.0",
+    "@fontsource/plus-jakarta-sans": "^5.2.5",
     "three": "0.170.0"
+  },
+  "devDependencies": {
+    "@mapbox/vector-tile": "^2.0.3",
+    "pbf": "^4.0.1"
   }
 }
