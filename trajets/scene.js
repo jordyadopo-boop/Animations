@@ -7,8 +7,10 @@ import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import TRAJETS from './trajets.js';
 
-const W = 1080, H = 1920, FPS = 30;
 const q = new URLSearchParams(location.search);
+const SQ = q.get('fmt') === 'carre';   // version carrée 1080×1080
+const W = 1080, H = SQ ? 1080 : 1920, FPS = 30;
+if (SQ) { document.getElementById('stage').classList.add('sq'); document.getElementById('c').height = H; }
 const NAME = q.get('name') || 'bassam_angre';
 const CFG = TRAJETS[NAME];
 const [map, buildings] = await Promise.all([
@@ -62,7 +64,7 @@ renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadow
 const scene = new THREE.Scene();
 const SKY = new THREE.Color('#e3edf2');
 scene.background = SKY; scene.fog = new THREE.Fog(SKY, 1000, 5000);
-const camera = new THREE.PerspectiveCamera(46, W / H, 1, 400000);
+const camera = new THREE.PerspectiveCamera(SQ ? 38 : 46, W / H, 1, 400000);
 
 scene.add(new THREE.HemisphereLight('#ffffff', '#d4d6d8', 1.9));
 const sun = new THREE.DirectionalLight('#fffaf2', 2.1);
@@ -99,7 +101,7 @@ ground.receiveShadow = true; scene.add(ground);
   }
   const mm = new THREE.Mesh(minor.geometry(), new THREE.MeshLambertMaterial({ color: '#ffffff' }));
   const MM = new THREE.Mesh(major.geometry(), new THREE.MeshLambertMaterial({ color: '#ffeeb8' }));
-  const cm = new THREE.Mesh(casing.geometry(), new THREE.MeshLambertMaterial({ color: '#c9c7c0' }));
+  const cm = new THREE.Mesh(casing.geometry(), new THREE.MeshLambertMaterial({ color: '#b3afa5' }));
   mm.receiveShadow = MM.receiveShadow = cm.receiveShadow = true; scene.add(cm, mm, MM);
 }
 
@@ -245,12 +247,12 @@ if (CFG.theme?.name) document.getElementById('stage').classList.add(CFG.theme.na
 if (CFG.endCard) { const e = Object.assign(document.createElement('div'), { id: 'endcard' }); e.innerHTML = CFG.endCard; ui.append(e); }
 if (CFG.turns) ui.append(Object.assign(document.createElement('div'), { id: 'turn' }));
 if (CFG.theme?.pagne) {
-  const NS = 'http://www.w3.org/2000/svg', sv = document.createElementNS(NS, 'svg'); sv.id = 'pagne'; sv.setAttribute('viewBox', '0 0 70 1920');
-  let o = '<rect width="70" height="1920" fill="#c3bbf0"/>'; const cw = 8.75;
-  for (let r = 0; r < 1920 / cw; r++) for (let c = 0; c < 8; c++) { const ph = (r % 20) / 20, x0 = 1 + 6 * (ph < 0.5 ? ph * 2 : 2 - ph * 2), d = Math.abs(c - x0);
+  const NS = 'http://www.w3.org/2000/svg', sv = document.createElementNS(NS, 'svg'); sv.id = 'pagne'; sv.setAttribute('viewBox', `0 0 70 ${H}`);
+  let o = `<rect width="70" height="${H}" fill="#c3bbf0"/>`; const cw = 8.75;
+  for (let r = 0; r < H / cw; r++) for (let c = 0; c < 8; c++) { const ph = (r % 20) / 20, x0 = 1 + 6 * (ph < 0.5 ? ph * 2 : 2 - ph * 2), d = Math.abs(c - x0);
     const col = d < 1.3 ? ((r + c) % 3 ? '#6a2690' : '#4f1a78') : d < 2.2 ? '#9c49b9' : d < 2.9 ? '#d79ae3' : (r + c) % 2 ? '#a69ef0' : '#b2aaf4';
     o += `<rect x="${(c * cw + 1.2).toFixed(1)}" y="${(r * cw + 1.2).toFixed(1)}" width="${(cw - 2.4).toFixed(1)}" height="${(cw - 2.4).toFixed(1)}" rx="1.5" fill="${col}"/>`; }
-  sv.innerHTML = o + '<rect width="5" height="1920" fill="#d8b04c"/>'; ui.append(sv);
+  sv.innerHTML = o + `<rect width="5" height="${H}" fill="#d8b04c"/>`; ui.append(sv);
 }
 if (CFG.theme?.pin) { const st = document.querySelectorAll('#pg stop'); st[0].setAttribute('stop-color', CFG.theme.pin[0]); st[1].setAttribute('stop-color', CFG.theme.pin[1]); document.querySelector('#pin path').setAttribute('stroke', CFG.theme.pin[2]); }
 const tagFrom = Object.assign(document.createElement('div'), { className: 'tag', textContent: CFG.fromLabel });
@@ -301,7 +303,7 @@ function updateLabels(t, cx, cz, D, avoid) {
     const dc = Math.hypot(camera.position.x - x, camera.position.y, camera.position.z - z);
     const [sx, sy, ok] = screen(x, 0, z);
     g.sx = sx; g.sy = sy; g.target = 0;
-    if (!ok || dc > D * (g.road ? 2.2 : g.near || 3.6) || sx < 40 + g.w / 2 || sx > W - 40 - g.w / 2 || sy < (CFG.theme ? 660 : 520) || sy > H - 90 || (CFG.theme?.pagne && sx > W - 70 - g.w / 2)) continue;
+    if (!ok || dc > D * (g.road ? 2.2 : g.near || 3.6) || sx < 40 + g.w / 2 || sx > W - 40 - g.w / 2 || sy < (CFG.theme ? (SQ ? 430 : 660) : 520) || sy > H - 90 || (CFG.theme?.pagne && sx > W - 70 - g.w / 2)) continue;
     g.scale = clamp(D * 1.5 / dc, 0.85, 1.2);
     cand.push([g.rank * 2 - dc / D, g]);
   }
@@ -343,7 +345,10 @@ window.renderFrame = (t) => {
   const [hx, hz, idx] = at(s), n = s >= LEN ? SEGS : idx;
   for (const l of [core, glow, glow2]) l.geometry.instanceCount = Math.max(0, n);
   const pulse = 1 + 0.12 * Math.sin(t * 6);
-  for (const [l, base] of [[glow, 46], [glow2, 26], [core, 13]]) l.material.linewidth = base * (l === glow ? pulse : 1);
+  // dans le ralenti final, trait affiné pour laisser voir la rue empruntée
+  const thin = SLOW ? sstep(TS - 1.5, TS + 0.5, t) : 0;
+  for (const [l, base] of [[glow, 46], [glow2, 26], [core, 13]]) l.material.linewidth = base * (l === glow ? pulse : 1) * mix(1, l === core ? 0.5 : l === glow2 ? 0.38 : 0.3, thin);
+  glow.material.opacity = 0.35 * (1 - 0.7 * thin); glow2.material.opacity = (CFG.theme?.line ? 0.95 : 0.5) * (1 - 0.25 * thin);
 
   // interface
   $('title').style.opacity = sstep(0.2, 0.9, t); $('title').style.transform = `translateY(${(1 - sstep(0.2, 0.9, t)) * 30}px)`;

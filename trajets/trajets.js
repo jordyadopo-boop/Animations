@@ -10,7 +10,7 @@ export default {
     toZone: 'Mockeyville',
     duration: 54,
     endHold: 6,
-    slowEnd: { meters: 1150, seconds: 11, dist: 470 },
+    slowEnd: { meters: 1150, seconds: 12, dist: 400 },
     theme: { name: 'theme-dot', pagne: true, line: { core: '#e0b23e', glow: '#d6a6f2', glow2: '#4b0f8a' }, pin: ['#d63bbd', '#a3168e', '#6d0b5e'] },
     landmarks: [
       { n: 'Carrefour Akwaba', lat: 5.267204, lon: -3.960614, num: 2 },
