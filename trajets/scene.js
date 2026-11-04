@@ -255,7 +255,7 @@ window.renderFrame = (t) => {
   // interface
   $('title').style.opacity = sstep(0.2, 0.9, t); $('title').style.transform = `translateY(${(1 - sstep(0.2, 0.9, t)) * 30}px)`;
   const pill = $('pill'); pill.style.opacity = sstep(T0 - 0.3, T0 + 0.2, t);
-  pill.innerHTML = t < T1 + 0.4 ? fmt(s) : `${fmt(map.distance)} <small>· ${Math.round(map.duration / 60)} min</small>`;
+  pill.innerHTML = t < T1 + 0.4 ? fmt(s * map.distance / LEN) : `${fmt(map.distance)} <small>· ${Math.round(map.duration / 60)} min</small>`;
   pill.style.transform = `scale(${1 + 0.12 * Math.exp(-Math.pow((t - T1 - 0.45) * 5, 2))})`;
   place(dotFrom, fx, 3, fz, sstep(0.3, 0.8, t), null);
   const [fsx, fsy] = screen(fx, 3, fz); tagFrom.style.left = fsx + 'px'; tagFrom.style.top = fsy - 34 + 'px'; tagFrom.style.opacity = sstep(0.5, 1.0, t) * (1 - w * 0.6);
