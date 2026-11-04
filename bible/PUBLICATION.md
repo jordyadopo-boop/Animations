@@ -96,3 +96,9 @@ Un partage, c'est une seconde. Pour elle, c'est des années. 💬
 One share takes a second. For her, it lasts for years.
 Tu vérifies avant de partager ? / Do you check before you share?
 #cyberbullying #rumeur #thinkbeforeyoushare #socialmedia #lumierehumaine
+
+## 14. TOUT VA BIEN ? (burn-out)
+« Tout va bien. » Jusqu'au jour où plus rien ne va. 🔋
+"I'm fine." Until the day nothing is.
+Et toi, ça va vraiment ? / And you, are you really okay?
+#burnout #santementale #mentalhealth #selfcare #lumierehumaine
