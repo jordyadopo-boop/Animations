@@ -7,3 +7,5 @@
 - Leçons : sur un ciel clair, les hologrammes additifs (holoMat) deviennent invisibles → objets pleins ; sol et nuages blancs
   écrasent l'image → sol doré, nuages seulement au loin ; ne jamais mettre de nuages entre la caméra et la scène.
 - Prochain : 49 Apocalypse 18, 21-24 (un ange jette une meule dans la mer) → proposer titre + couverture avant de commencer.
+- ⚠ DÉCISION de Mr A (5 nov. 2026) : épisodes 49 et 50 encore en 3D (même pipeline), puis À PARTIR DE L'ÉPISODE 51,
+  passage en « stick animation » (animation de bonhommes dessinés) avec le skill animation-studio.
