@@ -1,3 +1,14 @@
 node_modules/
 out/
 *.wav
+ep48/seg
+ep48/tts_cache
+ep48/build
+ep48/web/main.js
+ep48/cov
+ep48/node_modules
+ep48/stills
+ep48/sheet.jpg
+ep48/lang.txt
+ep*_rendu.log
+__pycache__/
