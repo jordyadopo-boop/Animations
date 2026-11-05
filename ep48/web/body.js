@@ -753,7 +753,7 @@ SETS.cover = () => {
   const tb = feastTable(scene, 34, 0.5); tb.position.y = 0;
   const lb = lamb(); lb.position.set(0, 0.8, -36); lb.scale.setScalar(2.2); scene.add(lb);
   const big = glowStar(22, 0xfff4d0); big.position.set(0, 7, -40); scene.add(big);
-  return { ...B, update(t) { cr.upd(2.3, 1); cam.position.set(0, 3.6, 7.5); cam.fov = 58; cam.updateProjectionMatrix(); cam.lookAt(0, 3.4, -14); } };
+  return { ...B, update(t) { cr.upd(2.3, 1); cam.position.set(0, 5.2, 8.5); cam.fov = 58; cam.updateProjectionMatrix(); cam.lookAt(0, 1.2, -14); } };
 };
 
 const SHOTS = [['intro', 0, SC.alleluia.start], ['alleluia', SC.alleluia.start, SC.trone.start], ['trone', SC.trone.start, C.handel], ['handel', C.handel, SC.noces.start], ['noces', SC.noces.start, SC.ange.start], ['ange', SC.ange.start, SC.fin.start], ['fin', SC.fin.start, 1000], ['cover', 1000, 1e9]];
