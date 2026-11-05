@@ -9,3 +9,5 @@
 - Prochain : 49 Apocalypse 18, 21-24 (un ange jette une meule dans la mer) → proposer titre + couverture avant de commencer.
 - ⚠ DÉCISION de Mr A (5 nov. 2026) : épisodes 49 et 50 encore en 3D (même pipeline), puis À PARTIR DE L'ÉPISODE 51,
   passage en « stick animation » (animation de bonhommes dessinés) avec le skill animation-studio.
+- ⚠ Pour la stick animation (ép. 51 et suivants) : montrer d'abord des CAPTURES (images fixes du style et des scènes)
+  à Mr A et attendre son accord avant le rendu complet.
