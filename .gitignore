@@ -13,3 +13,12 @@ ep48/lang.txt
 ep*_rendu.log
 __pycache__/
 ep48/vchk
+ep49/seg
+ep49/tts_cache
+ep49/build
+ep49/web/main.js
+ep49/cov
+ep49/node_modules
+ep49/stills
+ep49/sheet.jpg
+ep49/vchk
