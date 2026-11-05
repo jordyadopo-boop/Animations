@@ -175,7 +175,7 @@ SETS.silence = () => {
       ppl.forEach(h => h.root.visible && h !== groom && h !== brid && h.face(0, 'happy', t));
       B.wins.forEach((w, i) => w.visible = t < C.eteint + 0.6 + (i % 5) * 1.1 + hash(i) * 0.4);
       camKeys(cam, t, [{ t: T0, p: [0.6, 1.7, 4.8], l: [0, 1.1, -1.5], f: 52 }, { t: C.lampe, p: [0.3, 1.8, 3.6], l: [0, 1.0, -4], f: 52 }, { t: C.eteint, p: [0, 2.2, 3.0], l: [0, 1.1, -6], f: 52 }, { t: C.jer25, p: [0, 4.5, 8.0], l: [0, 1.0, -8], f: 56 }, { t: C.noces, p: [0, 4.5, 8.0], l: [0, 4.0, -8], f: 56 }, { t: SC.raisons.start, p: [0, 4.6, 8.4], l: [0, 4.4, -8], f: 56 }]);
-      tags.forEach((c, i) => { const k = win(t, T0 + 1.5 + i * 0.3, C.jer25, 0.3, 0.4); fade(c, k); camCard(cam, c, 0.3, 0.5 - i * 0.11); const s = strikes[i]; s.visible = k > 0.1 && t > tagOff[i]; s.position.copy(c.position); s.quaternion.copy(c.quaternion); s.scale.x = sstep(tagOff[i], tagOff[i] + 0.4, t); s.translateZ(0.001); });
+      tags.forEach((c, i) => { const k = win(t, T0 + 1.5 + i * 0.3, C.jer25, 0.3, 0.4); fade(c, k); camCard(cam, c, 0.3, 0.26 - i * 0.11); const s = strikes[i]; s.visible = k > 0.1 && t > tagOff[i]; s.position.copy(c.position); s.quaternion.copy(c.quaternion); s.scale.x = sstep(tagOff[i], tagOff[i] + 0.4, t); s.translateZ(0.001); });
       fade(al, win(t, C.noces + 0.5, SC.raisons.start, 0.8, 0.3)); al.position.set(0, 5.5 + 0.1 * Math.sin(t * 2), -10);
       K.update(t);
     }
