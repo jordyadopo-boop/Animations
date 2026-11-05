@@ -11,7 +11,8 @@ export default {
     duration: 54,
     endHold: 6,
     slowEnd: { meters: 1150, seconds: 12, dist: 400 },
-    theme: { name: 'theme-dot', pagne: true, line: { core: '#e0b23e', glow: '#d6a6f2', glow2: '#4b0f8a' }, pin: ['#d63bbd', '#a3168e', '#6d0b5e'] },
+    satellite: true,   // fond satellite réel (node trajets/satellite.mjs koumassi_mockeyville)
+    theme: { name: 'theme-dot', pagne: true, line: { core: '#ffcf3f', glow: '#e6c2ff', glow2: '#4b0f8a' }, pin: ['#d63bbd', '#a3168e', '#6d0b5e'] },
     landmarks: [
       { n: 'Carrefour Akwaba', lat: 5.267204, lon: -3.960614, num: 2 },
       { n: 'Aéroport FHB', lat: 5.264277, lon: -3.925424, near: 4, num: 3 },

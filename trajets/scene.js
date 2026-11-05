@@ -13,9 +13,10 @@ const W = 1080, H = SQ ? 1080 : 1920, FPS = 30;
 if (SQ) { document.getElementById('stage').classList.add('sq'); document.getElementById('c').height = H; }
 const NAME = q.get('name') || 'bassam_angre';
 const CFG = TRAJETS[NAME];
+const SAT = !!CFG.satellite;   // fond satellite réel (Esri World Imagery) à la place des maquettes
 const [map, buildings] = await Promise.all([
   fetch(`/trajets/data/${NAME}/map.json`).then((r) => r.json()),
-  fetch(`/trajets/data/${NAME}/buildings.json`).then((r) => r.json()),
+  SAT ? [] : fetch(`/trajets/data/${NAME}/buildings.json`).then((r) => r.json()),
 ]);
 
 // ---------- utilitaires ----------
@@ -60,7 +61,7 @@ function flatPoly(b, rings, y) {
 const canvas = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true, logarithmicDepthBuffer: true });
 renderer.setPixelRatio(1); renderer.setSize(W, H, false);
-renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.enabled = !SAT; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
 const SKY = new THREE.Color('#e3edf2');
 scene.background = SKY; scene.fog = new THREE.Fog(SKY, 1000, 5000);
@@ -74,10 +75,31 @@ const SUN_DIR = new THREE.Vector3(0.55, 1.0, 0.35).normalize();
 
 // sol
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(600000, 600000).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: '#dcdcd8' }));
-ground.receiveShadow = true; scene.add(ground);
+ground.receiveShadow = true; if (!SAT) scene.add(ground);
+
+// imagerie satellite : une dalle texturée par tuile, superposées du moins au plus détaillé (sans test de profondeur)
+if (SAT) {
+  const tiles = await fetch(`/trajets/data/${NAME}/sat.json`).then((r) => r.json());
+  const lon = (x, z) => x / 2 ** z * 360 - 180, lat = (y, z) => Math.atan(Math.sinh(Math.PI * (1 - 2 * y / 2 ** z))) * 180 / Math.PI;
+  const loader = new THREE.TextureLoader(), aniso = renderer.capabilities.getMaxAnisotropy();
+  const base = new THREE.Mesh(new THREE.PlaneGeometry(600000, 600000).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#56603f', depthTest: false, depthWrite: false }));
+  base.renderOrder = -10; scene.add(base);
+  await Promise.all(tiles.map(async ([z, x, y]) => {
+    const tex = await loader.loadAsync(`/trajets/data/${NAME}/sat/${z}/${x}/${y}.jpg`);
+    tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = aniso; tex.minFilter = THREE.LinearMipmapLinearFilter;
+    const [x0, z0] = proj(lat(y, z), lon(x, z)), [x1, z1] = proj(lat(y + 1, z), lon(x + 1, z));
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute([x0, 0, z0, x1, 0, z0, x1, 0, z1, x0, 0, z1], 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 1, 1, 1, 0, 0, 0], 2));
+    g.setIndex([0, 2, 1, 0, 3, 2]); g.computeBoundingSphere();
+    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: tex, depthTest: false, depthWrite: false, side: THREE.DoubleSide }));
+    m.renderOrder = z - 20; scene.add(m);
+  }));
+  console.log('tuiles satellite', tiles.length);
+}
 
 // verdure et eau
-{
+if (!SAT) {
   const g = new Builder(), w = new Builder();
   for (const p of map.green) flatPoly(g, p.r, 0.25);
   for (const p of map.water) flatPoly(w, p.r, 0.45);
@@ -87,7 +109,7 @@ ground.receiveShadow = true; scene.add(ground);
 }
 
 // routes : rubans plats
-{
+if (!SAT) {
   const minor = new Builder(), major = new Builder(), casing = new Builder();
   const ribbons = [];
   for (const r of map.roads) { ribbons.push([r.w >= 11 ? major : minor, r.w >= 11 ? 0.9 : 0.7, r.w / 2, r.p]); ribbons.push([casing, 0.55, r.w / 2 + (r.w >= 11 ? 2.2 : 1.2), r.p]); }
@@ -108,7 +130,7 @@ ground.receiveShadow = true; scene.add(ground);
 // bâtiments extrudés (par blocs de 1,5 km pour le découpage hors champ)
 const chunks = new Map();
 const WALL = [[0.94, 0.94, 0.93], [0.97, 0.97, 0.96], [0.91, 0.91, 0.91], [0.96, 0.94, 0.90]];
-for (const [h0, ring] of buildings) {
+for (const [h0, ring] of SAT ? [] : buildings) {
   let cx = 0, cz = 0, area = 0;
   for (let i = 0; i < ring.length; i++) { const [x1, z1] = ring[i], [x2, z2] = ring[(i + 1) % ring.length]; area += x1 * z2 - x2 * z1; cx += x1; cz += z1; }
   area = Math.abs(area) / 2; cx /= ring.length; cz /= ring.length;
@@ -145,7 +167,7 @@ const LEN = cum.at(-1);
 const at = (s) => { s = clamp(s, 0, LEN); let lo = 0, hi = cum.length - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; cum[m] <= s ? (lo = m) : (hi = m); } const t = (s - cum[lo]) / Math.max(1e-6, cum[hi] - cum[lo]); return [mix(route[lo][0], route[hi][0], t), mix(route[lo][1], route[hi][1], t), lo]; };
 
 // arbres : grille d'occupation 5 m (bâtiments, routes, eau) puis semis pseudo-aléatoire
-{
+if (!SAT) {
   const C = 5, [[bx0, bz0], [bx1, bz1]] = map.box, GW = Math.ceil((bx1 - bx0) / C), GH = Math.ceil((bz1 - bz0) / C);
   const occ = new Uint8Array(GW * GH); // 1 = occupé, 2 = espace vert
   const fill = (ring, val, onlyEmpty) => {
@@ -244,6 +266,7 @@ const $ = (id) => document.getElementById(id);
 const ui = $('ui'), labels = $('labels');
 $('title').innerHTML = CFG.titleHTML || CFG.title.map((l) => `<span>${l}</span>`).join('');
 if (CFG.theme?.name) document.getElementById('stage').classList.add(CFG.theme.name);
+if (SAT) ui.append(Object.assign(document.createElement('div'), { id: 'attr', textContent: 'Imagerie © Esri, Maxar, Earthstar Geographics · Itinéraire OSRM · Noms © OpenStreetMap' }));
 if (CFG.endCard) { const e = Object.assign(document.createElement('div'), { id: 'endcard' }); e.innerHTML = CFG.endCard; ui.append(e); }
 if (CFG.turns) ui.append(Object.assign(document.createElement('div'), { id: 'turn' }));
 if (CFG.theme?.pagne) {
@@ -347,7 +370,7 @@ window.renderFrame = (t) => {
   const pulse = 1 + 0.12 * Math.sin(t * 6);
   // dans le ralenti final, trait affiné pour laisser voir la rue empruntée
   const thin = SLOW ? sstep(TS - 1.5, TS + 0.5, t) : 0;
-  for (const [l, base] of [[glow, 46], [glow2, 26], [core, 13]]) l.material.linewidth = base * (l === glow ? pulse : 1) * mix(1, l === core ? 0.5 : l === glow2 ? 0.38 : 0.3, thin);
+  for (const [l, base] of [[glow, 46], [glow2, 26], [core, 13]]) l.material.linewidth = base * (l === glow ? pulse : 1) * mix(1, SAT ? (l === core ? 0.75 : l === glow2 ? 0.62 : 0.45) : (l === core ? 0.5 : l === glow2 ? 0.38 : 0.3), thin);
   glow.material.opacity = 0.35 * (1 - 0.7 * thin); glow2.material.opacity = (CFG.theme?.line ? 0.95 : 0.5) * (1 - 0.25 * thin);
 
   // interface
