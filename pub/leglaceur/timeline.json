@@ -1,0 +1,2121 @@
+{
+ "scenes": [
+  {
+   "id": "hook",
+   "start": 0.0,
+   "end": 3.878,
+   "lines": [
+    {
+     "t": "Attendez.",
+     "start": 0.4,
+     "end": 0.917,
+     "words": [
+      {
+       "w": "Attendez",
+       "s": 0.4,
+       "e": 0.917
+      }
+     ]
+    },
+    {
+     "t": "Votre boisson est fraîche…",
+     "start": 1.217,
+     "end": 2.413,
+     "words": [
+      {
+       "w": "Votre",
+       "s": 1.217,
+       "e": 1.53
+      },
+      {
+       "w": "boisson",
+       "s": 1.541,
+       "e": 1.831
+      },
+      {
+       "w": "est",
+       "s": 1.842,
+       "e": 1.907
+      },
+      {
+       "w": "fraîche",
+       "s": 1.918,
+       "e": 2.413
+      }
+     ]
+    },
+    {
+     "t": "ou juste tiède ?",
+     "start": 2.713,
+     "end": 3.478,
+     "words": [
+      {
+       "w": "ou",
+       "s": 2.713,
+       "e": 2.843
+      },
+      {
+       "w": "juste",
+       "s": 2.854,
+       "e": 3.101
+      },
+      {
+       "w": "tiède",
+       "s": 3.112,
+       "e": 3.478
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "heat",
+   "start": 3.878,
+   "end": 8.276,
+   "lines": [
+    {
+     "t": "À Abidjan, la chaleur ne prend jamais de pause.",
+     "start": 4.078,
+     "end": 6.373,
+     "words": [
+      {
+       "w": "À",
+       "s": 4.078,
+       "e": 4.207
+      },
+      {
+       "w": "Abidjan",
+       "s": 4.218,
+       "e": 4.628
+      },
+      {
+       "w": "la",
+       "s": 4.94,
+       "e": 5.059
+      },
+      {
+       "w": "chaleur",
+       "s": 5.069,
+       "e": 5.328
+      },
+      {
+       "w": "ne",
+       "s": 5.339,
+       "e": 5.425
+      },
+      {
+       "w": "prend",
+       "s": 5.436,
+       "e": 5.597
+      },
+      {
+       "w": "jamais",
+       "s": 5.608,
+       "e": 5.845
+      },
+      {
+       "w": "de",
+       "s": 5.856,
+       "e": 5.964
+      },
+      {
+       "w": "pause",
+       "s": 5.975,
+       "e": 6.373
+      }
+     ]
+    },
+    {
+     "t": "Alors votre glace non plus.",
+     "start": 6.723,
+     "end": 7.876,
+     "words": [
+      {
+       "w": "Alors",
+       "s": 6.723,
+       "e": 7.003
+      },
+      {
+       "w": "votre",
+       "s": 7.014,
+       "e": 7.251
+      },
+      {
+       "w": "glace",
+       "s": 7.262,
+       "e": 7.499
+      },
+      {
+       "w": "non",
+       "s": 7.51,
+       "e": 7.65
+      },
+      {
+       "w": "plus",
+       "s": 7.661,
+       "e": 7.876
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "logo",
+   "start": 8.276,
+   "end": 13.977,
+   "lines": [
+    {
+     "t": "Voici Le Glaceur. La fraîcheur sous toutes ses formes.",
+     "start": 9.076,
+     "end": 12.377,
+     "words": [
+      {
+       "w": "Voici",
+       "s": 9.076,
+       "e": 9.475
+      },
+      {
+       "w": "Le",
+       "s": 9.486,
+       "e": 9.572
+      },
+      {
+       "w": "Glaceur",
+       "s": 9.582,
+       "e": 10.164
+      },
+      {
+       "w": "La",
+       "s": 10.912,
+       "e": 11.084
+      },
+      {
+       "w": "fraîcheur",
+       "s": 11.095,
+       "e": 11.472
+      },
+      {
+       "w": "sous",
+       "s": 11.483,
+       "e": 11.623
+      },
+      {
+       "w": "toutes",
+       "s": 11.634,
+       "e": 11.817
+      },
+      {
+       "w": "ses",
+       "s": 11.828,
+       "e": 11.936
+      },
+      {
+       "w": "formes",
+       "s": 11.946,
+       "e": 12.377
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "values",
+   "chips": [
+    {
+     "text": "EAU TRAITÉE & CONTRÔLÉE",
+     "t": 16.044
+    },
+    {
+     "text": "HYGIÈNE RIGOUREUSE",
+     "t": 17.892
+    },
+    {
+     "text": "FROID MAÎTRISÉ",
+     "t": 19.609
+    }
+   ],
+   "start": 13.977,
+   "end": 21.464,
+   "lines": [
+    {
+     "t": "Une glace alimentaire, faite avec une eau traitée et contrôlée.",
+     "start": 14.277,
+     "end": 16.96,
+     "words": [
+      {
+       "w": "Une",
+       "s": 14.277,
+       "e": 14.439
+      },
+      {
+       "w": "glace",
+       "s": 14.449,
+       "e": 14.676
+      },
+      {
+       "w": "alimentaire",
+       "s": 14.687,
+       "e": 15.279
+      },
+      {
+       "w": "faite",
+       "s": 15.527,
+       "e": 15.71
+      },
+      {
+       "w": "avec",
+       "s": 15.721,
+       "e": 15.926
+      },
+      {
+       "w": "une",
+       "s": 15.937,
+       "e": 16.034
+      },
+      {
+       "w": "eau",
+       "s": 16.044,
+       "e": 16.087
+      },
+      {
+       "w": "traitée",
+       "s": 16.098,
+       "e": 16.4
+      },
+      {
+       "w": "et",
+       "s": 16.411,
+       "e": 16.443
+      },
+      {
+       "w": "contrôlée",
+       "s": 16.454,
+       "e": 16.96
+      }
+     ]
+    },
+    {
+     "t": "Des procédés d'hygiène rigoureux. Et le froid maîtrisé, en continu.",
+     "start": 17.31,
+     "end": 21.064,
+     "words": [
+      {
+       "w": "Des",
+       "s": 17.31,
+       "e": 17.493
+      },
+      {
+       "w": "procédés",
+       "s": 17.504,
+       "e": 17.881
+      },
+      {
+       "w": "d'hygiène",
+       "s": 17.892,
+       "e": 18.205
+      },
+      {
+       "w": "rigoureux",
+       "s": 18.215,
+       "e": 18.646
+      },
+      {
+       "w": "Et",
+       "s": 19.394,
+       "e": 19.502
+      },
+      {
+       "w": "le",
+       "s": 19.512,
+       "e": 19.599
+      },
+      {
+       "w": "froid",
+       "s": 19.609,
+       "e": 19.793
+      },
+      {
+       "w": "maîtrisé",
+       "s": 19.803,
+       "e": 20.299
+      },
+      {
+       "w": "en",
+       "s": 20.536,
+       "e": 20.59
+      },
+      {
+       "w": "continu",
+       "s": 20.601,
+       "e": 21.064
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "science",
+   "start": 21.464,
+   "end": 29.012,
+   "lines": [
+    {
+     "t": "Le secret ? En fondant, chaque gramme de glace absorbe trois cent trente-quatre joules de chaleur.",
+     "start": 21.764,
+     "end": 26.628,
+     "words": [
+      {
+       "w": "Le",
+       "s": 21.764,
+       "e": 21.947
+      },
+      {
+       "w": "secret",
+       "s": 21.958,
+       "e": 22.346
+      },
+      {
+       "w": "En",
+       "s": 23.083,
+       "e": 23.223
+      },
+      {
+       "w": "fondant",
+       "s": 23.233,
+       "e": 23.611
+      },
+      {
+       "w": "chaque",
+       "s": 23.923,
+       "e": 24.117
+      },
+      {
+       "w": "gramme",
+       "s": 24.128,
+       "e": 24.343
+      },
+      {
+       "w": "de",
+       "s": 24.354,
+       "e": 24.451
+      },
+      {
+       "w": "glace",
+       "s": 24.462,
+       "e": 24.677
+      },
+      {
+       "w": "absorbe",
+       "s": 24.688,
+       "e": 25.022
+      },
+      {
+       "w": "trois",
+       "s": 25.033,
+       "e": 25.216
+      },
+      {
+       "w": "cent",
+       "s": 25.227,
+       "e": 25.345
+      },
+      {
+       "w": "trente-quatre",
+       "s": 25.356,
+       "e": 25.83
+      },
+      {
+       "w": "joules",
+       "s": 25.841,
+       "e": 26.014
+      },
+      {
+       "w": "de",
+       "s": 26.024,
+       "e": 26.143
+      },
+      {
+       "w": "chaleur",
+       "s": 26.154,
+       "e": 26.628
+      }
+     ]
+    },
+    {
+     "t": "C'est ça, la vraie fraîcheur.",
+     "start": 26.928,
+     "end": 28.512,
+     "words": [
+      {
+       "w": "C'est",
+       "s": 26.928,
+       "e": 27.154
+      },
+      {
+       "w": "ça",
+       "s": 27.165,
+       "e": 27.38
+      },
+      {
+       "w": "la",
+       "s": 27.661,
+       "e": 27.779
+      },
+      {
+       "w": "vraie",
+       "s": 27.79,
+       "e": 27.951
+      },
+      {
+       "w": "fraîcheur",
+       "s": 27.962,
+       "e": 28.512
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "trans",
+   "start": 29.012,
+   "end": 31.925,
+   "lines": [
+    {
+     "t": "Six glaces. Six usages.",
+     "start": 29.312,
+     "end": 31.525,
+     "words": [
+      {
+       "w": "Six",
+       "s": 29.312,
+       "e": 29.527
+      },
+      {
+       "w": "glaces",
+       "s": 29.538,
+       "e": 30.034
+      },
+      {
+       "w": "Six",
+       "s": 30.781,
+       "e": 30.997
+      },
+      {
+       "w": "usages",
+       "s": 31.008,
+       "e": 31.525
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "p_glacons",
+   "type": "product",
+   "img": "glacons",
+   "num": 1,
+   "name": "Glace cubique",
+   "alias": "Glaçons alimentaires",
+   "price": "750",
+   "unit": "le pack de 5 kg",
+   "chips": [
+    {
+     "text": "DENSE & CRISTALLINE",
+     "t": 34.377
+    },
+    {
+     "text": "FONTE LENTE",
+     "t": 35.789
+    },
+    {
+     "text": "NE DILUE PAS",
+     "t": 37.157
+    }
+   ],
+   "start": 31.925,
+   "end": 39.956,
+   "lines": [
+    {
+     "t": "La glace cubique. Des glaçons denses, cristallins, à fonte lente : ils refroidissent sans diluer.",
+     "start": 32.175,
+     "end": 37.513,
+     "words": [
+      {
+       "w": "La",
+       "s": 32.175,
+       "e": 32.358
+      },
+      {
+       "w": "glace",
+       "s": 32.369,
+       "e": 32.595
+      },
+      {
+       "w": "cubique",
+       "s": 32.606,
+       "e": 33.123
+      },
+      {
+       "w": "Des",
+       "s": 33.871,
+       "e": 34.054
+      },
+      {
+       "w": "glaçons",
+       "s": 34.065,
+       "e": 34.366
+      },
+      {
+       "w": "denses",
+       "s": 34.377,
+       "e": 34.765
+      },
+      {
+       "w": "cristallins",
+       "s": 35.013,
+       "e": 35.487
+      },
+      {
+       "w": "à",
+       "s": 35.703,
+       "e": 35.778
+      },
+      {
+       "w": "fonte",
+       "s": 35.789,
+       "e": 36.015
+      },
+      {
+       "w": "lente",
+       "s": 36.026,
+       "e": 36.284
+      },
+      {
+       "w": "ils",
+       "s": 36.468,
+       "e": 36.565
+      },
+      {
+       "w": "refroidissent",
+       "s": 36.575,
+       "e": 37.028
+      },
+      {
+       "w": "sans",
+       "s": 37.039,
+       "e": 37.147
+      },
+      {
+       "w": "diluer",
+       "s": 37.157,
+       "e": 37.513
+      }
+     ]
+    },
+    {
+     "t": "Sept cent cinquante francs le pack de cinq kilos.",
+     "start": 37.763,
+     "end": 39.606,
+     "words": [
+      {
+       "w": "Sept",
+       "s": 37.763,
+       "e": 38.022
+      },
+      {
+       "w": "cent",
+       "s": 38.032,
+       "e": 38.14
+      },
+      {
+       "w": "cinquante",
+       "s": 38.151,
+       "e": 38.496
+      },
+      {
+       "w": "francs",
+       "s": 38.506,
+       "e": 38.657
+      },
+      {
+       "w": "le",
+       "s": 38.668,
+       "e": 38.765
+      },
+      {
+       "w": "pack",
+       "s": 38.776,
+       "e": 38.959
+      },
+      {
+       "w": "de",
+       "s": 38.97,
+       "e": 39.088
+      },
+      {
+       "w": "cinq",
+       "s": 39.099,
+       "e": 39.25
+      },
+      {
+       "w": "kilos",
+       "s": 39.261,
+       "e": 39.606
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "p_grain",
+   "type": "product",
+   "img": "grain",
+   "num": 2,
+   "name": "Glace en grain",
+   "alias": "Nugget ice · nouveau",
+   "price": "750",
+   "unit": "le pack de 5 kg",
+   "isNew": true,
+   "chips": [
+    {
+     "text": "MOELLEUSE",
+     "t": 42.257
+    },
+    {
+     "text": "ABSORBE LE JUS",
+     "t": 43.087
+    },
+    {
+     "text": "SE CROQUE",
+     "t": 44.973
+    },
+    {
+     "text": "SMOOTHIES · COCKTAILS",
+     "t": 46.322
+    }
+   ],
+   "start": 39.956,
+   "end": 47.9,
+   "lines": [
+    {
+     "t": "Nouveau : la glace en grain. Moelleuse, elle absorbe le jus de votre boisson, et elle se croque.",
+     "start": 40.206,
+     "end": 45.447,
+     "words": [
+      {
+       "w": "Nouveau",
+       "s": 40.206,
+       "e": 40.669
+      },
+      {
+       "w": "la",
+       "s": 40.82,
+       "e": 40.917
+      },
+      {
+       "w": "glace",
+       "s": 40.928,
+       "e": 41.176
+      },
+      {
+       "w": "en",
+       "s": 41.187,
+       "e": 41.251
+      },
+      {
+       "w": "grain",
+       "s": 41.262,
+       "e": 41.521
+      },
+      {
+       "w": "Moelleuse",
+       "s": 42.257,
+       "e": 42.742
+      },
+      {
+       "w": "elle",
+       "s": 43.001,
+       "e": 43.076
+      },
+      {
+       "w": "absorbe",
+       "s": 43.087,
+       "e": 43.421
+      },
+      {
+       "w": "le",
+       "s": 43.432,
+       "e": 43.54
+      },
+      {
+       "w": "jus",
+       "s": 43.55,
+       "e": 43.658
+      },
+      {
+       "w": "de",
+       "s": 43.669,
+       "e": 43.755
+      },
+      {
+       "w": "votre",
+       "s": 43.766,
+       "e": 43.992
+      },
+      {
+       "w": "boisson",
+       "s": 44.003,
+       "e": 44.413
+      },
+      {
+       "w": "et",
+       "s": 44.693,
+       "e": 44.747
+      },
+      {
+       "w": "elle",
+       "s": 44.757,
+       "e": 44.844
+      },
+      {
+       "w": "se",
+       "s": 44.854,
+       "e": 44.962
+      },
+      {
+       "w": "croque",
+       "s": 44.973,
+       "e": 45.447
+      }
+     ]
+    },
+    {
+     "t": "Parfaite pour les smoothies et les cocktails d'été.",
+     "start": 45.697,
+     "end": 47.55,
+     "words": [
+      {
+       "w": "Parfaite",
+       "s": 45.697,
+       "e": 46.074
+      },
+      {
+       "w": "pour",
+       "s": 46.085,
+       "e": 46.225
+      },
+      {
+       "w": "les",
+       "s": 46.236,
+       "e": 46.311
+      },
+      {
+       "w": "smoothies",
+       "s": 46.322,
+       "e": 46.667
+      },
+      {
+       "w": "et",
+       "s": 46.678,
+       "e": 46.699
+      },
+      {
+       "w": "les",
+       "s": 46.71,
+       "e": 46.775
+      },
+      {
+       "w": "cocktails",
+       "s": 46.785,
+       "e": 47.141
+      },
+      {
+       "w": "d'été",
+       "s": 47.152,
+       "e": 47.55
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "p_pilee",
+   "type": "product",
+   "img": "pilee",
+   "num": 3,
+   "name": "Glace pilée",
+   "alias": "Glace concassée",
+   "price": "3 000",
+   "unit": "le sac de 50 kg",
+   "chips": [
+    {
+     "text": "FRAÎCHEUR INTENSE",
+     "t": 49.835
+    },
+    {
+     "text": "MOJITO · FRAPPÉS",
+     "t": 51.106
+    },
+    {
+     "text": "ÉTALS DE POISSON",
+     "t": 52.68
+    }
+   ],
+   "start": 47.9,
+   "end": 55.737,
+   "lines": [
+    {
+     "t": "La glace pilée. Une fraîcheur intense, pour le mojito, les frappés, et les étals de poisson.",
+     "start": 48.15,
+     "end": 53.456,
+     "words": [
+      {
+       "w": "La",
+       "s": 48.15,
+       "e": 48.333
+      },
+      {
+       "w": "glace",
+       "s": 48.344,
+       "e": 48.57
+      },
+      {
+       "w": "pilée",
+       "s": 48.581,
+       "e": 48.926
+      },
+      {
+       "w": "Une",
+       "s": 49.663,
+       "e": 49.824
+      },
+      {
+       "w": "fraîcheur",
+       "s": 49.835,
+       "e": 50.158
+      },
+      {
+       "w": "intense",
+       "s": 50.169,
+       "e": 50.632
+      },
+      {
+       "w": "pour",
+       "s": 50.902,
+       "e": 51.031
+      },
+      {
+       "w": "le",
+       "s": 51.042,
+       "e": 51.096
+      },
+      {
+       "w": "mojito",
+       "s": 51.106,
+       "e": 51.559
+      },
+      {
+       "w": "les",
+       "s": 51.818,
+       "e": 51.904
+      },
+      {
+       "w": "frappés",
+       "s": 51.915,
+       "e": 52.303
+      },
+      {
+       "w": "et",
+       "s": 52.561,
+       "e": 52.583
+      },
+      {
+       "w": "les",
+       "s": 52.594,
+       "e": 52.669
+      },
+      {
+       "w": "étals",
+       "s": 52.68,
+       "e": 52.96
+      },
+      {
+       "w": "de",
+       "s": 52.971,
+       "e": 53.068
+      },
+      {
+       "w": "poisson",
+       "s": 53.078,
+       "e": 53.456
+      }
+     ]
+    },
+    {
+     "t": "Trois mille francs le sac de cinquante kilos.",
+     "start": 53.706,
+     "end": 55.387,
+     "words": [
+      {
+       "w": "Trois",
+       "s": 53.706,
+       "e": 53.91
+      },
+      {
+       "w": "mille",
+       "s": 53.921,
+       "e": 54.072
+      },
+      {
+       "w": "francs",
+       "s": 54.083,
+       "e": 54.244
+      },
+      {
+       "w": "le",
+       "s": 54.255,
+       "e": 54.363
+      },
+      {
+       "w": "sac",
+       "s": 54.374,
+       "e": 54.557
+      },
+      {
+       "w": "de",
+       "s": 54.568,
+       "e": 54.686
+      },
+      {
+       "w": "cinquante",
+       "s": 54.697,
+       "e": 55.02
+      },
+      {
+       "w": "kilos",
+       "s": 55.031,
+       "e": 55.387
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "p_carbo",
+   "type": "product",
+   "img": "carboglace",
+   "num": 4,
+   "name": "Carboglace",
+   "alias": "Glace carbonique · glace sèche",
+   "price": "7 500",
+   "unit": "le kilo",
+   "fog": true,
+   "chips": [
+    {
+     "text": "−78,5 °C",
+     "t": 57.715
+    },
+    {
+     "text": "BRUME SPECTACULAIRE",
+     "t": 60.107
+    },
+    {
+     "text": "ÉVÉNEMENTS · TRANSPORT",
+     "t": 61.734
+    },
+    {
+     "text": "AVEC DES GANTS",
+     "t": 63.881
+    }
+   ],
+   "start": 55.737,
+   "end": 65.556,
+   "lines": [
+    {
+     "t": "La carboglace. Moins soixante-dix-huit degrés. Elle crée une brume blanche spectaculaire, pour vos événements et le transport au froid.",
+     "start": 55.987,
+     "end": 63.038,
+     "words": [
+      {
+       "w": "La",
+       "s": 55.987,
+       "e": 56.159
+      },
+      {
+       "w": "carboglace",
+       "s": 56.17,
+       "e": 56.968
+      },
+      {
+       "w": "Moins",
+       "s": 57.715,
+       "e": 57.952
+      },
+      {
+       "w": "soixante-dix-huit",
+       "s": 57.963,
+       "e": 58.523
+      },
+      {
+       "w": "degrés",
+       "s": 58.534,
+       "e": 58.9
+      },
+      {
+       "w": "Elle",
+       "s": 59.644,
+       "e": 59.816
+      },
+      {
+       "w": "crée",
+       "s": 59.827,
+       "e": 59.989
+      },
+      {
+       "w": "une",
+       "s": 60.0,
+       "e": 60.096
+      },
+      {
+       "w": "brume",
+       "s": 60.107,
+       "e": 60.301
+      },
+      {
+       "w": "blanche",
+       "s": 60.312,
+       "e": 60.56
+      },
+      {
+       "w": "spectaculaire",
+       "s": 60.571,
+       "e": 61.25
+      },
+      {
+       "w": "pour",
+       "s": 61.497,
+       "e": 61.627
+      },
+      {
+       "w": "vos",
+       "s": 61.637,
+       "e": 61.724
+      },
+      {
+       "w": "événements",
+       "s": 61.734,
+       "e": 62.079
+      },
+      {
+       "w": "et",
+       "s": 62.09,
+       "e": 62.133
+      },
+      {
+       "w": "le",
+       "s": 62.144,
+       "e": 62.23
+      },
+      {
+       "w": "transport",
+       "s": 62.241,
+       "e": 62.618
+      },
+      {
+       "w": "au",
+       "s": 62.629,
+       "e": 62.683
+      },
+      {
+       "w": "froid",
+       "s": 62.694,
+       "e": 63.038
+      }
+     ]
+    },
+    {
+     "t": "Toujours avec des gants, et jamais en bouche.",
+     "start": 63.288,
+     "end": 65.206,
+     "words": [
+      {
+       "w": "Toujours",
+       "s": 63.288,
+       "e": 63.59
+      },
+      {
+       "w": "avec",
+       "s": 63.601,
+       "e": 63.762
+      },
+      {
+       "w": "des",
+       "s": 63.773,
+       "e": 63.87
+      },
+      {
+       "w": "gants",
+       "s": 63.881,
+       "e": 64.097
+      },
+      {
+       "w": "et",
+       "s": 64.355,
+       "e": 64.409
+      },
+      {
+       "w": "jamais",
+       "s": 64.42,
+       "e": 64.657
+      },
+      {
+       "w": "en",
+       "s": 64.668,
+       "e": 64.754
+      },
+      {
+       "w": "bouche",
+       "s": 64.765,
+       "e": 65.206
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "p_cup",
+   "type": "product",
+   "img": "gobelet",
+   "num": 5,
+   "name": "Ice Cup",
+   "alias": "Gobelet de glaçons",
+   "price": "250",
+   "unit": "le gobelet",
+   "chips": [
+    {
+     "text": "PRÊT À L'EMPLOI",
+     "t": 68.407
+    },
+    {
+     "text": "SODAS · JUS",
+     "t": 69.183
+    },
+    {
+     "text": "À EMPORTER",
+     "t": 70.142
+    }
+   ],
+   "start": 65.556,
+   "end": 72.444,
+   "lines": [
+    {
+     "t": "L'Ice Cup. Un gobelet de glaçons, prêt à l'emploi : sodas, jus, vente à emporter.",
+     "start": 65.806,
+     "end": 70.875,
+     "words": [
+      {
+       "w": "L'Ice",
+       "s": 65.806,
+       "e": 66.108
+      },
+      {
+       "w": "Cup",
+       "s": 66.119,
+       "e": 66.474
+      },
+      {
+       "w": "Un",
+       "s": 67.222,
+       "e": 67.372
+      },
+      {
+       "w": "gobelet",
+       "s": 67.383,
+       "e": 67.631
+      },
+      {
+       "w": "de",
+       "s": 67.642,
+       "e": 67.739
+      },
+      {
+       "w": "glaçons",
+       "s": 67.75,
+       "e": 68.148
+      },
+      {
+       "w": "prêt",
+       "s": 68.407,
+       "e": 68.558
+      },
+      {
+       "w": "à",
+       "s": 68.569,
+       "e": 68.612
+      },
+      {
+       "w": "l'emploi",
+       "s": 68.622,
+       "e": 68.989
+      },
+      {
+       "w": "sodas",
+       "s": 69.183,
+       "e": 69.495
+      },
+      {
+       "w": "jus",
+       "s": 69.743,
+       "e": 69.937
+      },
+      {
+       "w": "vente",
+       "s": 70.142,
+       "e": 70.325
+      },
+      {
+       "w": "à",
+       "s": 70.336,
+       "e": 70.379
+      },
+      {
+       "w": "emporter",
+       "s": 70.39,
+       "e": 70.875
+      }
+     ]
+    },
+    {
+     "t": "Deux cent cinquante francs.",
+     "start": 71.125,
+     "end": 72.094,
+     "words": [
+      {
+       "w": "Deux",
+       "s": 71.125,
+       "e": 71.362
+      },
+      {
+       "w": "cent",
+       "s": 71.372,
+       "e": 71.48
+      },
+      {
+       "w": "cinquante",
+       "s": 71.491,
+       "e": 71.825
+      },
+      {
+       "w": "francs",
+       "s": 71.836,
+       "e": 72.094
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "p_barres",
+   "type": "product",
+   "img": "barres",
+   "num": 6,
+   "name": "Barres de glace",
+   "alias": "Pains de glace",
+   "price": "350",
+   "unit": "la barre de 5 kg · 650 F les 10 kg",
+   "chips": [
+    {
+     "text": "GRAND FORMAT",
+     "t": 74.454
+    },
+    {
+     "text": "FONTE LENTE",
+     "t": 75.273
+    },
+    {
+     "text": "CONSERVER · TRANSPORTER",
+     "t": 76.103
+    },
+    {
+     "text": "5 KG · 10 KG",
+     "t": 78.228
+    }
+   ],
+   "start": 72.444,
+   "end": 81.462,
+   "lines": [
+    {
+     "t": "Et les barres de glace. Grand format, fonte lente : pour conserver, transporter, pêcher.",
+     "start": 72.694,
+     "end": 77.978,
+     "words": [
+      {
+       "w": "Et",
+       "s": 72.694,
+       "e": 72.802
+      },
+      {
+       "w": "les",
+       "s": 72.813,
+       "e": 72.91
+      },
+      {
+       "w": "barres",
+       "s": 72.92,
+       "e": 73.093
+      },
+      {
+       "w": "de",
+       "s": 73.103,
+       "e": 73.2
+      },
+      {
+       "w": "glace",
+       "s": 73.211,
+       "e": 73.707
+      },
+      {
+       "w": "Grand",
+       "s": 74.454,
+       "e": 74.67
+      },
+      {
+       "w": "format",
+       "s": 74.681,
+       "e": 75.058
+      },
+      {
+       "w": "fonte",
+       "s": 75.273,
+       "e": 75.478
+      },
+      {
+       "w": "lente",
+       "s": 75.489,
+       "e": 75.769
+      },
+      {
+       "w": "pour",
+       "s": 75.941,
+       "e": 76.092
+      },
+      {
+       "w": "conserver",
+       "s": 76.103,
+       "e": 76.599
+      },
+      {
+       "w": "transporter",
+       "s": 76.814,
+       "e": 77.364
+      },
+      {
+       "w": "pêcher",
+       "s": 77.59,
+       "e": 77.978
+      }
+     ]
+    },
+    {
+     "t": "Trois cent cinquante francs les cinq kilos, six cent cinquante les dix.",
+     "start": 78.228,
+     "end": 81.062,
+     "words": [
+      {
+       "w": "Trois",
+       "s": 78.228,
+       "e": 78.444
+      },
+      {
+       "w": "cent",
+       "s": 78.454,
+       "e": 78.562
+      },
+      {
+       "w": "cinquante",
+       "s": 78.573,
+       "e": 78.907
+      },
+      {
+       "w": "francs",
+       "s": 78.918,
+       "e": 79.069
+      },
+      {
+       "w": "les",
+       "s": 79.079,
+       "e": 79.176
+      },
+      {
+       "w": "cinq",
+       "s": 79.187,
+       "e": 79.36
+      },
+      {
+       "w": "kilos",
+       "s": 79.37,
+       "e": 79.672
+      },
+      {
+       "w": "six",
+       "s": 79.877,
+       "e": 80.017
+      },
+      {
+       "w": "cent",
+       "s": 80.028,
+       "e": 80.157
+      },
+      {
+       "w": "cinquante",
+       "s": 80.168,
+       "e": 80.513
+      },
+      {
+       "w": "les",
+       "s": 80.523,
+       "e": 80.599
+      },
+      {
+       "w": "dix",
+       "s": 80.61,
+       "e": 81.062
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sectors",
+   "start": 81.462,
+   "end": 86.379,
+   "lines": [
+    {
+     "t": "Restaurants.",
+     "img": "usage-restaurant",
+     "start": 81.762,
+     "end": 82.333,
+     "words": [
+      {
+       "w": "Restaurants",
+       "s": 81.762,
+       "e": 82.333
+      }
+     ]
+    },
+    {
+     "t": "Bars et lounges.",
+     "img": "usage-whisky",
+     "start": 82.633,
+     "end": 83.377,
+     "words": [
+      {
+       "w": "Bars",
+       "s": 82.633,
+       "e": 82.903
+      },
+      {
+       "w": "et",
+       "s": 82.913,
+       "e": 82.946
+      },
+      {
+       "w": "lounges",
+       "s": 82.956,
+       "e": 83.377
+      }
+     ]
+    },
+    {
+     "t": "Événements.",
+     "img": "usage-event",
+     "start": 83.677,
+     "end": 84.183,
+     "words": [
+      {
+       "w": "Événements",
+       "s": 83.677,
+       "e": 84.183
+      }
+     ]
+    },
+    {
+     "t": "Poissonneries.",
+     "img": "usage-poisson",
+     "start": 84.483,
+     "end": 85.054,
+     "words": [
+      {
+       "w": "Poissonneries",
+       "s": 84.483,
+       "e": 85.054
+      }
+     ]
+    },
+    {
+     "t": "Et à la maison.",
+     "img": "usage-jus",
+     "start": 85.354,
+     "end": 85.979,
+     "words": [
+      {
+       "w": "Et",
+       "s": 85.354,
+       "e": 85.494
+      },
+      {
+       "w": "à",
+       "s": 85.505,
+       "e": 85.537
+      },
+      {
+       "w": "la",
+       "s": 85.548,
+       "e": 85.624
+      },
+      {
+       "w": "maison",
+       "s": 85.634,
+       "e": 85.979
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "order",
+   "start": 86.379,
+   "end": 99.723,
+   "lines": [
+    {
+     "t": "Commander ? Sur leglaceur point ci, vous choisissez vos quantités.",
+     "start": 86.779,
+     "end": 90.511,
+     "words": [
+      {
+       "w": "Commander",
+       "s": 86.779,
+       "e": 87.264
+      },
+      {
+       "w": "Sur",
+       "s": 88.001,
+       "e": 88.227
+      },
+      {
+       "w": "leglaceur",
+       "s": 88.238,
+       "e": 88.658
+      },
+      {
+       "w": "point",
+       "s": 88.669,
+       "e": 88.852
+      },
+      {
+       "w": "ci",
+       "s": 88.863,
+       "e": 89.089
+      },
+      {
+       "w": "vous",
+       "s": 89.337,
+       "e": 89.455
+      },
+      {
+       "w": "choisissez",
+       "s": 89.466,
+       "e": 89.854
+      },
+      {
+       "w": "vos",
+       "s": 89.865,
+       "e": 89.962
+      },
+      {
+       "w": "quantités",
+       "s": 89.973,
+       "e": 90.511
+      }
+     ]
+    },
+    {
+     "t": "Livraison ou retrait sur place.",
+     "start": 91.011,
+     "end": 92.498,
+     "words": [
+      {
+       "w": "Livraison",
+       "s": 91.011,
+       "e": 91.496
+      },
+      {
+       "w": "ou",
+       "s": 91.507,
+       "e": 91.55
+      },
+      {
+       "w": "retrait",
+       "s": 91.561,
+       "e": 91.841
+      },
+      {
+       "w": "sur",
+       "s": 91.852,
+       "e": 92.014
+      },
+      {
+       "w": "place",
+       "s": 92.024,
+       "e": 92.498
+      }
+     ]
+    },
+    {
+     "t": "Vous téléchargez votre devis en PDF ou en Excel, et vous l'envoyez sur WhatsApp.",
+     "start": 92.998,
+     "end": 96.598,
+     "words": [
+      {
+       "w": "Vous",
+       "s": 92.998,
+       "e": 93.149
+      },
+      {
+       "w": "téléchargez",
+       "s": 93.16,
+       "e": 93.623
+      },
+      {
+       "w": "votre",
+       "s": 93.634,
+       "e": 93.871
+      },
+      {
+       "w": "devis",
+       "s": 93.882,
+       "e": 94.119
+      },
+      {
+       "w": "en",
+       "s": 94.13,
+       "e": 94.205
+      },
+      {
+       "w": "PDF",
+       "s": 94.216,
+       "e": 94.604
+      },
+      {
+       "w": "ou",
+       "s": 94.615,
+       "e": 94.669
+      },
+      {
+       "w": "en",
+       "s": 94.679,
+       "e": 94.766
+      },
+      {
+       "w": "Excel",
+       "s": 94.776,
+       "e": 95.164
+      },
+      {
+       "w": "et",
+       "s": 95.488,
+       "e": 95.531
+      },
+      {
+       "w": "vous",
+       "s": 95.542,
+       "e": 95.639
+      },
+      {
+       "w": "l'envoyez",
+       "s": 95.649,
+       "e": 96.005
+      },
+      {
+       "w": "sur",
+       "s": 96.016,
+       "e": 96.156
+      },
+      {
+       "w": "WhatsApp",
+       "s": 96.167,
+       "e": 96.598
+      }
+     ]
+    },
+    {
+     "t": "Aucun paiement en ligne : vous réglez à la livraison.",
+     "start": 97.098,
+     "end": 99.123,
+     "words": [
+      {
+       "w": "Aucun",
+       "s": 97.098,
+       "e": 97.389
+      },
+      {
+       "w": "paiement",
+       "s": 97.399,
+       "e": 97.636
+      },
+      {
+       "w": "en",
+       "s": 97.647,
+       "e": 97.701
+      },
+      {
+       "w": "ligne",
+       "s": 97.712,
+       "e": 98.014
+      },
+      {
+       "w": "vous",
+       "s": 98.164,
+       "e": 98.251
+      },
+      {
+       "w": "réglez",
+       "s": 98.261,
+       "e": 98.531
+      },
+      {
+       "w": "à",
+       "s": 98.542,
+       "e": 98.574
+      },
+      {
+       "w": "la",
+       "s": 98.585,
+       "e": 98.639
+      },
+      {
+       "w": "livraison",
+       "s": 98.649,
+       "e": 99.123
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "delivery",
+   "start": 99.723,
+   "end": 108.816,
+   "lines": [
+    {
+     "t": "Livraison partout à Abidjan, offerte dès vingt articles.",
+     "start": 100.023,
+     "end": 102.555,
+     "words": [
+      {
+       "w": "Livraison",
+       "s": 100.023,
+       "e": 100.476
+      },
+      {
+       "w": "partout",
+       "s": 100.486,
+       "e": 100.788
+      },
+      {
+       "w": "à",
+       "s": 100.799,
+       "e": 100.853
+      },
+      {
+       "w": "Abidjan",
+       "s": 100.864,
+       "e": 101.284
+      },
+      {
+       "w": "offerte",
+       "s": 101.51,
+       "e": 101.812
+      },
+      {
+       "w": "dès",
+       "s": 101.823,
+       "e": 101.909
+      },
+      {
+       "w": "vingt",
+       "s": 101.92,
+       "e": 102.027
+      },
+      {
+       "w": "articles",
+       "s": 102.038,
+       "e": 102.555
+      }
+     ]
+    },
+    {
+     "t": "Ou retrait à Abatta, carrefour Drogba.",
+     "start": 102.955,
+     "end": 104.841,
+     "words": [
+      {
+       "w": "Ou",
+       "s": 102.955,
+       "e": 103.085
+      },
+      {
+       "w": "retrait",
+       "s": 103.096,
+       "e": 103.376
+      },
+      {
+       "w": "à",
+       "s": 103.386,
+       "e": 103.44
+      },
+      {
+       "w": "Abatta",
+       "s": 103.451,
+       "e": 103.85
+      },
+      {
+       "w": "carrefour",
+       "s": 104.087,
+       "e": 104.41
+      },
+      {
+       "w": "Drogba",
+       "s": 104.421,
+       "e": 104.841
+      }
+     ]
+    },
+    {
+     "t": "Vingt-quatre heures sur vingt-quatre. Sept jours sur sept.",
+     "start": 105.241,
+     "end": 108.316,
+     "words": [
+      {
+       "w": "Vingt-quatre",
+       "s": 105.241,
+       "e": 105.737
+      },
+      {
+       "w": "heures",
+       "s": 105.748,
+       "e": 105.823
+      },
+      {
+       "w": "sur",
+       "s": 105.834,
+       "e": 105.985
+      },
+      {
+       "w": "vingt-quatre",
+       "s": 105.996,
+       "e": 106.556
+      },
+      {
+       "w": "Sept",
+       "s": 107.303,
+       "e": 107.562
+      },
+      {
+       "w": "jours",
+       "s": 107.573,
+       "e": 107.756
+      },
+      {
+       "w": "sur",
+       "s": 107.767,
+       "e": 107.907
+      },
+      {
+       "w": "sept",
+       "s": 107.918,
+       "e": 108.316
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "climax",
+   "start": 108.816,
+   "end": 116.127,
+   "lines": [
+    {
+     "t": "Alors la question n'est pas : avez-vous de la glace ?",
+     "start": 109.316,
+     "end": 111.46,
+     "words": [
+      {
+       "w": "Alors",
+       "s": 109.316,
+       "e": 109.575
+      },
+      {
+       "w": "la",
+       "s": 109.585,
+       "e": 109.65
+      },
+      {
+       "w": "question",
+       "s": 109.661,
+       "e": 109.995
+      },
+      {
+       "w": "n'est",
+       "s": 110.006,
+       "e": 110.103
+      },
+      {
+       "w": "pas",
+       "s": 110.113,
+       "e": 110.307
+      },
+      {
+       "w": "avez-vous",
+       "s": 110.523,
+       "e": 110.792
+      },
+      {
+       "w": "de",
+       "s": 110.803,
+       "e": 110.878
+      },
+      {
+       "w": "la",
+       "s": 110.889,
+       "e": 110.965
+      },
+      {
+       "w": "glace",
+       "s": 110.976,
+       "e": 111.46
+      }
+     ]
+    },
+    {
+     "t": "C'est : votre glace est-elle vraiment alimentaire ?",
+     "start": 112.16,
+     "end": 114.272,
+     "words": [
+      {
+       "w": "C'est",
+       "s": 112.16,
+       "e": 112.451
+      },
+      {
+       "w": "votre",
+       "s": 112.656,
+       "e": 112.882
+      },
+      {
+       "w": "glace",
+       "s": 112.893,
+       "e": 113.109
+      },
+      {
+       "w": "est-elle",
+       "s": 113.119,
+       "e": 113.335
+      },
+      {
+       "w": "vraiment",
+       "s": 113.346,
+       "e": 113.647
+      },
+      {
+       "w": "alimentaire",
+       "s": 113.658,
+       "e": 114.272
+      }
+     ]
+    },
+    {
+     "t": "Restez au frais.",
+     "start": 114.972,
+     "end": 115.727,
+     "words": [
+      {
+       "w": "Restez",
+       "s": 114.972,
+       "e": 115.339
+      },
+      {
+       "w": "au",
+       "s": 115.35,
+       "e": 115.404
+      },
+      {
+       "w": "frais",
+       "s": 115.414,
+       "e": 115.727
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cta",
+   "start": 116.127,
+   "end": 124.298,
+   "lines": [
+    {
+     "t": "Le Glaceur. Sur leglaceur point ci, ou sur WhatsApp.",
+     "start": 116.727,
+     "end": 120.298,
+     "words": [
+      {
+       "w": "Le",
+       "s": 116.727,
+       "e": 116.899
+      },
+      {
+       "w": "Glaceur",
+       "s": 116.91,
+       "e": 117.503
+      },
+      {
+       "w": "Sur",
+       "s": 118.25,
+       "e": 118.466
+      },
+      {
+       "w": "leglaceur",
+       "s": 118.477,
+       "e": 118.897
+      },
+      {
+       "w": "point",
+       "s": 118.908,
+       "e": 119.102
+      },
+      {
+       "w": "ci",
+       "s": 119.112,
+       "e": 119.339
+      },
+      {
+       "w": "ou",
+       "s": 119.63,
+       "e": 119.705
+      },
+      {
+       "w": "sur",
+       "s": 119.716,
+       "e": 119.856
+      },
+      {
+       "w": "WhatsApp",
+       "s": 119.867,
+       "e": 120.298
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "duration": 124.298
+}
