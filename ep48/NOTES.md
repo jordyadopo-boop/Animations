@@ -23,5 +23,6 @@
   et les deux racontent l'histoire ensemble (dialogue). Personnage : personnages/helpersMrA.js (fonction mrA() :
   peau foncée, cheveux très courts, bouc, lunettes ovales dorées verres sombres, polo marron manches courtes) ;
   captures : personnages/mrA_captures.jpg. À copier dans epNN/web/ et ajouter dans body.js avant setsNN.js.
-  Voix de Mr A : en attente de son choix (Gérard fr-BE-GerardNeural / Fabrice fr-CH-FabriceNeural / Henri fr-FR-HenriNeural,
-  Henri sert déjà aux citations bibliques).
+  Voix de Mr A CHOISIE : Fabrice — VOICES["mra"] = dict(voice="fr-CH-FabriceNeural", rate="+4%", pitch="+0Hz").
+  (Claude garde fr-FR-RemyMultilingualNeural +30Hz ; citations bibliques = Henri fr-FR-HenriNeural.)
+  Dans build_audio.py, l'enveloppe de bouche est exportée seulement pour "claude" : ajouter "mra" dans timeline.js.
