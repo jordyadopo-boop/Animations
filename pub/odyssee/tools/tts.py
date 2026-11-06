@@ -38,6 +38,10 @@ def decode(path):
     return np.frombuffer(raw, dtype=np.float32)
 
 
+import unicodedata
+def norm(w): return ''.join(c for c in unicodedata.normalize('NFD', w.lower().replace('’', "'").split("'")[-1] or w.lower()) if unicodedata.category(c) != 'Mn').strip(".,:;!?'’« »")
+
+
 async def main():
     t = 0.0
     timeline = {'scenes': []}
@@ -58,7 +62,14 @@ async def main():
                           'words': [{'w': w['w'], 's': round(off + w['s'], 3), 'e': round(off + w['e'], 3)} for w in words]})
             cur = off + s1 + sc.get('gap', 0.3)
         end = max(lines[-1]['end'] + sc.get('pad', 0.4), start + sc.get('min', 0))
-        timeline['scenes'].append({'id': sc['id'], 'start': round(start, 3), 'end': round(end, 3), 'lines': lines})
+        meta = {k: v for k, v in sc.items() if k not in ('vo', 'lead', 'gap', 'pad', 'min', 'chips')}
+        if 'chips' in sc:  # chaque pastille apparaît quand son mot-repère est dit
+            allw = [w for l in lines for w in l['words']]; k = 0; meta['chips'] = []
+            for label, cue in sc['chips']:
+                j = next((j for j in range(k, len(allw)) if norm(allw[j]['w']).startswith(cue)), None)
+                if j is None: raise SystemExit(f"repère introuvable : {cue} dans {sc['id']}")
+                meta['chips'].append({'text': label, 't': allw[j]['s']}); k = j + 1
+        timeline['scenes'].append({**meta, 'start': round(start, 3), 'end': round(end, 3), 'lines': lines})
         t = end
     timeline['duration'] = round(t, 3)
     vo = np.zeros(int((t + 1) * SR), dtype=np.float32)

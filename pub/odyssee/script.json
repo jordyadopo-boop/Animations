@@ -1,188 +1,633 @@
 {
-  "_doc": "Pub Odyssée Games (9:16). Chaque scène : id, lignes de voix off (vo), 'clip' optionnel par ligne, pause après (pad, s), durée mini (min, s). Les durées viennent de la voix (tools/tts.py -> timeline.json).",
-  "voice": "fr-FR-HenriNeural",
-  "rate": "-4%",
-  "scenes": [
+ "_doc": "Pub Odyssée Games (9:16). Chaque scène : id, lignes de voix off (vo), 'clip' optionnel par ligne, pause après (pad, s), durée mini (min, s). Les durées viennent de la voix (tools/tts.py -> timeline.json).",
+ "voice": "fr-FR-HenriNeural",
+ "rate": "+12%",
+ "scenes": [
+  {
+   "id": "hook",
+   "lead": 0.4,
+   "pad": 0.5,
+   "vo": [
+    "Attends.",
+    "Regarde bien.",
+    "Tu n'es pas prêt pour ça."
+   ],
+   "gap": 0.35
+  },
+  {
+   "id": "intro",
+   "pad": 0.4,
+   "vo": [
+    "Un petit bonhomme.",
+    "Une ligne de craie.",
+    "Et toute la géométrie contre lui."
+   ],
+   "gap": 0.45
+  },
+  {
+   "id": "logo",
+   "lead": 1.0,
+   "pad": 2.0,
+   "vo": [
+    "Ça, c'est Odyssée."
+   ]
+  },
+  {
+   "id": "count",
+   "pad": 0.6,
+   "vo": [
+    "Et non, ce n'est pas un jeu.",
+    "C'est cinquante et un jeux.",
+    "Tous dans le même univers."
+   ],
+   "gap": 0.45
+  },
+  {
+   "id": "phi",
+   "pad": 0.4,
+   "vo": [
+    "Odyssée Phi. Le premier. Du jeu de plateforme pur : dix mondes, dix gardiens.",
+    "À la fin de chaque monde, un polyèdre géant te poursuit.",
+    "Et chaque niveau naît d'une graine : le niveau trente-sept est toujours le même. Tu l'apprends. Tu le maîtrises."
+   ],
+   "gap": 0.3,
+   "lead": 0.35,
+   "type": "phi"
+  },
+  {
+   "id": "infini",
+   "pad": 0.4,
+   "vo": [
+    "Odyssée Infini. Tu cours. Tu voles. Tu plonges sous la vague.",
+    "Rate le bateau, et c'est la plongée : quatorze secondes d'oxygène pour remonter.",
+    "Et la vitesse monte. Sans plafond."
+   ],
+   "gap": 0.3,
+   "lead": 0.35
+  },
+  {
+   "id": "omega",
+   "pad": 0.4,
+   "vo": [
+    "Odyssée Oméga. Le duel des gardiens.",
+    "Cinquante gardiens. Une campagne. Et le duel."
+   ],
+   "gap": 0.3,
+   "lead": 0.35
+  },
+  {
+   "id": "trans",
+   "vo": [
+    "Et ce n'est que le début. Voici les autres."
+   ],
+   "lead": 0.3,
+   "pad": 0.4
+  },
+  {
+   "id": "g_alpha",
+   "type": "game",
+   "clip": "alpha",
+   "num": 4,
+   "label": "Odyssée α",
+   "kicker": "Le jeu de tir",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Alpha. Le jeu de tir. Cinq contre cinq, survie sur l'île, ou duel.",
+    "En ligne avec des bots, à la première ou à la troisième personne."
+   ],
+   "chips": [
+    [
+     "5 CONTRE 5",
+     "cinq"
+    ],
+    [
+     "SURVIE SUR L'ÎLE",
+     "survie"
+    ],
+    [
+     "DUEL",
+     "duel"
+    ],
+    [
+     "EN LIGNE + BOTS",
+     "ligne"
+    ],
+    [
+     "1RE OU 3E PERSONNE",
+     "premiere"
+    ]
+   ]
+  },
+  {
+   "id": "g_beta",
+   "type": "game",
+   "clip": "beta",
+   "num": 5,
+   "label": "Odyssée β",
+   "kicker": "La course de karts",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Bêta. Des karts néon. Dix circuits, des pouvoirs, trois tours.",
+    "Et ça marche même hors ligne."
+   ],
+   "chips": [
+    [
+     "10 CIRCUITS",
+     "dix"
+    ],
+    [
+     "POUVOIRS",
+     "pouvoirs"
+    ],
+    [
+     "3 TOURS",
+     "trois"
+    ],
+    [
+     "HORS LIGNE",
+     "hors"
+    ]
+   ]
+  },
+  {
+   "id": "g_lambda",
+   "type": "game",
+   "clip": "lambda",
+   "num": 10,
+   "label": "Odyssée Λ",
+   "kicker": "La poursuite",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Lambda. L'écran est coupé en deux.",
+    "En haut, un polyèdre te poursuit sans jamais s'arrêter. En bas, un puzzle : chaque ligne complétée te fait courir.",
+    "Ralenti, sprint, bouclier, bombe."
+   ],
+   "chips": [
+    [
+     "ÉCRAN PARTAGÉ",
+     "coupe"
+    ],
+    [
+     "LA POURSUITE",
+     "polyedre"
+    ],
+    [
+     "LE PUZZLE",
+     "puzzle"
+    ],
+    [
+     "1 LIGNE = 1 SPRINT",
+     "ligne"
+    ],
+    [
+     "RALENTI · SPRINT · BOUCLIER · BOMBE",
+     "ralenti"
+    ]
+   ]
+  },
+  {
+   "id": "g_tau",
+   "type": "game",
+   "clip": "tau",
+   "num": 14,
+   "label": "Odyssée Τ",
+   "kicker": "La tour",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Tau. Une grue oscille, tu lâches les blocs.",
+    "Centre de gravité, vent, et la marée qui monte sous ta tour."
+   ],
+   "chips": [
+    [
+     "LA GRUE",
+     "grue"
+    ],
+    [
+     "CENTRE DE GRAVITÉ",
+     "centre"
+    ],
+    [
+     "LE VENT",
+     "vent"
+    ],
+    [
+     "LA MARÉE MONTE",
+     "maree"
+    ]
+   ]
+  },
+  {
+   "id": "g_eta",
+   "type": "game",
+   "clip": "eta",
+   "num": 15,
+   "label": "Odyssée Η",
+   "kicker": "Le phare",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Êta. La nuit, tu tournes le faisceau d'un phare. Tout ce qu'il éclaire se fige.",
+    "Guide les naufragés jusqu'au port, avant que l'huile s'épuise."
+   ],
+   "chips": [
+    [
+     "LE FAISCEAU",
+     "faisceau"
+    ],
+    [
+     "LA LUMIÈRE FIGE",
+     "fige"
+    ],
+    [
+     "LES NAUFRAGÉS",
+     "naufrages"
+    ],
+    [
+     "L'HUILE BAISSE",
+     "huile"
+    ]
+   ]
+  },
+  {
+   "id": "g_zeta",
+   "type": "game",
+   "clip": "zeta",
+   "num": 16,
+   "label": "Odyssée Ζ",
+   "kicker": "Les échos",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Zêta. Dix secondes par salle.",
+    "Chaque essai rejoue les précédents en échos néon, qui tiennent les dalles, les portes et les leviers. Quarante salles."
+   ],
+   "chips": [
+    [
+     "10 S PAR SALLE",
+     "dix"
+    ],
+    [
+     "TES ÉCHOS",
+     "echos"
+    ],
+    [
+     "DALLES · PORTES · LEVIERS",
+     "dalles"
+    ],
+    [
+     "40 SALLES",
+     "quarante"
+    ]
+   ]
+  },
+  {
+   "id": "g_xi",
+   "type": "game",
+   "clip": "xi",
+   "num": 13,
+   "label": "Odyssée Ξ",
+   "kicker": "Le labyrinthe vivant",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Xi. Un labyrinthe vivant.",
+    "Toutes les dix secondes, les murs se transforment selon une règle cachée. Et ton ombre rejoue tes pas."
+   ],
+   "chips": [
+    [
+     "LABYRINTHE VIVANT",
+     "labyrinthe"
+    ],
+    [
+     "TOUTES LES 10 S",
+     "toutes"
+    ],
+    [
+     "RÈGLE CACHÉE",
+     "regle"
+    ],
+    [
+     "TON OMBRE",
+     "ombre"
+    ]
+   ]
+  },
+  {
+   "id": "g_chi",
+   "type": "game",
+   "clip": "chi",
+   "num": 17,
+   "label": "Odyssée Χ",
+   "kicker": "Le croisement",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Khi. Deux coureurs, deux routes en X, un pouce pour chacun.",
+    "Jamais deux dans le losange d'or. Et on y joue à deux, sur le même téléphone."
+   ],
+   "chips": [
+    [
+     "2 COUREURS",
+     "deux"
+    ],
+    [
+     "UN POUCE CHACUN",
+     "pouce"
+    ],
+    [
+     "LE LOSANGE D'OR",
+     "losange"
+    ],
+    [
+     "À DEUX · 1 TÉLÉPHONE",
+     "meme"
+    ]
+   ]
+  },
+  {
+   "id": "g_gamma",
+   "type": "game",
+   "clip": "gamma",
+   "num": 12,
+   "label": "Odyssée Γ",
+   "kicker": "Le pendule",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Gamma. Tu te balances de nombre en nombre, au-dessus d'un vide qui monte.",
+    "Seuls les bons nombres tiennent : pairs, premiers, carrés."
+   ],
+   "chips": [
+    [
+     "DE NOMBRE EN NOMBRE",
+     "balances"
+    ],
+    [
+     "LE VIDE MONTE",
+     "vide"
+    ],
+    [
+     "PAIRS",
+     "pairs"
+    ],
+    [
+     "PREMIERS",
+     "premiers"
+    ],
+    [
+     "CARRÉS",
+     "carres"
+    ]
+   ]
+  },
+  {
+   "id": "g_theta",
+   "type": "game",
+   "clip": "theta",
+   "num": 11,
+   "label": "Odyssée Θ",
+   "kicker": "Les salles du cadran",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Thêta. Huit salles en 3D.",
+    "Une énigme mathématique chronométrée par salle, et un indice toutes les trente secondes."
+   ],
+   "chips": [
+    [
+     "8 SALLES EN 3D",
+     "huit"
+    ],
+    [
+     "UNE ÉNIGME",
+     "enigme"
+    ],
+    [
+     "CHRONOMÉTRÉE",
+     "chronometree"
+    ],
+    [
+     "1 INDICE / 30 S",
+     "indice"
+    ]
+   ]
+  },
+  {
+   "id": "g_pi",
+   "type": "game",
+   "clip": "pi",
+   "num": 6,
+   "label": "Odyssée π",
+   "kicker": "Le calcul mental",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Pi. Du calcul mental, des niveaux infinis, un défi du jour, le chrono et le duel."
+   ],
+   "chips": [
+    [
+     "CALCUL MENTAL",
+     "calcul"
+    ],
+    [
+     "NIVEAUX INFINIS",
+     "niveaux"
+    ],
+    [
+     "DÉFI DU JOUR",
+     "defi"
+    ],
+    [
+     "CHRONO",
+     "chrono"
+    ],
+    [
+     "DUEL",
+     "duel"
+    ]
+   ]
+  },
+  {
+   "id": "g_delta",
+   "type": "game",
+   "clip": "delta",
+   "num": 7,
+   "label": "Odyssée Δ",
+   "kicker": "Le tour du monde",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Delta. Le tour du monde sur un globe néon : pays, capitales, drapeaux, merveilles."
+   ],
+   "chips": [
+    [
+     "GLOBE NÉON",
+     "globe"
+    ],
+    [
+     "PAYS",
+     "pays"
+    ],
+    [
+     "CAPITALES",
+     "capitales"
+    ],
+    [
+     "DRAPEAUX",
+     "drapeaux"
+    ],
+    [
+     "MERVEILLES",
+     "merveilles"
+    ]
+   ]
+  },
+  {
+   "id": "g_sigma",
+   "type": "game",
+   "clip": "sigma",
+   "num": 8,
+   "label": "Odyssée Σ",
+   "kicker": "Le quiz",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Sigma. Le quiz de culture générale : parcours, thèmes, chrono, duel.",
+    "Avec un classement en ligne."
+   ],
+   "chips": [
+    [
+     "PARCOURS",
+     "parcours"
+    ],
+    [
+     "THÈMES",
+     "themes"
+    ],
+    [
+     "CHRONO",
+     "chrono"
+    ],
+    [
+     "DUEL",
+     "duel"
+    ],
+    [
+     "CLASSEMENT EN LIGNE",
+     "classement"
+    ]
+   ]
+  },
+  {
+   "id": "g_psi",
+   "type": "game",
+   "clip": "psi",
+   "num": 9,
+   "label": "Odyssée Ψ",
+   "kicker": "Les tests de logique",
+   "lead": 0.25,
+   "gap": 0.25,
+   "pad": 0.35,
+   "vo": [
+    "Odyssée Psi. Entraîne-toi aux tests de logique et d'aptitude : matrices, suites, déduction."
+   ],
+   "chips": [
+    [
+     "LOGIQUE",
+     "logique"
+    ],
+    [
+     "APTITUDE",
+     "aptitude"
+    ],
+    [
+     "MATRICES",
+     "matrices"
+    ],
+    [
+     "SUITES",
+     "suites"
+    ],
+    [
+     "DÉDUCTION",
+     "deduction"
+    ]
+   ]
+  },
+  {
+   "id": "montage",
+   "vo": [
     {
-      "id": "hook",
-      "lead": 0.6,
-      "pad": 0.9,
-      "vo": [
-        "Attends.",
-        "Regarde bien.",
-        "Tu n'es pas prêt pour ça."
-      ],
-      "gap": 0.7
+     "t": "Et encore : du tennis, du bowling, du minigolf, des tirs au but.",
+     "clip": "sports"
     },
     {
-      "id": "intro",
-      "pad": 0.8,
-      "vo": [
-        "Un petit bonhomme.",
-        "Une ligne de craie.",
-        "Et toute la géométrie contre lui."
-      ],
-      "gap": 0.9
-    },
-    {
-      "id": "logo",
-      "lead": 1.4,
-      "pad": 3.0,
-      "vo": [
-        "Ça, c'est Odyssée."
-      ]
-    },
-    {
-      "id": "count",
-      "pad": 1.0,
-      "vo": [
-        "Et non, ce n'est pas un jeu.",
-        "C'est cinquante et un jeux.",
-        "Tous dans le même univers."
-      ],
-      "gap": 0.8
-    },
-    {
-      "id": "phi",
-      "pad": 0.8,
-      "vo": [
-        "Odyssée Phi. Le premier. Du jeu de plateforme pur : dix mondes, dix gardiens.",
-        "À la fin de chaque monde, un polyèdre géant te poursuit.",
-        "Et chaque niveau naît d'une graine : le niveau trente-sept est toujours le même. Tu l'apprends. Tu le maîtrises."
-      ],
-      "gap": 0.6,
-      "lead": 0.6
-    },
-    {
-      "id": "infini",
-      "pad": 0.8,
-      "vo": [
-        "Odyssée Infini. Tu cours. Tu voles. Tu plonges sous la vague.",
-        "Rate le bateau, et c'est la plongée : quatorze secondes d'oxygène pour remonter.",
-        "Et la vitesse monte. Sans plafond."
-      ],
-      "gap": 0.6,
-      "lead": 0.5
-    },
-    {
-      "id": "omega",
-      "pad": 1.0,
-      "vo": [
-        "Odyssée Oméga. Le duel des gardiens.",
-        "Cinquante gardiens. Une campagne. Et le duel."
-      ],
-      "gap": 0.6,
-      "lead": 0.5
-    },
-    {
-      "id": "montage",
-      "pad": 0.8,
-      "gap": 0.45,
-      "vo": [
-        {
-          "t": "Et ça continue.",
-          "clip": null
-        },
-        {
-          "t": "Du tir en cinq contre cinq.",
-          "clip": "alpha",
-          "label": "Odyssée α",
-          "sub": "Tir · 5 contre 5"
-        },
-        {
-          "t": "Des courses de karts néon.",
-          "clip": "beta",
-          "label": "Odyssée β",
-          "sub": "Karts · 10 circuits"
-        },
-        {
-          "t": "Du calcul mental.",
-          "clip": "pi",
-          "label": "Odyssée π",
-          "sub": "Calcul mental"
-        },
-        {
-          "t": "Le tour du monde.",
-          "clip": "delta",
-          "label": "Odyssée Δ",
-          "sub": "Pays · capitales · drapeaux"
-        },
-        {
-          "t": "Un quiz de culture générale.",
-          "clip": "sigma",
-          "label": "Odyssée Σ",
-          "sub": "Quiz · duel"
-        },
-        {
-          "t": "Des tests de logique.",
-          "clip": "psi",
-          "label": "Odyssée Ψ",
-          "sub": "Logique · aptitude"
-        },
-        {
-          "t": "Une tour à empiler jusqu'au ciel.",
-          "clip": "tau",
-          "label": "Odyssée Τ",
-          "sub": "Empile · tiens bon"
-        },
-        {
-          "t": "Un phare dans la brume.",
-          "clip": "eta",
-          "label": "Odyssée Η",
-          "sub": "Guide les naufragés"
-        },
-        {
-          "t": "Du tennis. Du bowling. Du minigolf. Des tirs au but.",
-          "clip": "sports"
-        },
-        {
-          "t": "Et des dizaines d'autres.",
-          "clip": "wall"
-        }
-      ],
-      "lead": 0.4
-    },
-    {
-      "id": "workflow",
-      "pad": 1.2,
-      "vo": [
-        "Un jeu mobile classique ? Tu ouvres le store. Tu télécharges des centaines de mégas. Tu crées un compte. Tu attends la mise à jour.",
-        "Odyssée ? Tu cliques. Tu joues."
-      ],
-      "gap": 1.0,
-      "lead": 0.6
-    },
-    {
-      "id": "features",
-      "pad": 1.0,
-      "vo": [
-        "Directement dans ton navigateur. Rien à installer.",
-        "Sur Android, l'appli pèse moins d'un méga.",
-        "Sur iPhone, tu l'ajoutes à ton écran d'accueil.",
-        "Treize langues.",
-        "Et un classement mondial : ton meilleur score reste affiché. Pour toujours."
-      ],
-      "gap": 0.7,
-      "lead": 0.5
-    },
-    {
-      "id": "climax",
-      "pad": 0.8,
-      "gap": 1.1,
-      "vo": [
-        "Alors la vraie question, ce n'est pas : est-ce que c'est bien ?",
-        "C'est : jusqu'où tu vas aller ?",
-        "Commence ton odyssée."
-      ],
-      "lead": 0.8
-    },
-    {
-      "id": "cta",
-      "pad": 4.5,
-      "vo": [
-        "Odyssée Games. Sur odyssée games point com."
-      ],
-      "lead": 0.8
+     "t": "Plus de cinquante jeux. Et ça continue.",
+     "clip": "wall"
     }
-  ]
+   ],
+   "lead": 0.3,
+   "gap": 0.3,
+   "pad": 0.6
+  },
+  {
+   "id": "workflow",
+   "pad": 0.7,
+   "vo": [
+    "Un jeu mobile classique ? Tu ouvres le store. Tu télécharges des centaines de mégas. Tu crées un compte. Tu attends la mise à jour.",
+    "Odyssée ? Tu cliques. Tu joues."
+   ],
+   "gap": 0.6,
+   "lead": 0.4
+  },
+  {
+   "id": "features",
+   "pad": 0.6,
+   "vo": [
+    "Directement dans ton navigateur. Rien à installer.",
+    "Sur Android, l'appli pèse moins d'un méga.",
+    "Sur iPhone, tu l'ajoutes à ton écran d'accueil.",
+    "Treize langues.",
+    "Et un classement mondial : ton meilleur score reste affiché. Pour toujours."
+   ],
+   "gap": 0.4,
+   "lead": 0.3
+  },
+  {
+   "id": "climax",
+   "pad": 0.4,
+   "gap": 0.7,
+   "vo": [
+    "Alors la vraie question, ce n'est pas : est-ce que c'est bien ?",
+    "C'est : jusqu'où tu vas aller ?",
+    "Commence ton odyssée."
+   ],
+   "lead": 0.5
+  },
+  {
+   "id": "cta",
+   "pad": 4.0,
+   "vo": [
+    "Odyssée Games. Sur odyssée games point com."
+   ],
+   "lead": 0.6
+  }
+ ]
 }

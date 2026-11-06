@@ -301,7 +301,7 @@ export function createScreen(TL, IMG) {
         ctx.save(); ctx.translate(SW / 2, SH / 2); ctx.scale(z, z); ctx.translate(-SW / 2, -SH / 2);
         for (let r = -1; r < 10; r++) for (let c = 0; c < cols; c++) { const n = (r + 1) * cols + c; ctx.globalAlpha = 0.85; cover(IMG.get(`assets/jeux/${ids[(n * 7) % ids.length]}.jpg`), c * tw + 3, r * th + 3 + ((c % 2) * th / 2 - lt * 30) % th, tw - 6, th - 6); }
         ctx.restore(); ctx.fillStyle = 'rgba(5,3,2,.45)'; ctx.fillRect(0, 0, SW, SH);
-        const k = eo(lin(l0, 0.2, 0.6)); text('+ 40', SW / 2, SH / 2 - 30, { size: 220, w: 700, metal: true, glow: 'rgba(255,160,40,.85)', alpha: k }); text("ET DES DIZAINES D'AUTRES", SW / 2, SH / 2 + 120, { size: 34, fam: 'Jost', w: 600, color: '#fff', ls: 10, alpha: k });
+        const k = eo(lin(l0, 0.2, 0.6)); text('51', SW / 2, SH / 2 - 30, { size: 220, w: 700, metal: true, glow: 'rgba(255,160,40,.85)', alpha: k }); text('JEUX · ET ÇA CONTINUE', SW / 2, SH / 2 + 120, { size: 34, fam: 'Jost', w: 600, color: '#fff', ls: 10, alpha: k });
       } else {
         clip(li.clip, l0, { zoom: 1.02 });
       }
@@ -315,6 +315,40 @@ export function createScreen(TL, IMG) {
       }
       // coupe : petit flash à chaque changement
       const f = 1 - lin(l0, 0, 0.12); if (f > 0 && i > 0) { ctx.fillStyle = `rgba(255,241,194,${0.35 * f})`; ctx.fillRect(0, 0, SW, SH); }
+    },
+
+    // un jeu en détail : gameplay plein écran, titre, et ses mécaniques qui s'affichent au fil de la voix
+    game(sc, lt) {
+      const dur = sc.end - sc.start;
+      clip(sc.clip, lt, { zoom: 1.03, push: 0.003 });
+      // voile à gauche pour la lisibilité
+      const g = ctx.createLinearGradient(0, 0, SW * 0.55, 0); g.addColorStop(0, 'rgba(5,3,2,.78)'); g.addColorStop(1, 'rgba(5,3,2,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, SW * 0.55, SH);
+      const k = eo(lin(lt, 0.05, 0.4));
+      chip(`JEU Nº ${sc.num} · ${sc.kicker.toUpperCase()}`, 60, 110, { alpha: k, k });
+      text(sc.label, 60 + (1 - k) * -50, 210, { size: 96, w: 600, metal: true, align: 'left', glow: 'rgba(255,160,40,.6)', alpha: k });
+      // mécaniques
+      const chips = sc.chips || []; let last = -1; chips.forEach((c, q) => { if (lt >= c.t - sc.start - 0.05) last = q; });
+      chips.forEach((c, q) => {
+        const t0 = c.t - sc.start - 0.05; const kk = back(lin(lt, t0, t0 + 0.3)); if (kk <= 0) return;
+        const y = 330 + q * 82, on = q === last;
+        ctx.save(); ctx.translate(60 + (1 - clamp(kk)) * -60, y); ctx.globalAlpha = clamp(kk * 1.5);
+        const w = measure(c.text, 30, 600, 'Jost', 3) + 90; rrect(0, -30, w, 60, 10);
+        ctx.fillStyle = on ? BRAISE : 'rgba(13,9,4,.86)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = on ? '#ffb46a' : 'rgba(255,201,60,.5)'; ctx.shadowColor = BRAISE; ctx.shadowBlur = on ? 26 : 0; ctx.stroke(); ctx.shadowBlur = 0;
+        ctx.beginPath(); ctx.moveTo(20, 1); ctx.lineTo(30, 11); ctx.lineTo(48, -10); ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.strokeStyle = on ? '#1a0d02' : GOLD; ctx.stroke();
+        text(c.text, 66, 2, { size: 30, fam: 'Jost', w: 600, color: on ? '#1a0d02' : '#fff', align: 'left', ls: 3 });
+        ctx.restore();
+      });
+      text(`${String(sc.num).padStart(2, '0')} / 51`, SW - 64, SH - 116, { size: 22, fam: 'Jost', w: 600, color: CLAIR, align: 'right', ls: 6, alpha: k });
+      const f = 1 - lin(lt, 0, 0.14); if (f > 0) { ctx.fillStyle = `rgba(255,241,194,${0.4 * f})`; ctx.fillRect(0, 0, SW, SH); }
+      ctx.fillStyle = `rgba(5,3,2,${0.8 * lin(lt, dur - 0.15, dur)})`; ctx.fillRect(0, 0, SW, SH);
+    },
+    trans(sc, lt) {
+      bg(); grid(lt, 0.1); dust(lt, 50, 0.6, 11);
+      const k = eo(lin(lt, 0.1, 0.4)), w = sc.lines[0].words, wd5 = w[Math.min(5, w.length - 1)].s - sc.start;
+      text("CE N'EST QUE", SW / 2, SH / 2 - 90, { size: 80, w: 600, color: '#fff', alpha: k });
+      text('LE DÉBUT.', SW / 2, SH / 2 + 40, { size: 170, w: 700, metal: true, glow: 'rgba(255,160,40,.8)', alpha: eo(lin(lt, wd5 - 0.3, wd5)) });
+      const ids = IMG.games; const kk = lin(lt, 1.4, sc.end - sc.start);
+      for (let q = 0; q < 14; q++) { const a = q / 14 * Math.PI * 2 + lt * 0.3, x = SW / 2 + Math.cos(a) * 640, y = SH / 2 + Math.sin(a) * 330; ctx.save(); ctx.globalAlpha = 0.5 * eo(clamp(kk * 3 - q * 0.1)); cover(IMG.get(`assets/jeux/${ids[(q * 3 + 2) % ids.length]}.jpg`), x - 80, y - 45, 160, 90); ctx.restore(); }
     },
     workflow(sc, lt) {
       bg(); grid(lt, 0.1);
@@ -334,8 +368,8 @@ export function createScreen(TL, IMG) {
           const pb = lin(lt, t0, t0 + 3.5); rrect(760, y + 36, 180, 14, 7); ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fill(); rrect(760, y + 36, 180 * pb, 14, 7); ctx.fillStyle = 'rgba(255,74,60,.8)'; ctx.fill();
           text(m, 1010, y + 44, { size: 22, fam: 'Jost', w: 600, color: '#ff6a50', align: 'right', alpha: k });
         });
-        text('TEMPS PERDU', 1290, 300, { size: 20, fam: 'Jost', w: 600, color: CLAIR, ls: 6 });
-        text(`${Math.round(mins)} MIN`, 1290, 390, { size: 110, w: 700, color: '#ff5a3c', glow: 'rgba(255,74,60,.7)' });
+        const km = clamp(mins * 2); text('TEMPS PERDU', 1290, 300, { size: 20, fam: 'Jost', w: 600, color: CLAIR, ls: 6, alpha: km });
+        text(`${Math.max(1, Math.round(mins))} MIN`, 1290, 390, { size: 110, w: 700, color: '#ff5a3c', glow: 'rgba(255,74,60,.7)', alpha: km });
       } else {
         const k = eo(lin(lt, a1 - 0.1, a1 + 0.3));
         text('ODYSSÉE', SW / 2, 170, { size: 60, w: 700, metal: true, alpha: k, ls: 12 });
@@ -421,7 +455,7 @@ export function createScreen(TL, IMG) {
 
   function draw(t) {
     let sc = TL.scenes[TL.scenes.length - 1]; for (const s of TL.scenes) if (t >= s.start && t < s.end) { sc = s; break; }
-    const lt = t - sc.start; ctx.setTransform(1.2, 0, 0, 1.2, 0, 0); ctx.save(); DRAW[sc.id](sc, lt); ctx.restore();
+    const lt = t - sc.start; ctx.setTransform(1.2, 0, 0, 1.2, 0, 0); ctx.save(); DRAW[sc.type === 'game' ? 'game' : sc.id](sc, lt); ctx.restore();
     ctx.save(); chrome(t, curLine(sc, t)); ctx.restore();
     // lignes de balayage très légères (écran)
     

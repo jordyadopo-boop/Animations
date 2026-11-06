@@ -1,13 +1,111 @@
 {
-  "_doc": "Extraits de gameplay (dépôt games-02/media). from = seconde de départ dans la source. Images extraites par tools/frames.py dans out/odyssee/frames/<nom>/.",
-  "phi":    { "src": "odyssee-phi-promo.mp4", "from": 3.0 },
-  "infini": { "src": "bandes-annonces/infini-16x9.mp4", "from": 6.5 },
-  "omega":  { "src": "bandes-annonces/omega-16x9.mp4", "from": 3.6 },
-  "alpha":  { "src": "bandes-annonces/alpha-16x9.mp4", "from": 5.0 },
-  "pi":     { "src": "bandes-annonces/pi-16x9.mp4", "from": 3.0 },
-  "delta":  { "src": "bandes-annonces/delta-16x9.mp4", "from": 7.0 },
-  "sigma":  { "src": "bandes-annonces/sigma-16x9.mp4", "from": 3.0 },
-  "psi":    { "src": "bandes-annonces/psi-16x9.mp4", "from": 3.0 },
-  "tau":    { "src": "bandes-annonces/tau-16x9.mp4", "from": 10.0 },
-  "eta":    { "src": "bandes-annonces/eta-16x9.mp4", "from": 5.0 }
+ "_doc": "Extraits de gameplay. src relatif au dossier media de games-02 (ou chemin absolu / out/...). seg = liste [début, durée] enchaînés ; from = début simple. Images extraites par tools/frames.py.",
+ "phi": {
+  "src": "odyssee-phi-promo.mp4",
+  "seg": [
+   [
+    3.0,
+    13.6
+   ],
+   [
+    8.0,
+    3.0
+   ]
+  ]
+ },
+ "infini": {
+  "src": "bandes-annonces/infini-16x9.mp4",
+  "from": 6.5
+ },
+ "omega": {
+  "src": "bandes-annonces/omega-16x9.mp4",
+  "seg": [
+   [
+    3.6,
+    3.2
+   ],
+   [
+    9.6,
+    5.0
+   ]
+  ]
+ },
+ "alpha": {
+  "src": "bandes-annonces/alpha-16x9.mp4",
+  "from": 4.5
+ },
+ "beta": {
+  "src": "@out/odyssee/src/beta-capture.mp4",
+  "seg": [
+   [
+    7.6,
+    1.6
+   ],
+   [
+    34.3,
+    7.0
+   ]
+  ]
+ },
+ "lambda": {
+  "src": "bandes-annonces/lambda-16x9.mp4",
+  "from": 1.0
+ },
+ "tau": {
+  "src": "bandes-annonces/tau-16x9.mp4",
+  "from": 0.3
+ },
+ "eta": {
+  "src": "bandes-annonces/eta-16x9.mp4",
+  "from": 0.3
+ },
+ "zeta": {
+  "src": "bandes-annonces/zeta-16x9.mp4",
+  "from": 0.2
+ },
+ "xi": {
+  "src": "bandes-annonces/xi-16x9.mp4",
+  "from": 3.0
+ },
+ "chi": {
+  "src": "bandes-annonces/chi-16x9.mp4",
+  "from": 1.0
+ },
+ "gamma": {
+  "src": "bandes-annonces/gamma-16x9.mp4",
+  "from": 1.2
+ },
+ "theta": {
+  "src": "bandes-annonces/theta-16x9.mp4",
+  "seg": [
+   [
+    4.8,
+    3.6
+   ],
+   [
+    10.2,
+    2.4
+   ],
+   [
+    17.2,
+    2.4
+   ]
+  ]
+ },
+ "pi": {
+  "src": "bandes-annonces/pi-16x9.mp4",
+  "from": 3.0
+ },
+ "delta": {
+  "src": "bandes-annonces/delta-16x9.mp4",
+  "from": 3.0
+ },
+ "sigma": {
+  "src": "bandes-annonces/sigma-16x9.mp4",
+  "from": 3.0
+ },
+ "psi": {
+  "src": "bandes-annonces/psi-16x9.mp4",
+  "from": 3.0
+ }
 }

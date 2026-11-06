@@ -42,9 +42,9 @@ def osc(f, n, kind='sine'):
 # ---------- repères ----------
 def line(sid, i): return S[sid]['lines'][i]['start']
 def word(sid, i, j): return S[sid]['lines'][i]['words'][j]['s']
-BPM = 100; BEAT = 60 / BPM
+BPM = 112; BEAT = 60 / BPM
 T_INTRO, T_LOGO, T_COUNT = S['intro']['start'], line('logo', 0), S['count']['start']
-T_PHI, T_MONT, T_WF, T_FEAT, T_CLI = S['phi']['start'], S['montage']['start'], S['workflow']['start'], S['features']['start'], S['climax']['start']
+T_PHI, T_MONT, T_WF, T_FEAT, T_CLI = S['phi']['start'], S['trans']['start'], S['workflow']['start'], S['features']['start'], S['climax']['start']
 T_ORANGE, T_CTA, T_END = line('climax', 2), S['cta']['start'], TL['duration']
 
 # intensité de la musique dans le temps (0..1)
@@ -139,10 +139,12 @@ put(FX, T_LOGO - 2.5, riser(2.5), 0.3)
 put(FX, T_LOGO, boom(4.0), 0.9); put(FX, T_LOGO, shimmer(3.5), 0.4)            # logo
 for j in range(0, 22): put(FX, line('count', 1) + 0.1 + j * 0.055, tick(), 0.25)  # compteur 1 → 51
 put(FX, word('count', 1, 4), boom(2.5), 0.6)
-for sid in ('phi', 'infini', 'omega', 'workflow', 'features', 'climax'):
-    put(FX, S[sid]['start'] - 0.25, whoosh(0.5), 0.35)
-for i, l in enumerate(S['montage']['lines']):
-    put(FX, l['start'] - 0.2, whoosh(0.35), 0.35, pan=0.4 * (-1) ** i); put(FX, l['start'] - 0.12, KICK, 0.25)
+for i, sc in enumerate(TL['scenes'][4:-1]):  # une transition à chaque scène
+    put(FX, sc['start'] - 0.25, whoosh(0.45), 0.35, pan=0.4 * (-1) ** i)
+    if sc.get('type') == 'game': put(FX, sc['start'], KICK, 0.3); put(FX, sc['start'], shimmer(1.2), 0.08)
+for sc in TL['scenes']:  # petit « tic » à chaque mécanique affichée
+    for c in sc.get('chips', []): put(FX, c['t'] - 0.05, tick(), 0.35)
+for l in S['montage']['lines']: put(FX, l['start'] - 0.2, whoosh(0.35), 0.3)
 put(FX, T_ORANGE - 2.4, riser(2.4), 0.4)
 put(FX, T_ORANGE, boom(4.0), 1.0); put(FX, T_ORANGE, shimmer(3.5), 0.45)        # « Commence ton odyssée »
 put(FX, T_CTA, shimmer(4.0), 0.3)
@@ -159,9 +161,9 @@ music *= np.clip((T_END + 0.3 - tt) / 1.5, 0, 1)  # fin en fondu
 raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', os.path.join(OUT, 'vo.wav'), '-f', 'f64le', '-ac', '1', '-ar', str(SR), '-'], capture_output=True, check=True).stdout
 vo = np.frombuffer(raw, dtype=np.float64)[:N]; vo = np.pad(vo, (0, N - len(vo)))
 # compression de voix légère + atténuation de la musique sous la voix
-env = lfilt(np.abs(vo), np.exp(-2 * np.pi * 4 / SR)); duck = 1 - 0.55 * np.clip(env / (env.max() * 0.25), 0, 1)
+env = lfilt(np.abs(vo), np.exp(-2 * np.pi * 4 / SR)); duck = 1 - 0.42 * np.clip(env / (env.max() * 0.25), 0, 1)
 music /= np.abs(music).max() + 1e-9
-mix = music * 0.42 * duck + vo[None, :] * 1.0 / (np.abs(vo).max() + 1e-9) * 0.9
+mix = music * 0.55 * duck + vo[None, :] * 1.0 / (np.abs(vo).max() + 1e-9) * 0.9
 pcm = (np.clip(mix.T, -1, 1) * 32767).astype('<i2').tobytes()
 tmp = os.path.join(OUT, 'mix_raw.wav')
 subprocess.run(['ffmpeg', '-y', '-v', 'error', '-f', 's16le', '-ar', str(SR), '-ac', '2', '-i', '-', tmp], input=pcm, check=True)
