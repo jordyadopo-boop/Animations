@@ -50,3 +50,12 @@ ep51/vchk
 ep51/cov
 ep51/vchk_*
 ep51/sheet_*.jpg
+ep52/seg
+ep52/tts_cache
+ep52/build
+ep52/web/main.js
+ep52/cov
+ep52/node_modules
+ep52/stills
+ep52/sheet.jpg
+ep52/vchk
