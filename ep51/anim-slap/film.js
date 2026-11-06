@@ -204,8 +204,8 @@
       angel(ctx, W / 2, Math.round(H * 0.42), 1.2, t, { armL: 2.7, armR: 2.7, mouth: 'open', eyes: 'wide' });
       ctx.restore();
       if (t > hit) { ctx.fillStyle = `rgba(255,250,235,${0.8 * Math.exp(-(t - hit) * 10)})`; ctx.fillRect(0, 0, W, H); }
-      stamp(ctx, 'ELLE EST TOMBÉE,', W / 2, Math.round(H * 0.50), 96, t, hit);
-      stamp(ctx, 'ELLE EST TOMBÉE !', W / 2, Math.round(H * 0.57), 96, t, hit + 0.9);
+      stamp(ctx, 'ELLE EST TOMBÉE,', W / 2, Math.round(H * 0.50), 74, t, hit);
+      stamp(ctx, 'ELLE EST TOMBÉE !', W / 2, Math.round(H * 0.57), 74, t, hit + 0.9);
       ref(ctx); return;
     }
     if (t < C.cyrus) { // Isaie 21 : la sentinelle sur la tour voit arriver le messager

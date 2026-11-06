@@ -48,3 +48,5 @@ ep51*_rendu*.log
 ep51/render*.log
 ep51/vchk
 ep51/cov
+ep51/vchk_*
+ep51/sheet_*.jpg
