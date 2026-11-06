@@ -167,9 +167,13 @@
   }
   function sceneAnge(ctx, t) {
     const T0 = SC.ange[0], d = ease.outCubic(clamp((t - T0) / 5));
-    sky(ctx, d, 'dusk'); G.rays(ctx, W / 2, H * 0.3, { n: 28, r0: 160, r1: 1400, color: GOLD, lw: 6, alpha: 0.55 * d, spin: t * 0.05 });
-    ground(ctx, d); city(ctx, W / 2, GROUND, W * 1.1, 0, 3, { lit: d > 0.5 });
-    angel(ctx, W / 2, lerp(-150, H * 0.5, d), 2.0, t, { armL: 0.9 + d, armR: 0.9 + d });
+    const LY = globalThis.LAYERS ?? 99; // demonstration « making-of » : nombre de couches dessinees
+    if (LY < 1) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, W, H); }
+    if (LY >= 1) sky(ctx, d, 'dusk');
+    if (LY >= 2) G.rays(ctx, W / 2, H * 0.3, { n: 28, r0: 160, r1: 1400, color: GOLD, lw: 6, alpha: 0.55 * d, spin: t * 0.05 });
+    if (LY >= 3) { ground(ctx, d); city(ctx, W / 2, GROUND, W * 1.1, 0, 3, { lit: d > 0.5 }); }
+    if (LY >= 4) angel(ctx, W / 2, lerp(-150, H * 0.5, d), 2.0, t, { armL: 0.9 + d, armR: 0.9 + d });
+    if (LY < 5) return;
     if (t > C.gloire) { const k = clamp((t - C.gloire - 0.5) / 0.6); ctx.save(); ctx.globalAlpha = k; G.ellipse(ctx, SAFE.x + 110, SAFE.y + 330, 60, 60, { fill: '#FFD24A', lw: 5, seed: 51 }); G.rays(ctx, SAFE.x + 110, SAFE.y + 330, { n: 12, r0: 72, r1: 110, color: '#FFD24A', lw: 6, alpha: 1 }); ctx.restore(); }
     paper(ctx, ['« la terre fut éclairée de sa gloire »'], t, T0 + 0.6, C.gloire, { size: 46 });
     paper(ctx, ['comme un second soleil'], t, C.gloire + 0.5, SC.cri[0], { size: 50 });
