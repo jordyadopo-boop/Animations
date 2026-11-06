@@ -15,3 +15,7 @@
   ON CONTINUE EN 3D. Les versions 2D et slapstick de l'ép. 51 sont gardées en archives (ep51/anim, ep51/anim-slap, ep51/livrables).
   L'ép. 51 officiel = la version 3D (ep51/web/sets51.js, livrables/episode51_3D_...).
 - Prochain : 52 Apocalypse 17, 7-18 (l'ange explique le mystère de la femme et de la bête) → proposer titre + couverture d'abord.
+- Ép. 57 UN SOLEIL DE FEU (Ap 16,8-9) livré. Ép. 58 LES FLEUVES DEVIENNENT DU SANG (Ap 16,4-7) : sources, couverture, légende commitées ;
+  rendu complet via `./rendu.sh ep58` (livrables/episode58_les_fleuves_deviennent_du_sang.mp4).
+- Prochain : 59 Apocalypse 16, 1-3 (voix du temple : « versez les sept coupes » ; 1re coupe = ulcères ; 2e coupe = la mer comme le sang d'un mort)
+  → proposer 2 titres + couverture d'abord. Nouveau épisode = copier ep58 (render.js, web/head|tail|lib|helpers*, build_audio.py), body.js = cat helpers*.js setsNN.js.
