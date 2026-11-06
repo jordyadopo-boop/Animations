@@ -150,6 +150,54 @@ export function createScreen(TL, IMG) {
     ctx.restore();
   }
 
+  // ---------- effets « studio » ----------
+  // texte qui se décode (caractères aléatoires puis le vrai texte)
+  const GLYPHS = 'ΦΩΣΔΛΞΨ#%&@0123456789ABCDEFGHKMNPRSTVXZ';
+  function scramble(s, k, t) { const n = Math.floor(s.length * clamp(k)); let o = s.slice(0, n); for (let i = n; i < s.length; i++) o += s[i] === ' ' ? ' ' : GLYPHS[Math.floor(rnd(i * 7 + Math.floor(t * 30)) * GLYPHS.length)]; return o; }
+  // titre : lettres qui montent une à une avec dépassement, puis un reflet qui balaie
+  function staggerTitle(s, x, y, size, lt) {
+    if (lt <= 0) return; let cx = x;
+    for (let i = 0; i < s.length; i++) {
+      const ch = s[i], w = measure(ch, size, 600, 'Cinzel'); const k = back(lin(lt, i * 0.035, i * 0.035 + 0.32));
+      if (k > 0) { ctx.save(); ctx.translate(cx + w / 2, y + (1 - k) * 60); ctx.rotate((1 - clamp(k)) * 0.25); text(ch, 0, 0, { size, w: 600, metal: true, glow: 'rgba(255,160,40,.6)', alpha: clamp(k * 1.4) }); ctx.restore(); }
+      cx += w;
+    }
+    const sw = lin(lt, 0.55, 1.15); if (sw > 0 && sw < 1) shine(x, y - size * 0.6, cx - x, size * 1.1, sw, 0.55);
+  }
+  // reflet diagonal qui balaie une zone
+  function shine(x, y, w, h, k, a = 0.45) {
+    if (k <= 0 || k >= 1) return; ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.globalCompositeOperation = 'lighter';
+    const cx = x - 80 + (w + 160) * k; const g = ctx.createLinearGradient(cx - 50, 0, cx + 50, 0); g.addColorStop(0, 'rgba(255,240,200,0)'); g.addColorStop(0.5, `rgba(255,240,200,${a})`); g.addColorStop(1, 'rgba(255,240,200,0)');
+    ctx.fillStyle = g; ctx.transform(1, 0, -0.3, 1, 0, 0); ctx.fillRect(cx - 60 + (y + h) * 0.3 - h * 0.3, y, 120, h); ctx.restore();
+  }
+  // gerbe d'étincelles (0..0.6 s)
+  function sparks(x, y, t, seed) {
+    if (t < 0 || t > 0.6) return; ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 14; i++) { const a = -1.2 + rnd(seed * 31 + i) * 2.4, v = 260 + rnd(seed * 17 + i) * 380, px = x + Math.cos(a) * v * t, py = y + Math.sin(a) * v * t + 300 * t * t; ctx.globalAlpha = 1 - t / 0.6; ctx.fillStyle = i % 3 ? GOLD : '#fff1c2'; ctx.beginPath(); ctx.arc(px, py, 2.6 * (1 - t / 0.6) + 0.8, 0, 7); ctx.fill(); }
+    ctx.restore();
+  }
+  // coins de visée qui se verrouillent sur l'image
+  function hudCorners(lt, dur) {
+    const k = eo(lin(lt, 0.1, 0.5)), m = 24 + (1 - k) * 70, L = 46; ctx.save(); ctx.globalAlpha = 0.85 * k * (1 - lin(lt, dur - 0.25, dur)); ctx.strokeStyle = GOLD; ctx.lineWidth = 3; ctx.shadowColor = GOLD; ctx.shadowBlur = 12;
+    for (const [x, y, dx, dy] of [[m, m, 1, 1], [SW - m, m, -1, 1], [m, SH - m, 1, -1], [SW - m, SH - m, -1, -1]]) { ctx.beginPath(); ctx.moveTo(x, y + dy * L); ctx.lineTo(x, y); ctx.lineTo(x + dx * L, y); ctx.stroke(); }
+    // ligne de balayage horizontale (scan)
+    const sy = SH * lin(lt, 0.1, 0.9); if (sy > 0 && sy < SH) { ctx.globalAlpha = 0.25 * (1 - lin(lt, 0.7, 0.9)); ctx.fillStyle = CLAIR; ctx.fillRect(0, sy, SW, 2); }
+    ctx.restore();
+  }
+  // notification « succès » comme dans les jeux
+  function toast(sc, lt, dur) {
+    const kin = back(lin(lt, 0.55, 0.95)), kout = eo(lin(lt, dur - 0.55, dur - 0.2)); const k = clamp(kin) * (1 - kout); if (k <= 0) return;
+    const w = 430, h = 96, x = SW - w - 50 + (1 - clamp(kin)) * 480 + kout * 480, y = 70;
+    ctx.save(); rrect(x, y, w, h, 14); ctx.fillStyle = 'rgba(13,9,4,.92)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,201,60,.7)'; ctx.shadowColor = BRAISE; ctx.shadowBlur = 24; ctx.stroke(); ctx.shadowBlur = 0;
+    // icône : petit polyèdre qui tourne dans un cercle
+    ctx.beginPath(); ctx.arc(x + 48, y + h / 2, 30, 0, 7); ctx.fillStyle = 'rgba(255,122,26,.18)'; ctx.fill(); ctx.restore();
+    poly('ico', x + 48, y + h / 2, 20, lt * 2, lt * 2.6, GOLD, 1, 2);
+    text('NOUVEAU JEU DÉBLOQUÉ', x + 92, y + 30, { size: 17, fam: 'Jost', w: 600, color: BRAISE, align: 'left', ls: 4 });
+    text(`${sc.label} · ${String(sc.num).padStart(2, '0')}/50`, x + 92, y + 58, { size: 26, fam: 'Jost', w: 600, color: '#fff', align: 'left' });
+    const pb = eo(lin(lt, 0.8, 1.6)); rrect(x + 92, y + 76, w - 120, 6, 3); ctx.fillStyle = 'rgba(255,224,138,.15)'; ctx.fill(); rrect(x + 92, y + 76, (w - 120) * (sc.num - 1 + pb) / 50, 6, 3); ctx.fillStyle = GOLD; ctx.fill();
+    shine(x, y, w, h, lin(lt, 0.9, 1.5), 0.3);
+  }
+
   // ======================= SCÈNES =======================
   const DRAW = {
     hook(sc, lt) {
@@ -224,9 +272,9 @@ export function createScreen(TL, IMG) {
         const st = eo(lin(lt, wd(sc, 0, 4) - 0.1, wd(sc, 0, 4) + 0.3)); // « pas »
         if (st > 0) { ctx.beginPath(); ctx.moveTo(SW / 2 - 380, SH / 2 + 10); ctx.lineTo(SW / 2 - 380 + 760 * st, SH / 2 - 10); glowStroke(BRAISE, 12, 22); }
       } else {
-        const n = Math.round(1 + 50 * eio(lin(lt, a1 + 0.1, wd(sc, 1, 4) + 0.2)));
+        const n = Math.round(1 + 49 * eio(lin(lt, a1 + 0.1, wd(sc, 1, 4) + 0.2)));
         const pop = back(lin(lt, wd(sc, 1, 4) - 0.05, wd(sc, 1, 4) + 0.35));
-        ctx.save(); ctx.translate(SW / 2, SH / 2 - 40); const s = 1 + 0.12 * pop * (n === 51 ? 1 : 0); ctx.scale(s, s);
+        ctx.save(); ctx.translate(SW / 2, SH / 2 - 40); const s = 1 + 0.12 * pop * (n === 50 ? 1 : 0); ctx.scale(s, s);
         text(String(n), 0, 0, { size: 330, w: 700, metal: true, glow: 'rgba(255,160,40,.8)' }); ctx.restore();
         text('JEUX', SW / 2, SH / 2 + 170, { size: 70, w: 600, color: '#fff', ls: 30 });
         if (lt > a2) text('UN SEUL UNIVERS', SW / 2, SH / 2 + 260, { size: 30, fam: 'Jost', w: 500, color: CLAIR, ls: 14, alpha: lin(lt, a2, a2 + 0.3) });
@@ -301,7 +349,7 @@ export function createScreen(TL, IMG) {
         ctx.save(); ctx.translate(SW / 2, SH / 2); ctx.scale(z, z); ctx.translate(-SW / 2, -SH / 2);
         for (let r = -1; r < 10; r++) for (let c = 0; c < cols; c++) { const n = (r + 1) * cols + c; ctx.globalAlpha = 0.85; cover(IMG.get(`assets/jeux/${ids[(n * 7) % ids.length]}.jpg`), c * tw + 3, r * th + 3 + ((c % 2) * th / 2 - lt * 30) % th, tw - 6, th - 6); }
         ctx.restore(); ctx.fillStyle = 'rgba(5,3,2,.45)'; ctx.fillRect(0, 0, SW, SH);
-        const k = eo(lin(l0, 0.2, 0.6)); text('51', SW / 2, SH / 2 - 30, { size: 220, w: 700, metal: true, glow: 'rgba(255,160,40,.85)', alpha: k }); text('JEUX · ET ÇA CONTINUE', SW / 2, SH / 2 + 120, { size: 34, fam: 'Jost', w: 600, color: '#fff', ls: 10, alpha: k });
+        const k = eo(lin(l0, 0.2, 0.6)); text('50', SW / 2, SH / 2 - 30, { size: 220, w: 700, metal: true, glow: 'rgba(255,160,40,.85)', alpha: k }); text('JEUX · ET ÇA CONTINUE', SW / 2, SH / 2 + 120, { size: 34, fam: 'Jost', w: 600, color: '#fff', ls: 10, alpha: k });
       } else {
         clip(li.clip, l0, { zoom: 1.02 });
       }
@@ -311,7 +359,7 @@ export function createScreen(TL, IMG) {
         text(li.label, 70 + (1 - k) * -40, SH - 140, { size: 84, w: 600, metal: true, align: 'left', glow: 'rgba(255,160,40,.6)', alpha: k });
         chip(li.sub.toUpperCase(), 72, SH - 70, { alpha: k, k: eo(lin(l0, 0.15, 0.5)) });
         // compteur
-        text(`${String(i).padStart(2, '0')} / 51`, SW - 70, SH - 70, { size: 22, fam: 'Jost', w: 600, color: CLAIR, align: 'right', ls: 6, alpha: k });
+        text(`${String(i).padStart(2, '0')} / 50`, SW - 70, SH - 70, { size: 22, fam: 'Jost', w: 600, color: CLAIR, align: 'right', ls: 6, alpha: k });
       }
       // coupe : petit flash à chaque changement
       const f = 1 - lin(l0, 0, 0.12); if (f > 0 && i > 0) { ctx.fillStyle = `rgba(255,241,194,${0.35 * f})`; ctx.fillRect(0, 0, SW, SH); }
@@ -320,12 +368,15 @@ export function createScreen(TL, IMG) {
     // un jeu en détail : gameplay plein écran, titre, et ses mécaniques qui s'affichent au fil de la voix
     game(sc, lt) {
       const dur = sc.end - sc.start;
-      clip(sc.clip, lt, { zoom: 1.03, push: 0.003 });
+      const pin = eo(lin(lt, 0, 0.45));
+      clip(sc.clip, lt, { zoom: 1.03 + 0.16 * (1 - pin), push: 0.003 });
+      hudCorners(lt, dur);
       // voile à gauche pour la lisibilité
       const g = ctx.createLinearGradient(0, 0, SW * 0.55, 0); g.addColorStop(0, 'rgba(5,3,2,.78)'); g.addColorStop(1, 'rgba(5,3,2,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, SW * 0.55, SH);
       const k = eo(lin(lt, 0.05, 0.4));
-      chip(`JEU Nº ${sc.num} · ${sc.kicker.toUpperCase()}`, 60, 110, { alpha: k, k });
-      text(sc.label, 60 + (1 - k) * -50, 210, { size: 96, w: 600, metal: true, align: 'left', glow: 'rgba(255,160,40,.6)', alpha: k });
+      chip(scramble(`JEU Nº ${sc.num} · ${sc.kicker.toUpperCase()}`, lin(lt, 0.05, 0.55), lt), 60, 110, { alpha: k, k });
+      staggerTitle(sc.label, 60, 210, 96, lt - 0.12);
+      toast(sc, lt, dur);
       // mécaniques
       const chips = sc.chips || []; let last = -1; chips.forEach((c, q) => { if (lt >= c.t - sc.start - 0.05) last = q; });
       chips.forEach((c, q) => {
@@ -337,8 +388,10 @@ export function createScreen(TL, IMG) {
         ctx.beginPath(); ctx.moveTo(20, 1); ctx.lineTo(30, 11); ctx.lineTo(48, -10); ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.strokeStyle = on ? '#1a0d02' : GOLD; ctx.stroke();
         text(c.text, 66, 2, { size: 30, fam: 'Jost', w: 600, color: on ? '#1a0d02' : '#fff', align: 'left', ls: 3 });
         ctx.restore();
+        sparks(60, y, lt - t0, q + sc.num * 10);
+        shine(60, y - 30, w, 60, lin(lt, t0 + 0.15, t0 + 0.6));
       });
-      text(`${String(sc.num).padStart(2, '0')} / 51`, SW - 64, SH - 116, { size: 22, fam: 'Jost', w: 600, color: CLAIR, align: 'right', ls: 6, alpha: k });
+      text(`${String(sc.num).padStart(2, '0')} / 50`, SW - 64, SH - 116, { size: 22, fam: 'Jost', w: 600, color: CLAIR, align: 'right', ls: 6, alpha: k });
       const f = 1 - lin(lt, 0, 0.14); if (f > 0) { ctx.fillStyle = `rgba(255,241,194,${0.4 * f})`; ctx.fillRect(0, 0, SW, SH); }
       ctx.fillStyle = `rgba(5,3,2,${0.8 * lin(lt, dur - 0.15, dur)})`; ctx.fillRect(0, 0, SW, SH);
     },
@@ -453,10 +506,46 @@ export function createScreen(TL, IMG) {
     },
   };
 
+  // ---------- post-traitement : secousses, glitch de coupe, bloom, fuites de lumière, grain, vignette ----------
+  const IMPACTS = (() => {
+    const L = []; const W = (id, i, j) => { const sc = scenes[id]; const w = sc && sc.lines[i] && sc.lines[i].words; return w ? w[Math.min(j, w.length - 1)].s : null; };
+    TL.scenes.forEach((sc, i) => { if (i > 0) L.push({ t: sc.start, a: sc.type === 'game' ? 0.55 : 0.4, cut: true }); });
+    for (const [t, a] of [[W('hook', 0, 0), 0.8], [W('hook', 2, 3), 1], [scenes.logo && scenes.logo.lines[0].start, 1], [W('count', 1, 9), 1], [scenes.climax && scenes.climax.lines[2].start, 1.3], [W('trans', 0, 5), 0.8]]) if (t != null) L.push({ t, a, cut: false });
+    return L;
+  })();
+  const snap = document.createElement('canvas'); snap.width = 1920; snap.height = 1080; const sctx = snap.getContext('2d');
+  const small = document.createElement('canvas'); small.width = 480; small.height = 270; const smctx = small.getContext('2d');
+  const noise = document.createElement('canvas'); noise.width = 256; noise.height = 256; { const nc = noise.getContext('2d'), im = nc.createImageData(256, 256); for (let i = 0; i < im.data.length; i += 4) { const v = rnd(i) * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; } nc.putImageData(im, 0, 0); }
+  function energy(t) { let sh = 0, cut = 0, best = null; for (const I of IMPACTS) { const d = t - I.t; if (d >= -0.02 && d < 0.6) { const e = I.a * Math.exp(-Math.max(0, d) * 9); sh += e; if (!best || e > best.e) best = { ...I, e, d }; } if (I.cut && Math.abs(d) < 0.12) cut = Math.max(cut, 1 - Math.abs(d) / 0.12); } return { sh, cut, best }; }
+  function post(t) {
+    const E = energy(t), f = Math.floor(t * 30);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    // glitch de coupe : bandes horizontales décalées + fantôme décalé
+    if (E.cut > 0.05) {
+      sctx.drawImage(cv, 0, 0);
+      for (let i = 0; i < 9; i++) { const y = Math.floor(rnd(f * 13 + i) * 1080), h = 12 + rnd(f * 7 + i) * 90, dx = (rnd(f * 3 + i) - 0.5) * 160 * E.cut; ctx.drawImage(snap, 0, y, 1920, h, dx, y, 1920, h); }
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.28 * E.cut; ctx.drawImage(snap, 14 * E.cut, 0); ctx.globalAlpha = 0.18 * E.cut; ctx.drawImage(snap, -14 * E.cut, 0); ctx.restore();
+      // traînée lumineuse diagonale
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; const x = -400 + 2700 * (0.5 + 0.5 * Math.sign(t - 0) * 0) ; const p = clamp((E.cut)); const gx = 1920 * (1 - p) - 200; const g = ctx.createLinearGradient(gx - 160, 0, gx + 160, 0); g.addColorStop(0, 'rgba(255,180,58,0)'); g.addColorStop(0.5, `rgba(255,220,150,${0.5 * p})`); g.addColorStop(1, 'rgba(255,180,58,0)'); ctx.fillStyle = g; ctx.transform(1, 0, -0.35, 1, 0, 0); ctx.fillRect(gx - 200, 0, 400 + 400, 1080); ctx.restore();
+    }
+    // bloom léger : image réduite, floutée, ajoutée en « screen »
+    smctx.filter = 'blur(5px)'; smctx.drawImage(cv, 0, 0, 480, 270); smctx.filter = 'none';
+    ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.globalAlpha = 0.32 + 0.4 * Math.min(1, E.sh); ctx.drawImage(small, 0, 0, 1920, 1080); ctx.restore();
+    // fuite de lumière chaude sur les impacts
+    if (E.best && E.best.e > 0.05) { ctx.save(); ctx.globalCompositeOperation = 'screen'; const cx = rnd(Math.floor(E.best.t * 10)) > 0.5 ? 1920 : 0; const g = ctx.createRadialGradient(cx, 300, 10, cx, 300, 1100); g.addColorStop(0, `rgba(255,140,40,${0.45 * Math.min(1, E.best.e)})`); g.addColorStop(1, 'rgba(255,140,40,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
+    // vignette
+    const v = ctx.createRadialGradient(960, 540, 420, 960, 540, 1150); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.55)'); ctx.fillStyle = v; ctx.fillRect(0, 0, 1920, 1080);
+    // grain de film
+    ctx.save(); ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = 0.09; const ox = Math.floor(rnd(f) * 256), oy = Math.floor(rnd(f + 99) * 256); ctx.translate(-ox, -oy); ctx.fillStyle = ctx.createPattern(noise, 'repeat'); ctx.fillRect(0, 0, 1920 + 256, 1080 + 256); ctx.restore();
+  }
+
   function draw(t) {
     let sc = TL.scenes[TL.scenes.length - 1]; for (const s of TL.scenes) if (t >= s.start && t < s.end) { sc = s; break; }
-    const lt = t - sc.start; ctx.setTransform(1.2, 0, 0, 1.2, 0, 0); ctx.save(); DRAW[sc.type === 'game' ? 'game' : sc.id](sc, lt); ctx.restore();
+    const lt = t - sc.start; const E = energy(t), f = Math.floor(t * 30);
+    const z = 1 + 0.035 * Math.min(1.2, E.sh), sx = (rnd(f) - 0.5) * 26 * E.sh, sy = (rnd(f + 7) - 0.5) * 18 * E.sh;
+    ctx.setTransform(1.2 * z, 0, 0, 1.2 * z, 960 - 960 * z + sx, 540 - 540 * z + sy); ctx.save(); DRAW[sc.type === 'game' ? 'game' : sc.id](sc, lt); ctx.restore();
     ctx.save(); chrome(t, curLine(sc, t)); ctx.restore();
+    post(t);
     // lignes de balayage très légères (écran)
     
     return sc;

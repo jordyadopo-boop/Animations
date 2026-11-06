@@ -41,7 +41,7 @@ def osc(f, n, kind='sine'):
 
 # ---------- repères ----------
 def line(sid, i): return S[sid]['lines'][i]['start']
-def word(sid, i, j): return S[sid]['lines'][i]['words'][j]['s']
+def word(sid, i, j): w = S[sid]['lines'][i]['words']; return w[min(j, len(w) - 1)]['s']
 BPM = 112; BEAT = 60 / BPM
 T_INTRO, T_LOGO, T_COUNT = S['intro']['start'], line('logo', 0), S['count']['start']
 T_PHI, T_MONT, T_WF, T_FEAT, T_CLI = S['phi']['start'], S['trans']['start'], S['workflow']['start'], S['features']['start'], S['climax']['start']
@@ -142,6 +142,10 @@ put(FX, word('count', 1, 4), boom(2.5), 0.6)
 for i, sc in enumerate(TL['scenes'][4:-1]):  # une transition à chaque scène
     put(FX, sc['start'] - 0.25, whoosh(0.45), 0.35, pan=0.4 * (-1) ** i)
     if sc.get('type') == 'game': put(FX, sc['start'], KICK, 0.3); put(FX, sc['start'], shimmer(1.2), 0.08)
+def chime():  # notification « jeu débloqué »
+    n = int(0.5 * SR); return (osc(mtof(84), n) * env_ad(n, 0.002, 0.12) + osc(mtof(91), n) * env_ad(n, 0.06, 0.18) * 0.8)
+for sc in TL['scenes']:
+    if sc.get('type') == 'game': put(FX, sc['start'] + 0.6, chime(), 0.22, pan=0.5)
 for sc in TL['scenes']:  # petit « tic » à chaque mécanique affichée
     for c in sc.get('chips', []): put(FX, c['t'] - 0.05, tick(), 0.35)
 for l in S['montage']['lines']: put(FX, l['start'] - 0.2, whoosh(0.35), 0.3)

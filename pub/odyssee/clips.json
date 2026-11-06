@@ -1,5 +1,5 @@
 {
- "_doc": "Extraits de gameplay. src relatif au dossier media de games-02 (ou chemin absolu / out/...). seg = liste [début, durée] enchaînés ; from = début simple. Images extraites par tools/frames.py.",
+ "_doc": "Extraits de gameplay. src relatif au dossier media de games-02 (ou chemin absolu / out/...). seg = liste [début, durée] enchaînés ; from = début simple. Images extraites par tools/frames.py. β : capture image par image du vrai jeu (horloge virtuelle), voir tools/capture-kart.js.",
  "phi": {
   "src": "odyssee-phi-promo.mp4",
   "seg": [
@@ -36,16 +36,7 @@
  },
  "beta": {
   "src": "@out/odyssee/src/beta-capture.mp4",
-  "seg": [
-   [
-    7.6,
-    1.6
-   ],
-   [
-    34.3,
-    7.0
-   ]
-  ]
+  "from": 0.0
  },
  "lambda": {
   "src": "bandes-annonces/lambda-16x9.mp4",

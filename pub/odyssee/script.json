@@ -37,7 +37,7 @@
    "pad": 0.45,
    "vo": [
     "Et non, ce n'est pas un jeu.",
-    "C'est cinquante et un jeux.",
+    "C'est cinquante jeux.",
     "Tous dans le même univers."
    ],
    "gap": 0.34
@@ -579,7 +579,7 @@
      "clip": "sports"
     },
     {
-     "t": "Plus de cinquante jeux. Et ça continue.",
+     "t": "Cinquante jeux. Et ça continue.",
      "clip": "wall"
     }
    ],
