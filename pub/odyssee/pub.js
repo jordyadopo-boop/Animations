@@ -21,5 +21,6 @@ async function settle() { while (pending.size) { const l = [...pending]; pending
 window.EPISODE = { duration: TL.duration, fps: 30, width: 1920, height: 1080 };
 window.renderFrame = async (t) => { screen.draw(t); if (pending.size) { await settle(); screen.draw(t); } };
 await settle();
-await window.renderFrame(Number(new URLSearchParams(location.search).get('t') || 0));
+const Q = new URLSearchParams(location.search);
+if (Q.get('cover')) { screen.poster(); await settle(); screen.poster(); } else await window.renderFrame(Number(Q.get('t') || 0));
 window.READY = true;

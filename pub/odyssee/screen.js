@@ -550,5 +550,35 @@ export function createScreen(TL, IMG) {
     
     return sc;
   }
-  return { canvas: cv, ctx, draw, scenes };
+
+  // couverture de la vidéo (image fixe 1920x1080)
+  function poster() {
+    ctx.setTransform(1.2, 0, 0, 1.2, 0, 0); const lt = 1.2;
+    ctx.fillStyle = NOIR; ctx.fillRect(0, 0, SW, SH);
+    // mosaïque de jeux inclinée en fond
+    const ids = IMG.games; ctx.save(); ctx.translate(SW * 0.62, SH / 2); ctx.rotate(-0.12); ctx.scale(1.05, 1.05);
+    const tw = 230, th = 130;
+    for (let r = -4; r <= 4; r++) for (let c = -3; c <= 5; c++) { const n = ((r + 4) * 9 + c + 3); ctx.globalAlpha = 0.85; cover2(IMG.get(`assets/jeux/${ids[(n * 7) % ids.length]}.jpg`), c * (tw + 10) + (r % 2) * 60, r * (th + 10), tw, th); }
+    ctx.restore();
+    // fondu vers la gauche pour le texte
+    let g = ctx.createLinearGradient(0, 0, SW, 0); g.addColorStop(0, 'rgba(5,3,2,1)'); g.addColorStop(0.42, 'rgba(5,3,2,.93)'); g.addColorStop(0.7, 'rgba(5,3,2,.35)'); g.addColorStop(1, 'rgba(5,3,2,.15)'); ctx.fillStyle = g; ctx.fillRect(0, 0, SW, SH);
+    g = ctx.createLinearGradient(0, 0, 0, SH); g.addColorStop(0, 'rgba(5,3,2,.5)'); g.addColorStop(0.25, 'rgba(5,3,2,0)'); g.addColorStop(0.75, 'rgba(5,3,2,0)'); g.addColorStop(1, 'rgba(5,3,2,.7)'); ctx.fillStyle = g; ctx.fillRect(0, 0, SW, SH);
+    // halo chaud
+    g = ctx.createRadialGradient(330, 430, 20, 330, 430, 620); g.addColorStop(0, 'rgba(255,150,40,.28)'); g.addColorStop(1, 'rgba(255,150,40,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, SW, SH);
+    dust(3.3, 70, 0.7, 4);
+    // polyèdres menaçants
+    poly('ico', 1210, 190, 105, 0.5, 0.8, GOLD, 0.95, 4); poly('cube', 1440, 620, 80, 0.7, 0.4, BRAISE, 0.9, 4); poly('tet', 990, 690, 60, 0.2, 1.1, '#ff4a6e', 0.85, 3); poly('oct', 1480, 300, 50, 1.0, 0.3, CLAIR, 0.8, 3);
+    // le bonhomme sur sa ligne de craie
+    ctx.beginPath(); ctx.moveTo(760, 735); ctx.lineTo(1560, 735); glowStroke(GOLD, 4, 18); node(760, 735, 10); node(1560, 735, 10);
+    stickman(1100, 735, 330, 1, 'run', 1.2);
+    // logo + accroche
+    const img = IMG.get('assets/logo/odyssee-lockup-horizontal.png'); if (img.width) { const w = 560, h = w * img.height / img.width; ctx.drawImage(img, 60, 60, w, h); }
+    text('50', 70, 470, { size: 330, w: 700, metal: true, glow: 'rgba(255,160,40,.85)', align: 'left' });
+    text('JEUX', 80, 640, { size: 92, w: 700, color: '#fff', align: 'left', ls: 22, glow: 'rgba(255,241,194,.35)' });
+    chip('UN BONHOMME CONTRE LA GÉOMÉTRIE', 82, 730, { size: 26 });
+    text('odysseegames.com', 84, 812, { size: 30, fam: 'Jost', w: 500, color: CLAIR, align: 'left', ls: 3 });
+    post(0.0001);
+  }
+  function cover2(img, x, y, w, h) { if (!img || !img.width) return; ctx.save(); rrect(x, y, w, h, 10); ctx.clip(); cover(img, x, y, w, h); ctx.restore(); ctx.save(); rrect(x, y, w, h, 10); ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,201,60,.35)'; ctx.stroke(); ctx.restore(); }
+  return { canvas: cv, ctx, draw, scenes, poster };
 }
