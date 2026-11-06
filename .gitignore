@@ -25,3 +25,12 @@ ep49/vchk
 ep51-stick/out
 ep51-stick/propositions/paper
 ep51-stick/propositions/chalk
+ep50/seg
+ep50/tts_cache
+ep50/build
+ep50/web/main.js
+ep50/cov
+ep50/node_modules
+ep50/stills
+ep50/sheet.jpg
+ep50/vchk
