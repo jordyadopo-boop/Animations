@@ -38,3 +38,11 @@ ep51/anim/out
 ep51/tts_cache
 ep51/build
 ep51/sheet.jpg
+ep51/seg
+ep51/web/main.js
+ep51/node_modules
+ep51/stills
+ep51/anim-slap/out
+ep51/sheet_slap.jpg
+ep51*_rendu*.log
+ep51/render*.log
