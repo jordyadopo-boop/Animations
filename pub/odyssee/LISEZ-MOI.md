@@ -1,4 +1,4 @@
-# Pub « Odyssée Games » — 16:9, 3 min 39
+# Pub « Odyssée Games » — 16:9, 3 min 15
 
 Typographie animée + gameplay réel, dans le style de la vidéo de référence (écran d'ordinateur), en plein cadre 1920x1080.
 Rendu : `episodes_rendus/ODYSSEE_GAMES_pub_16x9.mp4`.
