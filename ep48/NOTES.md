@@ -11,3 +11,7 @@
   passage en « stick animation » (animation de bonhommes dessinés) avec le skill animation-studio.
 - ⚠ Pour la stick animation (ép. 51 et suivants) : montrer d'abord des CAPTURES (images fixes du style et des scènes)
   à Mr A et attendre son accord avant le rendu complet.
+- ⚠ DÉCISION de Mr A (6 nov. 2026), après comparaison des 3 rendus de l'ép. 51 (3D, 2D Animation Studio, slapstick) :
+  ON CONTINUE EN 3D. Les versions 2D et slapstick de l'ép. 51 sont gardées en archives (ep51/anim, ep51/anim-slap, ep51/livrables).
+  L'ép. 51 officiel = la version 3D (ep51/web/sets51.js, livrables/episode51_3D_...).
+- Prochain : 52 Apocalypse 17, 7-18 (l'ange explique le mystère de la femme et de la bête) → proposer titre + couverture d'abord.
