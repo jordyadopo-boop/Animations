@@ -19,3 +19,9 @@
   rendu complet via `./rendu.sh ep58` (livrables/episode58_les_fleuves_deviennent_du_sang.mp4).
 - Prochain : 59 Apocalypse 16, 1-3 (voix du temple : « versez les sept coupes » ; 1re coupe = ulcères ; 2e coupe = la mer comme le sang d'un mort)
   → proposer 2 titres + couverture d'abord. Nouveau épisode = copier ep58 (render.js, web/head|tail|lib|helpers*, build_audio.py), body.js = cat helpers*.js setsNN.js.
+- ⚠ NOUVEAU FORMAT demandé par Mr A (à partir de l'ép. 59) : un personnage à son image, « Mr A », discute avec Claude
+  et les deux racontent l'histoire ensemble (dialogue). Personnage : personnages/helpersMrA.js (fonction mrA() :
+  peau foncée, cheveux très courts, bouc, lunettes ovales dorées verres sombres, polo marron manches courtes) ;
+  captures : personnages/mrA_captures.jpg. À copier dans epNN/web/ et ajouter dans body.js avant setsNN.js.
+  Voix de Mr A : en attente de son choix (Gérard fr-BE-GerardNeural / Fabrice fr-CH-FabriceNeural / Henri fr-FR-HenriNeural,
+  Henri sert déjà aux citations bibliques).
