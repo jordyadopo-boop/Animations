@@ -1,0 +1,188 @@
+{
+  "_doc": "Pub Odyssée Games (9:16). Chaque scène : id, lignes de voix off (vo), 'clip' optionnel par ligne, pause après (pad, s), durée mini (min, s). Les durées viennent de la voix (tools/tts.py -> timeline.json).",
+  "voice": "fr-FR-HenriNeural",
+  "rate": "-4%",
+  "scenes": [
+    {
+      "id": "hook",
+      "lead": 0.6,
+      "pad": 0.9,
+      "vo": [
+        "Attends.",
+        "Regarde bien.",
+        "Tu n'es pas prêt pour ça."
+      ],
+      "gap": 0.7
+    },
+    {
+      "id": "intro",
+      "pad": 0.8,
+      "vo": [
+        "Un petit bonhomme.",
+        "Une ligne de craie.",
+        "Et toute la géométrie contre lui."
+      ],
+      "gap": 0.9
+    },
+    {
+      "id": "logo",
+      "lead": 1.4,
+      "pad": 3.0,
+      "vo": [
+        "Ça, c'est Odyssée."
+      ]
+    },
+    {
+      "id": "count",
+      "pad": 1.0,
+      "vo": [
+        "Et non, ce n'est pas un jeu.",
+        "C'est cinquante et un jeux.",
+        "Tous dans le même univers."
+      ],
+      "gap": 0.8
+    },
+    {
+      "id": "phi",
+      "pad": 0.8,
+      "vo": [
+        "Odyssée Phi. Le premier. Du jeu de plateforme pur : dix mondes, dix gardiens.",
+        "À la fin de chaque monde, un polyèdre géant te poursuit.",
+        "Et chaque niveau naît d'une graine : le niveau trente-sept est toujours le même. Tu l'apprends. Tu le maîtrises."
+      ],
+      "gap": 0.6,
+      "lead": 0.6
+    },
+    {
+      "id": "infini",
+      "pad": 0.8,
+      "vo": [
+        "Odyssée Infini. Tu cours. Tu voles. Tu plonges sous la vague.",
+        "Rate le bateau, et c'est la plongée : quatorze secondes d'oxygène pour remonter.",
+        "Et la vitesse monte. Sans plafond."
+      ],
+      "gap": 0.6,
+      "lead": 0.5
+    },
+    {
+      "id": "omega",
+      "pad": 1.0,
+      "vo": [
+        "Odyssée Oméga. Le duel des gardiens.",
+        "Cinquante gardiens. Une campagne. Et le duel."
+      ],
+      "gap": 0.6,
+      "lead": 0.5
+    },
+    {
+      "id": "montage",
+      "pad": 0.8,
+      "gap": 0.45,
+      "vo": [
+        {
+          "t": "Et ça continue.",
+          "clip": null
+        },
+        {
+          "t": "Du tir en cinq contre cinq.",
+          "clip": "alpha",
+          "label": "Odyssée α",
+          "sub": "Tir · 5 contre 5"
+        },
+        {
+          "t": "Des courses de karts néon.",
+          "clip": "beta",
+          "label": "Odyssée β",
+          "sub": "Karts · 10 circuits"
+        },
+        {
+          "t": "Du calcul mental.",
+          "clip": "pi",
+          "label": "Odyssée π",
+          "sub": "Calcul mental"
+        },
+        {
+          "t": "Le tour du monde.",
+          "clip": "delta",
+          "label": "Odyssée Δ",
+          "sub": "Pays · capitales · drapeaux"
+        },
+        {
+          "t": "Un quiz de culture générale.",
+          "clip": "sigma",
+          "label": "Odyssée Σ",
+          "sub": "Quiz · duel"
+        },
+        {
+          "t": "Des tests de logique.",
+          "clip": "psi",
+          "label": "Odyssée Ψ",
+          "sub": "Logique · aptitude"
+        },
+        {
+          "t": "Une tour à empiler jusqu'au ciel.",
+          "clip": "tau",
+          "label": "Odyssée Τ",
+          "sub": "Empile · tiens bon"
+        },
+        {
+          "t": "Un phare dans la brume.",
+          "clip": "eta",
+          "label": "Odyssée Η",
+          "sub": "Guide les naufragés"
+        },
+        {
+          "t": "Du tennis. Du bowling. Du minigolf. Des tirs au but.",
+          "clip": "sports"
+        },
+        {
+          "t": "Et des dizaines d'autres.",
+          "clip": "wall"
+        }
+      ],
+      "lead": 0.4
+    },
+    {
+      "id": "workflow",
+      "pad": 1.2,
+      "vo": [
+        "Un jeu mobile classique ? Tu ouvres le store. Tu télécharges des centaines de mégas. Tu crées un compte. Tu attends la mise à jour.",
+        "Odyssée ? Tu cliques. Tu joues."
+      ],
+      "gap": 1.0,
+      "lead": 0.6
+    },
+    {
+      "id": "features",
+      "pad": 1.0,
+      "vo": [
+        "Directement dans ton navigateur. Rien à installer.",
+        "Sur Android, l'appli pèse moins d'un méga.",
+        "Sur iPhone, tu l'ajoutes à ton écran d'accueil.",
+        "Treize langues.",
+        "Et un classement mondial : ton meilleur score reste affiché. Pour toujours."
+      ],
+      "gap": 0.7,
+      "lead": 0.5
+    },
+    {
+      "id": "climax",
+      "pad": 0.8,
+      "gap": 1.1,
+      "vo": [
+        "Alors la vraie question, ce n'est pas : est-ce que c'est bien ?",
+        "C'est : jusqu'où tu vas aller ?",
+        "Commence ton odyssée."
+      ],
+      "lead": 0.8
+    },
+    {
+      "id": "cta",
+      "pad": 4.5,
+      "vo": [
+        "Odyssée Games. Sur odyssée games point com."
+      ],
+      "lead": 0.8
+    }
+  ]
+}

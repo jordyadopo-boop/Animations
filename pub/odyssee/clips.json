@@ -1,0 +1,13 @@
+{
+  "_doc": "Extraits de gameplay (dépôt games-02/media). from = seconde de départ dans la source. Images extraites par tools/frames.py dans out/odyssee/frames/<nom>/.",
+  "phi":    { "src": "odyssee-phi-promo.mp4", "from": 3.0 },
+  "infini": { "src": "bandes-annonces/infini-16x9.mp4", "from": 6.5 },
+  "omega":  { "src": "bandes-annonces/omega-16x9.mp4", "from": 3.6 },
+  "alpha":  { "src": "bandes-annonces/alpha-16x9.mp4", "from": 5.0 },
+  "pi":     { "src": "bandes-annonces/pi-16x9.mp4", "from": 3.0 },
+  "delta":  { "src": "bandes-annonces/delta-16x9.mp4", "from": 7.0 },
+  "sigma":  { "src": "bandes-annonces/sigma-16x9.mp4", "from": 3.0 },
+  "psi":    { "src": "bandes-annonces/psi-16x9.mp4", "from": 3.0 },
+  "tau":    { "src": "bandes-annonces/tau-16x9.mp4", "from": 10.0 },
+  "eta":    { "src": "bandes-annonces/eta-16x9.mp4", "from": 5.0 }
+}
