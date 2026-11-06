@@ -22,5 +22,5 @@ window.EPISODE = { duration: TL.duration, fps: 30, width: 1920, height: 1080 };
 window.renderFrame = async (t) => { screen.draw(t); if (pending.size) { await settle(); screen.draw(t); } };
 await settle();
 const Q = new URLSearchParams(location.search);
-if (Q.get('cover')) { screen.poster(); await settle(); screen.poster(); } else await window.renderFrame(Number(Q.get('t') || 0));
+if (Q.get('cover') === 'v') { screen.posterV(); await settle(); screen.posterV(); } else if (Q.get('cover')) { screen.poster(); await settle(); screen.poster(); } else await window.renderFrame(Number(Q.get('t') || 0));
 window.READY = true;
