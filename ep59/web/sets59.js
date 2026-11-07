@@ -272,11 +272,10 @@ SETS.cover = () => {
   const B = seaSet(); const { scene, cam } = B;
   const an = bowlAngel(1); an.root.scale.setScalar(3); an.place(-1.8, 7.5, -18, 0.3); scene.add(an.root); angelLight(scene, [-1, 11, -14]).intensity = 4;
   const stream = pourStream(scene);
-  const d = duo(scene, 0.15, 2.4, 0.25);
-  const tg = softGlow(10, 0xffe0a0); tg.position.set(6, 12, -40); scene.add(tg);
+  const tp = temple(scene, -55, 1.3); tp.position.set(5.5, 9, -55); const tg = softGlow(26, 0xffe0a0); tg.position.set(5.5, 12, -57); scene.add(tg);
+  const cl = clouds(scene, 10, 8.6, 8, { em: 0x8a5a6a, op: 1 }); cl.forEach((c, i) => { c.position.set(5.5 + (hash(i * 3) - 0.5) * 16, 8.4 + hash(i) * 0.6, -52 - hash(i * 7) * 8); c.scale.multiplyScalar(1.8); });
   return { ...B, update() { const t = 3; B.water.update(t, 0.08); B.blood(1); B.fishUpd(t, 1); an.pose({ aL: [2.4, 0.3], eL: 0.4, aR: [0.4, 0.2] }); an.bowl.rotation.z = -1.6; an.face(0, 'serious', t); aimStreamTo(an, stream, 1, new THREE.Vector3(-0.5, -0.2, -9));
-    d.update(t, { look: 1, hy: -0.55, hp: -0.32, expr: 'awe', mood: {}, poseA: { aR: [2.5, 0.45], eR: 0.15, aL: [0.15, 0.14], hy: -0.55, hp: -0.32 } }); d.c.g.rotation.y = -0.9; d.c.update(t, 0, { armsUp: 0.15 }); d.a.face(0, 'awe', t);
-    cam.position.set(0.7, 1.15, 6.3); cam.fov = 60; cam.updateProjectionMatrix(); cam.lookAt(-0.8, 2.15, -6); cam.userData.focus = 3.2; } };
+    cam.position.set(0.6, 1.3, 5.0); cam.fov = 64; cam.updateProjectionMatrix(); cam.lookAt(0.6, 4.2, -18); cam.userData.focus = 14; } };
 };
 
 const SHOTS = [['intro', 0, SC.temple.start], ['temple', SC.temple.start, SC.ulcere.start], ['ulcere', SC.ulcere.start, SC.egypte.start], ['egypte', SC.egypte.start, SC.mer.start], ['mer', SC.mer.start, SC.fin.start], ['fin', SC.fin.start, 1000], ['cover', 1000, 1e9]];
