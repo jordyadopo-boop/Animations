@@ -75,9 +75,9 @@ const GOLD = () => M(0xe0b040, { metalness: 0.7, roughness: 0.3, emissive: new T
 function addDoors(tp) { const ds = [-1, 1].map(s => { const h = new THREE.Group(); h.position.set(s * 0.8, 2.3, 1.13); tp.add(h); const p = box(0.8, 2.8, 0.06, GOLD()); p.position.x = -s * 0.4; h.add(p); return [h, s]; }); return k => ds.forEach(([h, s]) => h.rotation.y = s * 1.6 * k); }
 function priestly(an) { const b = box(0.42, 0.07, 0.26, GOLD()); b.position.y = 0.44; an.spine.add(b); an.bowl.visible = false; return an; }
 function heaven60(o = {}) {
-  const B = heavenTemple(o); B.angels.forEach(priestly); B.doors = addDoors(B.tp);
+  const B = heavenTemple({ exposure: 0.72, ...o }); B.angels.forEach(priestly); B.doors = addDoors(B.tp);
   B.light = new THREE.PointLight(0xffe0a0, 0, 30, 1.2); B.light.position.set(0, 3, -10); B.scene.add(B.light);
-  B.open = (k) => { B.doors(k); B.tp.userData.door.visible = k > 0.02; B.tp.userData.glow.scale.setScalar(7 + 10 * k); B.tp.userData.glow.material.opacity = k; B.light.intensity = 8 * k; };
+  B.open = (k) => { B.doors(k); B.tp.userData.door.visible = k > 0.02; B.tp.userData.glow.scale.setScalar(6 + 4 * k); B.tp.userData.glow.material.opacity = 0.55 * k; B.light.intensity = 2.0 * k; };
   return B;
 }
 // les anges sortent : u = 0 (dans le temple) .. 1 (en bas des marches)
@@ -108,7 +108,7 @@ SETS.intro = () => {
   return {
     ...B, update(t) {
       B.smk(t, 0.15); d.update(t, { look: win(t, C.title - 0.2, 99, 0.5, 0.1) });
-      camKeys(cam, t, [{ t: 0, p: [0, 1.4, 1.0], l: [0, 3.5, -14], f: 58 }, { t: 2.2, p: [0, 1.4, 1.0], l: [0, 3.5, -14], f: 58 }, dk(2.22, d), dk(C.serie, d), dk(C.title - 0.2, d, { dist: 2.4 }), { t: C.title + 1.2, p: [0, 2.0, 5.0], l: [0, 4.0, -14], f: 58 }, { t: SC.temple.start, p: [0, 1.8, 4.4], l: [0, 3.6, -14], f: 58 }]);
+      camKeys(cam, t, [{ t: 0, p: [0, 1.4, 1.0], l: [0, 3.5, -14], f: 58 }, { t: 2.2, p: [0, 1.4, 1.0], l: [0, 3.5, -14], f: 58 }, dk(2.22, d), dk(C.serie, d), dk(C.title - 0.2, d, { dist: 2.4 }), { t: C.title - 0.18, ...dk(0, d, { dist: 2.4 }), t: C.title - 0.18 }, { t: C.title - 0.16, p: [0, 2.0, 1.8], l: [0, 4.0, -14], f: 58 }, { t: SC.temple.start, p: [0, 1.8, 1.4], l: [0, 3.6, -14], f: 58 }]);
     }
   };
 };
@@ -169,7 +169,7 @@ SETS.anges = () => {
       d.update(t, { look: win(t, T0, C.pretres - 0.2, 0.1, 0.3) });
       const a3 = B.angels[3].root.position;
       camKeys(cam, t, [{ t: T0, p: [0, 1.6, -4.0], l: [0, 2.0, -14], f: 54 }, { t: C.pretres - 2.5, p: [0.6, 1.5, -5.5], l: [0, 1.3, -9.8], f: 52 }, { t: C.pretres - 0.42, p: [0.6, 1.5, -6.0], l: [0, 1.4, -9.8], f: 50 },
-        dk(C.pretres - 0.4, d), dk(C.lin + 0.6, d), { t: C.lin + 0.62, p: [0.3, 1.6, -7.4], l: [0, 1.6, -9.9], f: 46 }, { t: SC.coupes.start, p: [0.25, 1.6, -7.7], l: [0, 1.55, -9.9], f: 46 }]);
+        dk(C.pretres - 0.4, d), dk(C.lin + 0.6, d), { t: C.lin + 0.62, p: [0.4, 1.6, -6.6], l: [0, 1.45, -9.9], f: 48 }, { t: SC.coupes.start, p: [0.35, 1.6, -6.9], l: [0, 1.45, -9.9], f: 48 }]);
       K.update(t);
     }
   };
@@ -181,8 +181,8 @@ SETS.coupes = () => {
   const lion = wingedLion(); scene.add(lion);
   const d = duo(scene, -0.6, 3.2, 0.1, { ped: 'gold', ph: 0.85 });
   const four = new THREE.Group(); scene.add(four);
-  const cr = creatures(four); cr.forEach((g, i) => { g.position.set(-2.1 + i * 1.4, 0, 0); g.userData.l.position.y = 1.9; g.userData.l.scale.setScalar(1.3); });
-  const incense = B.angels.map(an => { const s = softGlow(0.9, 0xffe0a0); an.bowl.add(s); s.position.y = 0.12; s.scale.setScalar(0.4); return s; });
+  const cr = creatures(four); cr.forEach((g, i) => { g.position.set(-1.65 + i * 1.1, 0, 0); g.userData.l.position.y = 1.9; g.userData.l.scale.setScalar(1.3); });
+  const incense = B.angels.map(an => { const s = softGlow(0.9, 0xffe0a0); an.bowl.add(s); s.position.y = 0.1; s.scale.setScalar(0.25); return s; });
   const K = cardsMgr(scene, cam); refCard(K);
   K('Apocalypse 4, 6-7 : lion, veau, homme, aigle', { w: 1.6, h: 0.24, border: '#ffd070' }, t => win(t, C.lion + 1, C.prieres, 0.3, 0.2), -0.6);
   K('Apocalypse 5, 8 : « des coupes d\'or remplies de parfums, qui sont les prières des saints »', { w: 1.6, h: 0.34, border: '#ffd070' }, t => win(t, C.prieres + 0.4, C.colere, 0.3, 0.2), -0.6);
@@ -193,11 +193,11 @@ SETS.coupes = () => {
       lion.position.set(lerp(-5.5, 4.5, g), 0, -8.4); lion.rotation.y = Math.PI / 2;
       B.angels.forEach((an, i) => { const xf = -3.9 + i * 1.3; const has = lion.position.x > xf - 0.3 || t > C.etres; an.bowl.visible = has; an.pose(has ? { aL: [1.2, 0.2], eL: 1.2, aR: [0.3, 0.15] } : { aL: [0.3, 0.15], aR: [0.3, 0.15] }); });
       const pr = win(t, C.prieres, C.colere + 0.3, 0.4, 0.3), co = sstep(C.colere, C.colere + 1.5, t);
-      incense.forEach(s => { s.material.color.setRGB(1, lerp(0.88, 0.15, co), lerp(0.63, 0.08, co)); s.material.opacity = Math.max(pr, co); s.scale.setScalar(0.4 + 0.3 * Math.sin(t * 3)); });
+      incense.forEach(s => { s.material.color.setRGB(1, lerp(0.88, 0.15, co), lerp(0.63, 0.08, co)); s.material.opacity = Math.max(pr, co); s.scale.setScalar(0.25 + 0.1 * Math.sin(t * 3)); });
       d.update(t, { look: win(t, T0, C.etres - 0.2, 0.1, 0.3) });
       camKeys(cam, t, [{ t: T0, p: [0, 1.7, -4.5], l: [0, 1.4, -9.5], f: 56 }, { t: T0 + 8, p: [0.5, 1.7, -4.8], l: [0.5, 1.4, -9.5], f: 56 }, { t: C.etres - 0.42, p: [0.5, 1.7, -4.8], l: [0.5, 1.4, -9.5], f: 56 }, dk(C.etres - 0.4, d), dk(C.lion + 0.6, d),
-        { t: C.lion + 0.62, p: [0, 1.5, 3.6], l: [0, 1.0, 0], f: 56 }, { t: C.prieres - 0.02, p: [0, 1.5, 3.4], l: [0, 1.0, 0], f: 56 }, { t: C.prieres, p: [0.6, 1.6, -6.6], l: [0.2, 1.4, -9.6], f: 50 }, { t: C.colere - 0.42, p: [0.6, 1.6, -6.9], l: [0.2, 1.4, -9.6], f: 50 }, dk(C.colere - 0.4, d), dk(SC.fumee.start, d, { dist: 2.4 })]);
-      fade(four, win(t, C.lion + 0.6, C.prieres, 0.3, 0.1)); four.position.set(0, 0, -0.2); cr.forEach(g => g.userData.l.lookAt(cam.position));
+        { t: C.lion + 0.62, p: [0, 1.6, 1.9], l: [0, 1.0, -4.4], f: 58 }, { t: C.prieres - 0.02, p: [0, 1.6, 1.7], l: [0, 1.0, -4.4], f: 58 }, { t: C.prieres, p: [0.6, 1.6, -6.6], l: [0.2, 1.4, -9.6], f: 50 }, { t: C.colere - 0.42, p: [0.6, 1.6, -6.9], l: [0.2, 1.4, -9.6], f: 50 }, dk(C.colere - 0.4, d), dk(SC.fumee.start, d, { dist: 2.4 })]);
+      fade(four, win(t, C.lion + 0.6, C.prieres, 0.3, 0.1)); four.position.set(0, 0, -4.4); cr.forEach(g => g.userData.l.lookAt(cam.position));
       K.update(t);
     }
   };
@@ -274,11 +274,11 @@ SETS.fin = () => {
 // ---------- couverture : temple ouvert, fumee doree, les sept anges, l'etre vivant tend une coupe d'or (sans Mr A ni Claude)
 SETS.cover = () => {
   const B = heaven60({ exposure: 0.85 }); const { scene, cam } = B; B.open(1);
-  const lion = wingedLion(); scene.add(lion); lion.position.set(0.9, 0, -8.0); lion.rotation.y = -Math.PI / 2 - 0.4;
+  const lion = wingedLion(); scene.add(lion); lion.position.set(0.9, 0, -7.2); lion.rotation.y = -Math.PI / 2 + 0.7;
   const big = smoke(scene, 40, 0, 2.5, -13, 7, 12, 0xfff0d8);
-  const hb = goldBowl(2.2); hb.position.set(0.2, 1.75, -8.6); scene.add(hb); const hg = softGlow(1.6, 0xffd070); hg.position.copy(hb.position); scene.add(hg);
-  return { ...B, update() { const t = 4; procession(B, t, 1); B.angels.forEach((an, i) => { an.bowl.visible = i !== 3; an.pose({ aL: [1.2, 0.2], eL: 1.2, aR: [0.3, 0.15] }); if (i === 3) an.pose({ aL: [1.5, 0.1], eL: 0.6, aR: [1.5, -0.1], eR: 0.6 }); }); B.smk(t, 1); big(t, 0.8);
-    cam.position.set(0, 1.4, -3.2); cam.fov = 66; cam.updateProjectionMatrix(); cam.lookAt(0, 3.6, -12); cam.userData.focus = 6; } };
+  const hb = goldBowl(2.6); hb.position.set(-0.05, 2.05, -7.5); scene.add(hb); const hg = softGlow(2.2, 0xffd070); hg.position.copy(hb.position); hg.position.y += 0.15; scene.add(hg);
+  return { ...B, update() { const t = 4; procession(B, t, 1); B.angels.forEach((an, i) => { an.bowl.visible = i !== 3; an.pose({ aL: [1.2, 0.2], eL: 1.2, aR: [0.3, 0.15] }); if (i === 3) { an.pose({ aL: [1.3, 0.1], eL: 0.5, aR: [1.3, -0.1], eR: 0.5 }); an.root.position.z += 1.2; an.root.position.x += 0.3; } }); B.smk(t, 1); big(t, 0.8);
+    cam.position.set(-0.4, 0.45, -2.2); cam.fov = 70; cam.updateProjectionMatrix(); cam.lookAt(0.2, 1.9, -12); cam.userData.focus = 6; } };
 };
 
 const SHOTS = [['intro', 0, SC.temple.start], ['temple', SC.temple.start, C.tente], ['tente', C.tente, SC.anges.start], ['anges', SC.anges.start, SC.coupes.start], ['coupes', SC.coupes.start, SC.fumee.start], ['fumee', SC.fumee.start, C.moise], ['tente', C.moise, C.salomon], ['salomon', C.salomon, C.gloire], ['gloire', C.gloire, SC.fin.start], ['fin', SC.fin.start, 1000], ['cover', 1000, 1e9]];

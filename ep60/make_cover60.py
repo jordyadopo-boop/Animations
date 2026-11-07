@@ -17,8 +17,8 @@ for y in range(1920):
     k = max(0.0, min(1.0, (y - 1150) / 260)); gd.line([(0, y), (1080, y)], fill=int(215 * min(1, k * 1.6)))
 im = Image.composite(Image.new('RGB', im.size, (12, 8, 6)), im, grad)
 d = ImageDraw.Draw(im)
-f = ImageFont.truetype(BOLD, 112); lines = ['VERSEZ LES', 'SEPT COUPES']
-fb = ImageFont.truetype(BOLD, 52); lab = 'ÉPISODE 59'; tw = d.textlength(lab, font=fb)
+f = ImageFont.truetype(BOLD, 112); lines = ['SEPT COUPES', "D'OR"]
+fb = ImageFont.truetype(BOLD, 52); lab = 'ÉPISODE 60'; tw = d.textlength(lab, font=fb)
 y0 = 1180
 d.rounded_rectangle([(540 - tw / 2 - 34, y0), (540 + tw / 2 + 34, y0 + 92)], radius=46, fill=ORANGE)
 d.text((540, y0 + 46), lab, font=fb, fill='white', anchor='mm')
@@ -29,6 +29,6 @@ sh = sh.filter(ImageFilter.GaussianBlur(14)); im.paste(sh, (0, 8), sh); d = Imag
 for i, ln in enumerate(lines): d.text((540, y + i * lh), ln, font=f, fill='white', anchor='ma', stroke_width=5, stroke_fill=(10, 8, 6))
 yb = y + len(lines) * lh + 26
 d.rectangle([(450, yb), (630, yb + 10)], fill=ORANGE)
-d.text((540, yb + 40), 'Pour out the seven bowls', font=ImageFont.truetype(MED, 44), fill=(235, 228, 215), anchor='ma', stroke_width=3, stroke_fill=(10, 8, 6))
-im.save(os.path.join(OUT, 'couverture_ep59.jpg'), quality=93)
+d.text((540, yb + 40), 'Seven golden bowls', font=ImageFont.truetype(MED, 44), fill=(235, 228, 215), anchor='ma', stroke_width=3, stroke_fill=(10, 8, 6))
+im.save(os.path.join(OUT, 'couverture_ep60.jpg'), quality=93)
 print('ok')
