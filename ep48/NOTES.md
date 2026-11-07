@@ -26,3 +26,6 @@
   Voix de Mr A CHOISIE : Fabrice — VOICES["mra"] = dict(voice="fr-CH-FabriceNeural", rate="+4%", pitch="+0Hz").
   (Claude garde fr-FR-RemyMultilingualNeural +30Hz ; citations bibliques = Henri fr-FR-HenriNeural.)
   Dans build_audio.py, l'enveloppe de bouche est exportée seulement pour "claude" : ajouter "mra" dans timeline.js.
+- ⚠ RÈGLE (Mr A, ép. 59) : Mr A et Claude N'APPARAISSENT PAS sur les couvertures (seulement la scène biblique + titre).
+- Ép. 59 VERSEZ LES SEPT COUPES (Ap 16,1-3) : 1er épisode au format dialogue. Helpers duo()/dk()/talkK() dans ep59/web/sets59.js
+  (Mr A à gauche, Claude sur un rocher/socle à droite ; ils se regardent quand l'autre parle). Claude dit « Mister A ».
