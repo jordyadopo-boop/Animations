@@ -29,3 +29,5 @@
 - ⚠ RÈGLE (Mr A, ép. 59) : Mr A et Claude N'APPARAISSENT PAS sur les couvertures (seulement la scène biblique + titre).
 - Ép. 59 VERSEZ LES SEPT COUPES (Ap 16,1-3) : 1er épisode au format dialogue. Helpers duo()/dk()/talkK() dans ep59/web/sets59.js
   (Mr A à gauche, Claude sur un rocher/socle à droite ; ils se regardent quand l'autre parle). Claude dit « Mister A ».
+- Ép. 60 SEPT COUPES D'OR (Ap 15,5-8) livré (137 s). Prochain : 61 Apocalypse 15, 1-4 (mer de verre mêlée de feu,
+  vainqueurs de la bête avec les harpes de Dieu, cantique de Moïse et de l'Agneau) → proposer 2 titres + couverture d'abord.
