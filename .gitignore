@@ -127,3 +127,15 @@ ep59/vchk
 ep59/__pycache__
 ep59/caps
 ep59/vchk
+ep60/seg
+ep60/tts_cache
+ep60/build
+ep60/web/main.js
+ep60/cov
+ep60/node_modules
+ep60/stills
+ep60/sheet.jpg
+ep60/vchk
+ep60/__pycache__
+ep60/caps
+ep60/build_log.txt
